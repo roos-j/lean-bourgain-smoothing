@@ -1,0 +1,1711 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{aliascnt}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+\setcounter{tocdepth}{2}
+\setlength{\parindent}{1.25em}
+\setlength{\parskip}{0.22em}
+\allowdisplaybreaks
+
+\newtheorem{theorem}{Theorem}[section]
+\newaliascnt{proposition}{theorem}
+\newtheorem{proposition}[proposition]{Proposition}
+\aliascntresetthe{proposition}
+\newaliascnt{lemma}{theorem}
+\newtheorem{lemma}[lemma]{Lemma}
+\aliascntresetthe{lemma}
+\newaliascnt{corollary}{theorem}
+\newtheorem{corollary}[corollary]{Corollary}
+\aliascntresetthe{corollary}
+\theoremstyle{definition}
+\newaliascnt{definition}{theorem}
+\newtheorem{definition}[definition]{Definition}
+\aliascntresetthe{definition}
+\newaliascnt{convention}{theorem}
+\newtheorem{convention}[convention]{Convention}
+\aliascntresetthe{convention}
+\theoremstyle{remark}
+\newaliascnt{remark}{theorem}
+\newtheorem{remark}[remark]{Remark}
+\aliascntresetthe{remark}
+
+\crefname{theorem}{Theorem}{Theorems}
+\crefname{proposition}{Proposition}{Propositions}
+\crefname{lemma}{Lemma}{Lemmas}
+\crefname{corollary}{Corollary}{Corollaries}
+\crefname{definition}{Definition}{Definitions}
+\crefname{convention}{Convention}{Conventions}
+\crefname{remark}{Remark}{Remarks}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\1}{\mathbf 1}
+\newcommand{\FT}[1]{\widehat{#1}}
+\newcommand{\br}[1]{\langle #1\rangle}
+\newcommand{\dd}{\,d}
+\newcommand{\Ichi}{\mathcal I_{\chi}}
+\newcommand{\Lamchi}{\Lambda_{\chi}}
+\newcommand{\uNorm}[2]{\lVert #1\rVert_{u^{#2}}}
+\newcommand{\hNorm}[2]{\lVert #1\rVert_{H^{#2}}}
+\newcommand{\lpNorm}[2]{\lVert #1\rVert_{#2}}
+\newcommand{\uses}[1]{\par\smallskip\noindent\textbf{Dependencies.} #1\par\smallskip}
+\newcommand{\Ssize}[2]{\mathcal S\!\left(#1;#2\right)}
+
+\title{Autoformalization Blueprint for\\
+\emph{A New Proof of an Inequality of Bourgain}}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document reorganizes the argument of Durcik--Roos into strict forward dependency order.  Every definition and theorem-like statement is labeled, every proof after the introduction follows its statement immediately, and every inequality constant has the form
+$C_{\ref{thm:main},\text{parameters}}$ with all parameter dependence displayed.  Constants larger than $1000$ are replaced by integer powers of two.  The main theorem uses the short explicit constant
+$2^{23}$ times the square of a single natural size expression, so its asymptotic dependence on the support interval and cutoff is transparent.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The paper studies the trilinear form associated with the polynomial configuration
+$x,x+t,x+t^2$.  The following explicit formulation is the sole theorem stated before its proof.
+
+\begin{convention}[Notation in the main theorem]\label{conv:main-theorem-notation}
+For a Lebesgue-measurable set $E\subset\R$, $|E|$ denotes its Lebesgue measure; in particular, if $K$ is an interval, $|K|$ is its length.  For $1\leq p\leq\infty$,
+$\lpNorm fp$ denotes the $L^p(\R)$ norm with respect to Lebesgue measure.  We normalize the Fourier transform by
+\[
+\FT f(\xi):=\int_\R f(x)e^{-2\pi ix\xi}\dd x
+\]
+for $f\in L^1(\R)$ and extend it to $L^2(\R)$ by Plancherel's theorem.  For $\sigma\geq0$, the inhomogeneous Sobolev norm used below is
+\[
+\hNorm f{-\sigma}^2
+:=\int_\R|\FT f(\xi)|^2(1+|\xi|^2)^{-\sigma}\dd\xi.
+\]
+\end{convention}
+
+\begin{theorem}[Bourgain's trilinear smoothing inequality]\label{thm:main}
+Let $K\subset\R$ be a compact interval and let $\chi\in C_c^\infty(\R)$ satisfy
+$0\leq\chi\leq1$.  Define
+\[
+R_\chi:=1+\sup\{|t|:t\in\supp\chi\},
+\]
+where the supremum is $0$ when $\chi=0$, and define
+\[
+C_{\ref{thm:main},\,K,\chi}
+:=
+2^{23}
+\left(
+2+\lvert K\rvert+R_\chi^2
++\lpNorm\chi1+\lpNorm\chi2
++\lpNorm{\chi'}1+\lpNorm{\chi'}2
+\right)^2.
+\]
+Then, for every $f_0\in L^\infty(\R)$ supported in $K$ and every
+$f_1,f_2\in L^2(\R)$,
+\[
+\left|
+\iint_{\R^2}
+ f_0(x)f_1(x+t)f_2(x+t^2)\chi(t)
+\dd t\dd x
+\right|
+\leq
+C_{\ref{thm:main},\,K,\chi}
+\lpNorm{f_0}\infty\lpNorm{f_1}2
+\hNorm{f_2}{-2^{-14}}.
+\]
+\end{theorem}
+
+\uses{The proof is given at the end of \cref{sec:main-proof}.  The constant and exponent are completely specified in the statement.}
+
+The source paper displays a lower-separation condition using a maximum of pairwise distances.  The Fourier changes of variables in its proof require a lower bound for the minimum pairwise distance.  The blueprint states the required condition explicitly in \cref{lem:separation-selection,prop:gowers-differencing}.
+
+\section{Conventions and foundational definitions}
+
+\begin{convention}[Standing cutoff, measure, and indicator notation]\label{conv:standing-cutoff}
+Throughout the body, $\chi$ denotes a fixed function in $C_c^\infty(\R)$ satisfying
+$0\leq\chi\leq1$.  The measure, norm, and Fourier notation is that of 
+\cref{conv:main-theorem-notation}.  For a measurable set $E\subset\R$, $\1_E$ denotes its indicator function.  An $L^p$ function is said to be supported in a set when it vanishes almost everywhere outside that set.  Pointwise representatives are chosen whenever an integral formula is written.
+\end{convention}
+
+\begin{convention}[Standard theorems]\label{conv:standard-theorems}
+After the introduction, the only results used without local proofs are standard facts expected in a contemporary analysis library: Tonelli's and Fubini's theorems, H\"older's and Cauchy--Schwarz inequalities, dominated convergence, translation invariance and one-dimensional change of variables for Lebesgue measure, integration by parts for compactly supported $W^{2,1}$ functions, Plancherel's theorem, Fourier inversion for Schwartz functions, density of simple or Schwartz functions in the relevant $L^p$ spaces, Young's convolution inequality, and Hadamard's three-lines theorem.
+\end{convention}
+
+\begin{definition}[Intervals and Minkowski operations]\label{def:intervals}
+If $A=[a_-,a_+]$ is a compact interval, then its length is
+\[
+\lvert A\rvert=a_+-a_-.
+\]
+For compact intervals $A,B$, define
+\[
+A+B:=\{a+b:a\in A,\ b\in B\},
+\qquad
+A-B:=\{a-b:a\in A,\ b\in B\}.
+\]
+Then $\lvert A+B\rvert=\lvert A\rvert+\lvert B\rvert$ and $\lvert A-B\rvert=\lvert A\rvert+\lvert B\rvert$.
+A compact interval is called positive-length when its length is positive.
+\end{definition}
+
+\begin{definition}[Fourier transform and Sobolev norm]\label{def:fourier-sobolev}
+For $x,\xi\in\R$, set
+\[
+e(x):=e^{2\pi ix},
+\qquad
+e_\xi(x):=e(\xi x),
+\qquad
+\br\xi:=(1+|\xi|^2)^{1/2}.
+\]
+For $f\in L^1(\R)$, define
+\[
+\FT f(\xi):=\int_\R f(x)e(-x\xi)\dd x.
+\]
+For $g\in L^1(\R)$, define the inverse Fourier transform and the check notation by
+\[
+\mathcal F^{-1}g(x):=\int_\R g(\xi)e(x\xi)\dd\xi,
+\qquad
+\check g:=\mathcal F^{-1}g.
+\]
+The Fourier transform on $L^2$ is its Plancherel extension.  For $\sigma\geq0$, define
+\[
+\hNorm f{-\sigma}^2
+:=\int_\R|\FT f(\xi)|^2\br\xi^{-2\sigma}\dd\xi.
+\]
+\end{definition}
+
+\begin{definition}[Multiplicative differences and uniformity quantities]\label{def:uniformity}
+For measurable $f:\R\to\C$ and $h\in\R$, define
+\[
+\Delta_hf(x):=f(x)\overline{f(x+h)}.
+\]
+For $\mathbf h=(h_1,\ldots,h_s)\in\R^s$, define
+\[
+\Delta_{\mathbf h}f:=\Delta_{h_1}\cdots\Delta_{h_s}f.
+\]
+Whenever the right-hand side is finite, define
+\[
+\uNorm f{s+2}^{2^s}
+:=\int_{\R^s}\lpNorm{\FT{\Delta_{\mathbf h}f}}\infty\dd\mathbf h.
+\]
+In particular,
+\[
+\uNorm f2=\lpNorm{\FT f}\infty,
+\qquad
+\uNorm f3^2=\int_\R\lpNorm{\FT{\Delta_hf}}\infty\dd h.
+\]
+A measurable function is called $1$-bounded when its $L^\infty$ norm is at most $1$.
+\end{definition}
+
+\begin{definition}[Trilinear form]\label{def:trilinear-form}
+Whenever the integral is absolutely convergent, define
+\[
+\Lamchi(f_0,f_1,f_2)
+:=\iint_{\R^2}f_0(x)f_1(x+t)f_2(x+t^2)\chi(t)\dd t\dd x,
+\]
+\[
+\Ichi(f_0,f_1,f_2):=|\Lamchi(f_0,f_1,f_2)|.
+\]
+\end{definition}
+
+\begin{definition}[Size parameter]\label{def:size-parameter}
+Let $A_1,\ldots,A_r$ be compact intervals and let $\psi\in C_c^1(\R)$.  Define
+\[
+R_\psi:=1+\sup\{|t|:t\in\supp\psi\},
+\]
+with supremum $0$ when $\psi=0$, and define
+\[
+\Ssize{A_1,\ldots,A_r}{\psi}
+:=
+2+
+\max\left\{
+\lvert A_1\rvert,\ldots,\lvert A_r\rvert,R_\psi^2,
+\lpNorm\psi1,\lpNorm\psi2,
+\lpNorm{\psi'}1,\lpNorm{\psi'}2
+\right\}.
+\]
+This is a size parameter, not an inequality constant.  Every inequality constant below is separately named by the label of its statement and lists all parameters in its subscript.
+\end{definition}
+
+\begin{lemma}[Basic invariances of the uniformity quantities]\label{lem:u-invariances}
+Let $r\geq2$, $a\in\C$, $y\in\R$, and let $f$ have finite $u^r$ quantity.  Then
+\[
+\uNorm{af}r=|a|\uNorm fr,
+\qquad
+\uNorm{x\mapsto f(x+y)}r=\uNorm fr,
+\qquad
+\uNorm{\overline f}r=\uNorm fr.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:fourier-sobolev} and \ref{def:uniformity}.}
+
+\begin{proof}
+For $r=s+2$, one has
+$\Delta_{\mathbf h}(af)=|a|^{2^s}\Delta_{\mathbf h}f$.
+Translation multiplies each Fourier transform by a unimodular factor.  Complex conjugation reflects and conjugates the Fourier transform.  The defining $L^\infty$ norms are therefore unchanged in the latter two cases, and homogeneity gives the first identity.
+\end{proof}
+
+\begin{lemma}[Difference $L^2$ identity]\label{lem:difference-l2}
+For every $f\in L^2(\R)$,
+\[
+\int_\R\lpNorm{\Delta_hf}2^2\dd h=\lpNorm f2^4.
+\]
+If $f$ is $1$-bounded and supported in a compact interval $A$, then
+\[
+\left(\int_\R\lpNorm{\Delta_hf}2^2\dd h\right)^{1/2}\leq\lvert A\rvert.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:uniformity} and Tonelli's theorem.}
+
+\begin{proof}
+By Tonelli and the substitution $y=x+h$,
+\[
+\int_\R\lpNorm{\Delta_hf}2^2\dd h
+=
+\iint_{\R^2}|f(x)|^2|f(y)|^2\dd x\dd y
+=
+\lpNorm f2^4.
+\]
+If $f$ is $1$-bounded and supported in $A$, then $\lpNorm f2^2\leq\lvert A\rvert$.
+\end{proof}
+
+\section{Explicit auxiliary cutoffs}
+
+\begin{definition}[Polynomial smooth step]\label{def:smooth-step}
+Define $s:\R\to[0,1]$ by
+\[
+s(u)=0\quad(u\leq0),
+\]
+\[
+s(u)=3u^2-2u^3\quad(0<u<1),
+\]
+\[
+s(u)=1\quad(u\geq1).
+\]
+Then $s\in C^1(\R)\cap W^{2,1}_{\mathrm{loc}}(\R)$.
+\end{definition}
+
+\begin{lemma}[Derivative bounds for the smooth step]\label{lem:smooth-step-bounds}
+The function $s$ from \cref{def:smooth-step} satisfies
+\[
+\lpNorm{s'}1=1,
+\qquad
+\lpNorm{s''}1=3,
+\qquad
+\lpNorm{s'}2^2=\frac65<2.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:smooth-step} and elementary polynomial integration.}
+
+\begin{proof}
+On $(0,1)$, one has $s'(u)=6u(1-u)$ and $s''(u)=6-12u$, while both weak derivatives vanish off $[0,1]$.  Direct integration gives the three values.
+\end{proof}
+
+\begin{definition}[Spatial cutoff]\label{def:spatial-cutoff}
+For a compact interval $I=[a,b]$, define
+\[
+\rho_I(x):=s(x-a+1)s(b+1-x).
+\]
+\end{definition}
+
+\begin{lemma}[Spatial cutoff bounds]\label{lem:spatial-cutoff-bounds}
+For every compact interval $I$, the cutoff $\rho_I$ satisfies
+\[
+0\leq\rho_I\leq1,
+\qquad
+\rho_I=1\text{ on }I,
+\qquad
+\supp\rho_I\subset I+[-1,1],
+\]
+\[
+\lpNorm{\rho_I}1\leq\lvert I\rvert+2,
+\qquad
+\lpNorm{\rho_I}2\leq(\lvert I\rvert+2)^{1/2},
+\]
+\[
+\lpNorm{\rho_I'}1\leq2,
+\qquad
+\lpNorm{\rho_I''}1\leq2^4.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:spatial-cutoff} and Lemma \ref{lem:smooth-step-bounds}.}
+
+\begin{proof}
+The pointwise and support assertions follow directly from the definition.  The first two norm bounds follow from $0\leq\rho_I\leq1$ and the support length.  The product rule and \cref{lem:smooth-step-bounds} give
+$\lpNorm{\rho_I'}1\leq2$.  For the second derivative, the two pure terms contribute at most $6$, while the mixed term contributes at most
+$2\lpNorm{s'}2^2<4$.  Hence the total is below $10<2^4$.
+\end{proof}
+
+\begin{definition}[Explicit dyadic cutoffs]\label{def:dyadic-cutoffs}
+Define the even low-frequency cutoff
+\[
+\eta(\xi):=s(2-|\xi|).
+\]
+Define
+\[
+\varphi(\xi):=\eta(\xi)-\eta(2\xi),
+\]
+\[
+q(\xi):=\eta(\xi/2)-\eta(4\xi).
+\]
+Then $q=1$ on $\{\xi:\tfrac12\leq|\xi|\leq2\}$ and
+$q=0$ outside $\{\xi:\tfrac14\leq|\xi|\leq4\}$.
+For $k\geq1$, define
+\[
+\FT{P_0f}(\xi):=\eta(\xi)\FT f(\xi),
+\qquad
+\FT{P_kf}(\xi):=\varphi(2^{-k}\xi)\FT f(\xi),
+\]
+\[
+\FT{Q_kf}(\xi):=q(2^{-k}\xi)\FT f(\xi).
+\]
+\end{definition}
+
+\begin{lemma}[Explicit kernel bounds]\label{lem:dyadic-kernel-bounds}
+Let $\check q$ denote the inverse Fourier transform of $q$ from 
+\cref{def:fourier-sobolev}, and let
+\[
+m(\xi):=\frac{q(\xi)}{(2\pi i\xi)^2}.
+\]
+Define
+\[
+C_{\ref{lem:dyadic-kernel-bounds},\,q}:=2^{10}.
+\]
+Then
+\[
+\lpNorm{\check q}1\leq2^6,
+\qquad
+\lpNorm{\mathcal F^{-1}m}1\leq
+C_{\ref{lem:dyadic-kernel-bounds},\,q}.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:smooth-step} and \ref{def:dyadic-cutoffs}; integration by parts.}
+
+\begin{proof}
+The explicit polynomial transition gives
+\[
+\lpNorm q1<2^3,
+\qquad
+\lpNorm{q'}1\leq2^2,
+\qquad
+\lpNorm{q''}1<2^5.
+\]
+For any compactly supported $w\in W^{2,1}(\R)$, integration by parts twice gives
+\[
+\lpNorm{\mathcal F^{-1}w}1
+\leq2\lpNorm w1+\lpNorm{w''}1.
+\]
+Applying this to $q$ yields $\lpNorm{\check q}1\leq2^6$.
+On the support of $q$, $|\xi|\geq1/4$.  Differentiating
+$m=-(4\pi^2)^{-1}q\xi^{-2}$ and using $\pi>3$ gives
+\[
+\lpNorm m1<2^4,
+\qquad
+\lpNorm{m''}1<2^9.
+\]
+The same general estimate gives
+$\lpNorm{\mathcal F^{-1}m}1<2^4+2^9<2^{10}$.
+\end{proof}
+
+\begin{lemma}[Dyadic reconstruction and multiplier bounds]\label{lem:dyadic-reconstruction}
+For every $f\in L^2(\R)$,
+\[
+f=P_0f+\sum_{k=1}^\infty P_kf
+\quad\text{in }L^2(\R).
+\]
+For $k\geq1$,
+\[
+\supp\FT{P_kf}\subset\{\xi:2^{k-1}\leq|\xi|\leq2^{k+1}\},
+\qquad
+Q_kP_kf=P_kf.
+\]
+For every $1\leq p\leq\infty$,
+\[
+\lpNorm{Q_kf}p\leq2^6\lpNorm fp.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:dyadic-cutoffs}, Lemma \ref{lem:dyadic-kernel-bounds}, Plancherel's theorem, and Young's convolution inequality.}
+
+\begin{proof}
+The identity
+\[
+\eta(\xi)+\sum_{k=1}^N\varphi(2^{-k}\xi)=\eta(2^{-N}\xi)
+\]
+is telescoping.  Plancherel and dominated convergence give reconstruction.  The support relations follow from the explicit support of $\eta$ and $q$.  Finally, $Q_k$ is convolution with
+$2^k\check q(2^k\cdot)$, whose $L^1$ norm is at most $2^6$ by \cref{lem:dyadic-kernel-bounds}.
+\end{proof}
+
+\section{Fourier estimates for products of cutoffs}
+
+\begin{lemma}[Fourier $L^1$ estimate from $H^1$]\label{lem:fourier-l1-h1}
+If $g\in H^1(\R)$, then
+\[
+\lpNorm{\FT g}1
+\leq
+\sqrt2\lpNorm g2+\frac{\sqrt2}{2\pi}\lpNorm{g'}2.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:fourier-sobolev}, Cauchy--Schwarz, and Plancherel's theorem.}
+
+\begin{proof}
+On $|\xi|\leq1$, Cauchy--Schwarz gives $\sqrt2\lpNorm g2$.  On $|\xi|>1$, insert $|\xi|^{-1}$, apply Cauchy--Schwarz, and use
+$\lpNorm{\xi\FT g}2=(2\pi)^{-1}\lpNorm{g'}2$.
+\end{proof}
+
+\begin{lemma}[Products of translated cutoffs]\label{lem:product-cutoff-fourier}
+Let $\psi\in C_c^1(\R)$ satisfy $0\leq\psi\leq1$.  Define
+\[
+C_{\ref{lem:product-cutoff-fourier},\,\psi}
+:=
+\sqrt2\lpNorm\psi2+\frac{\sqrt2}{\pi}\lpNorm{\psi'}2.
+\]
+Then, for every $u\in\R$,
+\[
+\left\lVert\FT{\psi(\cdot)\psi(\cdot+u)}\right\rVert_1
+\leq
+C_{\ref{lem:product-cutoff-fourier},\,\psi}.
+\]
+For $\psi_h(t):=\chi(t)\chi(t+h)$, one has the uniform explicit bound
+\[
+C_{\ref{lem:product-cutoff-fourier},\,\psi_h}
+\leq
+\sqrt2\lpNorm\chi2+\frac{2\sqrt2}{\pi}\lpNorm{\chi'}2.
+\]
+\end{lemma}
+
+\uses{Lemma \ref{lem:fourier-l1-h1}.}
+
+\begin{proof}
+For $g_u(t)=\psi(t)\psi(t+u)$,
+\[
+\lpNorm{g_u}2\leq\lpNorm\psi2,
+\qquad
+\lpNorm{g_u'}2\leq2\lpNorm{\psi'}2.
+\]
+Apply \cref{lem:fourier-l1-h1}.  The second assertion follows by the same two estimates with $\psi=\chi$.
+\end{proof}
+
+\section{Gowers differencing and \texorpdfstring{$u^3$}{u3} control}
+
+\begin{proposition}[Gowers differencing for four linear forms]\label{prop:gowers-differencing}
+Let $A,J$ be positive-length compact intervals.  Let $\psi\in C_c^1(\R)$ satisfy
+$0\leq\psi\leq1$ and $\supp\psi\subset J$.  Let
+$c_0=0,c_1,c_2,c_3\in\R$ satisfy
+\[
+0<\delta\leq\min_{0\leq i<j\leq3}|c_i-c_j|,
+\]
+\[
+\max_{0\leq i<j\leq3}|c_i-c_j|\leq M,
+\]
+where $0<\delta\leq1$ and $M\geq1$.  Let $g_0,g_1,g_2,g_3$ be $1$-bounded, assume $g_0$ is supported in $A$, and assume $g_1$ is compactly supported.  Define
+\[
+C_{\ref{prop:gowers-differencing},\,A,J,\psi}
+:=
+2^2\Ssize{A,J}{\psi}^{2}.
+\]
+Then
+\[
+\left|
+\iint g_0(x)g_1(x+c_1t)g_2(x+c_2t)g_3(x+c_3t)\psi(t)
+\dd t\dd x
+\right|
+\leq
+C_{\ref{prop:gowers-differencing},\,A,J,\psi}
+M\delta^{-3/2}\uNorm{g_1}3.
+\]
+\end{proposition}
+
+\uses{Definitions \ref{def:uniformity} and \ref{def:size-parameter}; Lemma \ref{lem:product-cutoff-fourier}; Fubini, Fourier inversion, Plancherel, and Cauchy--Schwarz.}
+
+\begin{proof}
+Write the left-hand side as $T$.  Cauchy--Schwarz in $x$, expansion of the square, and the substitution $s=t+h$ give
+\[
+T^2
+\leq
+\lvert A\rvert
+\iiint
+\prod_{i=1}^3g_i(x+c_it)\overline{g_i(x+c_i(t+h))}
+\psi(t)\psi(t+h)
+\dd x\dd t\dd h.
+\]
+After $x\mapsto x-c_1t$ and $h\mapsto c_1^{-1}h$,
+\[
+T
+\leq
+(\lvert A\rvert)^{1/2}\delta^{-1/2}
+\left(\int_\R\mathfrak I_h\dd h\right)^{1/2},
+\]
+where $\mathfrak I_h$ is the absolute value of
+\[
+\iint
+\Delta_hg_1(x)
+\Delta_{(c_2/c_1)h}g_2(x+(c_2-c_1)t)
+\Delta_{(c_3/c_1)h}g_3(x+(c_3-c_1)t)
+\psi(t)\psi(t+c_1^{-1}h)
+\dd x\dd t.
+\]
+Only restrictions of $g_2,g_3$ to intervals of length at most
+$M(\lvert A\rvert+\lvert J\rvert)$ occur.  Fourier inversion and the change of variables
+\[
+(\xi_1,\xi_2)
+\mapsto
+(\xi_1,(c_3-c_1)\xi_1+(c_3-c_2)\xi_2)
+\]
+produce a Jacobian bounded by $\delta^{-1}$.  Extract
+$\lpNorm{\FT{\Delta_hg_1}}\infty$ and use Cauchy--Schwarz and Plancherel for the other two factors.  The affine frequency changes contribute at most $M/\delta$.  Consequently,
+\[
+\mathfrak I_h
+\leq
+C_{\ref{lem:product-cutoff-fourier},\,\psi}
+(\lvert A\rvert+\lvert J\rvert)M^2\delta^{-2}
+\lpNorm{\FT{\Delta_hg_1}}\infty.
+\]
+Integrating in $h$ yields
+\[
+T
+\leq
+\left[
+\lvert A\rvert(\lvert A\rvert+\lvert J\rvert)
+C_{\ref{lem:product-cutoff-fourier},\,\psi}
+\right]^{1/2}
+M\delta^{-3/2}\uNorm{g_1}3.
+\]
+Let $S=\Ssize{A,J}{\psi}$.  Since
+$C_{\ref{lem:product-cutoff-fourier},\,\psi}\leq2S$,
+$\lvert A\rvert\leq S$, and $\lvert A\rvert+\lvert J\rvert\leq2S$, the bracketed square root is at most $2S^{3/2}\leq2S^2$.  This is bounded by the displayed constant $2^2S^2$.
+\end{proof}
+
+\begin{lemma}[Selecting a separated parameter]\label{lem:separation-selection}
+Let $E\subset\R$ be measurable and suppose $|E|\geq m$ with $0<m\leq1$.  Then there exists $h\in E$ such that the four numbers
+\[
+0,\quad -2h,\quad 1,\quad 1-2h
+\]
+are pairwise separated by at least $2^{-2}m$.
+\end{lemma}
+
+\uses{Elementary measure estimates for intervals.}
+
+\begin{proof}
+Set $\delta=2^{-2}m$.  The nonconstant pairwise distances are
+$2|h|$, $|1-2h|$, and $|1+2h|$.  Each bad set on which one of these is smaller than $\delta$ has length $\delta$.  Their union has measure at most $3\delta=3m/4<m$.  Any $h\in E$ outside this union works; the remaining distances are equal to $1\geq\delta$.
+\end{proof}
+
+\begin{proposition}[Control by the $u^3$ quantity]\label{prop:u3-control}
+Let $A,C,J$ be positive-length compact intervals.  Let $\chi\in C_c^\infty(\R)$ satisfy $0\leq\chi\leq1$ and $\supp\chi\subset J$.  Define
+\[
+C_{\ref{prop:u3-control},\,A,C,J,\chi}
+:=
+2^4\Ssize{A,C,J}{\chi}^{3}.
+\]
+If $f_0,f_1,f_2$ are $1$-bounded, $f_0$ is supported in $A$, and $f_2$ is supported in $C$, then
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+C_{\ref{prop:u3-control},\,A,C,J,\chi}
+\uNorm{f_0}3^{1/5}.
+\]
+\end{proposition}
+
+\uses{Definitions \ref{def:trilinear-form} and \ref{def:size-parameter}; Lemmas \ref{lem:u-invariances}, \ref{lem:separation-selection}, and \ref{lem:product-cutoff-fourier}; Proposition \ref{prop:gowers-differencing}; Fubini and Cauchy--Schwarz.}
+
+\begin{proof}
+Set $I=\Ichi(f_0,f_1,f_2)$, $a=\lvert A\rvert$, $c=\lvert C\rvert$, and $j=\lvert J\rvert$.  The case $I=0$ is immediate.  After $x\mapsto x-t^2$, Cauchy--Schwarz in $x$ gives
+\[
+\int_{J-J}I_h\dd h\geq c^{-1}I^2,
+\]
+where
+\[
+I_h:=
+\left|
+\iint
+f_0(x)f_1(x+t)
+\overline{f_0(x-2ht-h^2)}
+\overline{f_1(x+(1-2h)t+h-h^2)}
+\chi(t)\chi(t+h)
+\dd t\dd x
+\right|.
+\]
+One has $I_h\leq aj$.  Define
+\[
+\alpha:=(4cj)^{-1},
+\]
+\[
+\beta:=\min\{(2cja)^{-1},(2a^2j^2)^{-1}\},
+\]
+\[
+E:=\{h\in J-J:I_h\geq\alpha I^2\}.
+\]
+The function $h\mapsto I_h$ is measurable.  Splitting the integral over $E$ and its complement gives
+\[
+|E|\geq\beta I^2.
+\]
+Since $I\leq aj$, one also has $0<\beta I^2\leq1/2$.  Apply \cref{lem:separation-selection} with $m=\beta I^2$.  For some $h\in E$, the coefficients
+\[
+0,\quad -2h,\quad 1,\quad 1-2h
+\]
+are separated by
+\[
+\delta:=2^{-2}\beta I^2.
+\]
+Their maximum pairwise distance is at most $1+2j$.
+
+Apply \cref{prop:gowers-differencing} to $I_h$, with the shifted conjugate of $f_0$ as the controlled $g_1$ input and cutoff $\chi(t)\chi(t+h)$.  By \cref{lem:u-invariances}, its $u^3$ quantity equals $\uNorm{f_0}3$.  Therefore
+\[
+\alpha I^2
+\leq
+C_{\ref{prop:gowers-differencing},\,A,J,\chi(\cdot)\chi(\cdot+h)}
+(1+2j)\delta^{-3/2}\uNorm{f_0}3.
+\]
+Let $S=\Ssize{A,C,J}{\chi}$.  The factors satisfy
+\[
+\alpha^{-1}\leq2^2S^2,
+\qquad
+1+2j\leq2^2S,
+\]
+\[
+\beta^{-3/2}\leq2^2S^6,
+\qquad
+C_{\ref{prop:gowers-differencing},\,A,J,\chi(\cdot)\chi(\cdot+h)}\leq2^4S^2.
+\]
+The factor from $(2^{-2})^{-3/2}$ is $2^3$.  Multiplication by $I^3$ gives
+\[
+I^5\leq2^{13}S^{11}\uNorm{f_0}3.
+\]
+Taking fifth roots and using $S\geq2$ gives
+$I\leq2^3S^3\uNorm{f_0}3^{1/5}$, which is bounded by the stated constant $2^4S^3$.
+\end{proof}
+
+\section{Dual difference interchange}
+
+\begin{lemma}[Measurable Fourier-supremum linearization]\label{lem:measurable-linearization}
+Let $(g_h)_{h\in\R}$ be a jointly measurable family of $L^1$ functions, each supported in a fixed compact interval.  Suppose
+\[
+\int_\R\lpNorm{\FT{g_h}}\infty\dd h<\infty.
+\]
+For every $n\geq1$, there exists a measurable $\phi_n:\R\to\R$ such that
+\[
+\int_\R|\FT{g_h}(\phi_n(h))|\dd h
+\geq
+\int_\R\lpNorm{\FT{g_h}}\infty\dd h-\frac1n.
+\]
+\end{lemma}
+
+\uses{Continuity of the Fourier transform of an $L^1$ function and measurable least-index selection over the rationals.}
+
+\begin{proof}
+Enumerate $\mathbb Q$ as $(r_m)_{m\geq1}$.  Continuity gives
+\[
+\lpNorm{\FT{g_h}}\infty=\sup_m|\FT{g_h}(r_m)|.
+\]
+For
+$w(h)=\pi^{-1}(1+h^2)^{-1}$, choose the least $m$ for which
+\[
+|\FT{g_h}(r_m)|
+\geq
+\lpNorm{\FT{g_h}}\infty-n^{-1}w(h).
+\]
+The least-index map is measurable.  Integrating the pointwise estimate gives the claim.
+\end{proof}
+
+\begin{theorem}[Dual difference interchange]\label{thm:dual-difference-interchange}
+Let $A,J$ be positive-length compact intervals.  Let $(F_t)_{t\in\R}$ be a jointly measurable family of $1$-bounded functions, each supported in $A$.  Let $\chi$ be nonnegative, $1$-bounded, and supported in $J$.  Define
+\[
+F(x):=\int_\R F_t(x)\chi(t)\dd t.
+\]
+Define
+\[
+C_{\ref{thm:dual-difference-interchange},\,A,J,\chi}
+:=
+2\Ssize{A,J}{\chi}^{2}.
+\]
+Then there exists a measurable map $\Phi:\R\to\R$ such that
+\[
+\uNorm F3
+\leq
+C_{\ref{thm:dual-difference-interchange},\,A,J,\chi}
+\left(
+\int_\R
+\left|
+\iint\Delta_hF_t(x)e(x\Phi(h))\chi(t)\dd t\dd x
+\right|
+\dd h
+\right)^{1/4}.
+\]
+\end{theorem}
+
+\uses{Definitions \ref{def:uniformity} and \ref{def:size-parameter}; Lemma \ref{lem:measurable-linearization}; Fubini and Cauchy--Schwarz.}
+
+\begin{proof}
+Set $a=\lvert A\rvert$, $a_\chi=\lpNorm\chi1$, and
+\[
+S_0:=\int_\R\lpNorm{\FT{\Delta_hF}}\infty\dd h=\uNorm F3^2.
+\]
+Since $F$ is bounded by $a_\chi$ and supported in $A$,
+$S_0\leq2a^2a_\chi^2<\infty$.  If $S_0=0$, choose $\Phi=0$.  Otherwise apply \cref{lem:measurable-linearization} with error at most $S_0/2$, and reverse the selected Fourier frequency sign.  This gives a measurable $\phi$ such that
+\[
+L_\phi
+:=
+\int_\R
+\left|
+\int_\R\Delta_hF(x)e(x\phi(h))\dd x
+\right|\dd h
+\geq\frac{S_0}{2}.
+\]
+Choose a measurable phase $u(h)$ removing the absolute value, supported in $A-A$.  Expanding $F$ and applying Cauchy--Schwarz in $(x,t)$ gives
+\[
+L_\phi\leq a^{1/2}a_\chi^{3/2}B^{1/2},
+\]
+where
+\[
+B:=
+\iint
+\left|
+\int_{A-A}\overline{F_t(x+h)}e(x\phi(h))u(h)\dd h
+\right|^2
+\chi(t)\dd t\dd x.
+\]
+Expand the square.  For fixed $h'\in A-A$, substitute $x\mapsto x-h'$ and $h=r+h'$.  After discarding unimodular factors,
+\[
+B\leq\int_{A-A}Q_{h'}\dd h',
+\]
+where
+\[
+Q_{h'}:=
+\int_\R
+\left|
+\iint
+\Delta_rF_t(x)
+ e\bigl(x(\phi(r+h')-\phi(h'))\bigr)
+\chi(t)\dd t\dd x
+\right|\dd r.
+\]
+The map $h'\mapsto Q_{h'}$ is measurable and finite.  Since $|A-A|=2a$, some $h'$ satisfies $B\leq2aQ_{h'}$.  Define
+\[
+\Phi(r):=\phi(r+h')-\phi(h').
+\]
+Then
+\[
+S_0\leq2L_\phi
+\leq
+2\sqrt2\,a\,a_\chi^{3/2}Q_{h'}^{1/2}.
+\]
+Taking square roots gives the exact coefficient
+$2^{3/4}a^{1/2}a_\chi^{3/4}$.  If
+$S=\Ssize{A,J}{\chi}$, this is at most
+$2S^{5/4}\leq2S^2$, equal to the stated constant.
+\end{proof}
+
+\section{Quadratic oscillation and bilinear smoothing}
+
+\begin{lemma}[Quadratic oscillatory integral estimate]\label{lem:quadratic-oscillatory}
+Let $J$ be a compact interval containing $\supp\chi$.  Define
+\[
+C_{\ref{lem:quadratic-oscillatory},\,J,\chi}
+:=
+2^5\Ssize{J}{\chi}^{2}.
+\]
+For every $a,b\in\R$,
+\[
+\left|
+\int_\R e(at+bt^2)\chi(t)\dd t
+\right|
+\leq
+C_{\ref{lem:quadratic-oscillatory},\,J,\chi}
+\bigl(1+\max\{|a|,|b|\}\bigr)^{-1/2}.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:size-parameter} and integration by parts.}
+
+\begin{proof}
+Set $A=\max\{|a|,|b|\}$ and $R=R_\chi$.  The case $A\leq1$ follows from the trivial $L^1$ estimate.  Assume $A>1$.
+
+If $|b|\geq|a|/(4R)$, let
+$t_0=-a/(2b)$ and $\rho=|b|^{-1/2}$.  The central interval
+$|t-t_0|\leq\rho$ contributes at most $2\rho$.  On the two complementary half-lines, integrate by parts using
+\[
+\frac{d}{dt}e(at+bt^2)=2\pi i(a+2bt)e(at+bt^2).
+\]
+The boundary, amplitude-derivative, and reciprocal-phase-derivative terms together are at most
+\[
+3(1+\lpNorm{\chi'}1)|b|^{-1/2}.
+\]
+Since $A\leq4R|b|$, this is at most
+$6R^{1/2}(1+\lpNorm{\chi'}1)A^{-1/2}$.
+
+If $|b|<|a|/(4R)$, then
+$|a+2bt|>|a|/2$ on $\supp\chi$.  One integration by parts gives
+\[
+\left|
+\int e(at+bt^2)\chi(t)\dd t
+\right|
+\leq
+\frac{\lpNorm{\chi'}1+\lpNorm\chi1}{\pi}|a|^{-1}.
+\]
+Let $S=\Ssize{J}{\chi}$.  In both cases the coefficient is bounded by
+$2^5S^2$, and $A^{-1/2}\leq\sqrt2(1+A)^{-1/2}$.  This proves the stated estimate.
+\end{proof}
+
+\begin{proposition}[Bilinear Sobolev estimates]\label{prop:bilinear-sobolev}
+Let $J$ contain $\supp\chi$.  Define
+\[
+C_{\ref{prop:bilinear-sobolev},\,J,\chi}
+:=
+2^5\Ssize{J}{\chi}^{2}.
+\]
+For every $\xi\in\R$ and every $f_0,f_1,f_2\in L^2(\R)$,
+\[
+\Ichi(e_\xi,f_1,f_2)
+\leq
+C_{\ref{prop:bilinear-sobolev},\,J,\chi}
+\hNorm{f_1}{-1/2}\lpNorm{f_2}2,
+\]
+\[
+\Ichi(f_0,e_\xi,f_2)
+\leq
+C_{\ref{prop:bilinear-sobolev},\,J,\chi}
+\lpNorm{f_0}2\hNorm{f_2}{-1/2}.
+\]
+\end{proposition}
+
+\uses{Definitions \ref{def:fourier-sobolev} and \ref{def:trilinear-form}; Lemma \ref{lem:quadratic-oscillatory}; Fourier inversion, Plancherel, Cauchy--Schwarz, and density.}
+
+\begin{proof}
+For Schwartz functions, Fourier inversion gives
+\[
+\Lamchi(e_\xi,f_1,f_2)
+=
+\int_\R\FT{f_1}(\eta)\FT{f_2}(-\eta-\xi)
+\left[
+\int_\R e\bigl(\eta t-(\eta+\xi)t^2\bigr)\chi(t)\dd t
+\right]\dd\eta.
+\]
+By \cref{lem:quadratic-oscillatory}, the bracket is at most
+$C_{\ref{lem:quadratic-oscillatory},\,J,\chi}\br\eta^{-1/2}$.
+Cauchy--Schwarz and Plancherel give the first estimate.  The second follows from the analogous formula with phase
+$\xi t-(\eta+\xi)t^2$.  Density extends both estimates to $L^2$; the uniform continuity estimate is the elementary $L^2\times L^2$ bound obtained by Cauchy--Schwarz in $x$ and integration in $t$.
+\end{proof}
+
+\section{Sobolev norms of multiplicative differences}
+
+\begin{theorem}[Sobolev estimate for multiplicative differences]\label{thm:sobolev-difference}
+Let $s\geq1$, $\sigma>0$, and let $A$ be a positive-length compact interval.  Define
+\[
+\gamma_{s,\sigma}:=\frac{2^s\sigma}{1+2\sigma},
+\]
+\[
+C_{\ref{thm:sobolev-difference},\,s,A}
+:=
+2^{s+1}(1+\lvert A\rvert)^{s+1}.
+\]
+If $f$ is $1$-bounded and supported in $A$, then
+\[
+\int_{\R^s}\hNorm{\Delta_{\mathbf h}f}{-\sigma}^2\dd\mathbf h
+\leq
+C_{\ref{thm:sobolev-difference},\,s,A}
+\uNorm f{s+1}^{\gamma_{s,\sigma}}.
+\]
+\end{theorem}
+
+\uses{Definitions \ref{def:fourier-sobolev} and \ref{def:uniformity}; Plancherel, Tonelli, and Cauchy--Schwarz.}
+
+\begin{proof}
+Write $U=\uNorm f{s+1}$ and $a=2^{s-1}$.  Fix $R>0$.  The high-frequency contribution is at most
+\[
+2^s(\lvert A\rvert)^{s+1}R^{-2\sigma}.
+\]
+For the low-frequency contribution, write
+$\mathbf h=(h_1,\mathbf h')$ and $g=\Delta_{\mathbf h'}f$.  Fourier inversion followed by Plancherel in $h_1$ gives
+\[
+\int_\R\int_{|\xi|\leq R}|\FT{\Delta_{h_1}g}(\xi)|^2\dd\xi\dd h_1
+=
+\iint_{|\xi-\xi'|\leq R}|\FT g(\xi)|^2|\FT g(\xi')|^2\dd\xi\dd\xi'.
+\]
+For fixed $\xi'$, the $\xi$ interval has length $2R$.  Since $g$ is $1$-bounded and supported in $A$,
+\[
+\lpNorm g2^2\leq\lvert A\rvert,
+\qquad
+\lpNorm{\FT g}\infty\leq\lvert A\rvert.
+\]
+Thus the low-frequency contribution is at most
+\[
+2(\lvert A\rvert)^2RU^a.
+\]
+Choose
+$R=U^{-a/(1+2\sigma)}$ when $U>0$, and pass to the limit when $U=0$.  Both terms then carry the exponent
+$2a\sigma/(1+2\sigma)=\gamma_{s,\sigma}$.  Finally,
+\[
+2(\lvert A\rvert)^2+2^s(\lvert A\rvert)^{s+1}
+\leq
+2^{s+1}(1+\lvert A\rvert)^{s+1}.
+\]
+\end{proof}
+
+\begin{corollary}[Difference estimate at $s=1$]\label{cor:sobolev-difference-s1}
+Let $A$ be a positive-length compact interval.  If $f$ is $1$-bounded and supported in $A$, then
+\[
+\int_\R\hNorm{\Delta_hf}{-1/2}^2\dd h
+\leq
+C_{\ref{thm:sobolev-difference},\,1,A}
+\uNorm f2^{1/2}.
+\]
+\end{corollary}
+
+\uses{Theorem \ref{thm:sobolev-difference} with $s=1$ and $\sigma=1/2$.}
+
+\begin{proof}
+For these parameters, $\gamma_{1,1/2}=1/2$.  Substitute into \cref{thm:sobolev-difference}.
+\end{proof}
+
+\section{Degree lowering and normalized smoothing}
+
+\begin{definition}[Admissible support data]\label{def:admissible-data}
+An admissible support datum is a tuple
+\[
+\mathfrak D=(A_0,A_1,A_2,J,\chi)
+\]
+where $A_0,A_1,A_2,J$ are positive-length compact intervals,
+$\supp\chi\subset J$, and
+\[
+A_0+J\subset A_1.
+\]
+Write $\ell_i=\lvert A_i\rvert$, $\ell_J=\lvert J\rvert$, and
+\[
+A_F:=A_1-J.
+\]
+\end{definition}
+
+\begin{lemma}[First dualization]\label{lem:first-dualization}
+Let $\mathfrak D$ be admissible and let $f_0,f_1,f_2$ be $1$-bounded with $f_i$ supported in $A_i$.  Define
+\[
+F_0(x):=\int_\R\overline{f_1(x+t)f_2(x+t^2)}\chi(t)\dd t.
+\]
+Then $F_0$ is supported in $A_F$ and
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\ell_0^{1/2}\Ichi(F_0,f_1,f_2)^{1/2}.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:trilinear-form} and \ref{def:admissible-data}; Cauchy--Schwarz.}
+
+\begin{proof}
+If $F_0(x)\neq0$, then $x+t\in A_1$ for some $t\in J$, hence $x\in A_1-J=A_F$.  If
+$G(x)=\int f_1(x+t)f_2(x+t^2)\chi(t)\dd t$, then $F_0=\overline G$.  Cauchy--Schwarz on the support of $f_0$ gives
+\[
+\Ichi(f_0,f_1,f_2)^2\leq\ell_0\int|G|^2.
+\]
+The final integral equals $\Lamchi(F_0,f_1,f_2)$.
+\end{proof}
+
+\begin{theorem}[First degree lowering: \texorpdfstring{$u^3$ to $u^2$}{u3 to u2}]\label{thm:u2-control}
+Let $\mathfrak D=(A_0,A_1,A_2,J,\chi)$ be admissible.  Define
+\[
+C_{\ref{thm:u2-control},\,A_0,A_1,A_2,J,\chi}
+:=
+2^6\Ssize{A_0,A_1,A_2,J}{\chi}^{3}.
+\]
+If $f_0,f_1,f_2$ are $1$-bounded and supported in $A_0,A_1,A_2$, respectively, then
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+C_{\ref{thm:u2-control},\,A_0,A_1,A_2,J,\chi}
+\uNorm{f_1}2^{1/160}.
+\]
+\end{theorem}
+
+\uses{Lemma \ref{lem:first-dualization}; Proposition \ref{prop:u3-control}; Theorem \ref{thm:dual-difference-interchange}; Proposition \ref{prop:bilinear-sobolev}; Corollary \ref{cor:sobolev-difference-s1}; Lemma \ref{lem:difference-l2}.}
+
+\begin{proof}
+Set
+$S=\Ssize{A_0,A_1,A_2,J}{\chi}$ and
+$A_\chi=\max\{1,\lpNorm\chi1\}$.  Apply \cref{lem:first-dualization}, then apply \cref{prop:u3-control} to
+$F_0/A_\chi,f_1,f_2$.  Homogeneity gives
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\ell_0^{1/2}A_\chi^{2/5}
+C_{\ref{prop:u3-control},\,A_F,A_2,J,\chi}^{1/2}
+\uNorm{F_0}3^{1/10}.
+\]
+Apply \cref{thm:dual-difference-interchange} to
+\[
+H_t(x):=\1_J(t)\overline{f_1(x+t)f_2(x+t^2)}.
+\]
+Every $H_t$ is supported in $A_F$.  Thus, for a measurable $\Phi$,
+\[
+\uNorm{F_0}3
+\leq
+C_{\ref{thm:dual-difference-interchange},\,A_F,J,\chi}
+Q^{1/4},
+\]
+where
+\[
+Q:=\int_\R\Ichi(e_{-\Phi(h)},\Delta_hf_1,\Delta_hf_2)\dd h.
+\]
+By \cref{prop:bilinear-sobolev} and Cauchy--Schwarz,
+\[
+Q
+\leq
+C_{\ref{prop:bilinear-sobolev},\,J,\chi}
+\left(\int\hNorm{\Delta_hf_1}{-1/2}^2\dd h\right)^{1/2}
+\left(\int\lpNorm{\Delta_hf_2}2^2\dd h\right)^{1/2}.
+\]
+Use \cref{cor:sobolev-difference-s1,lem:difference-l2}.  Since all interval lengths and cutoff norms are at most $S$, the preceding bounds imply
+\[
+Q\leq2^7S^4\uNorm{f_1}2^{1/4}.
+\]
+Also,
+\[
+C_{\ref{prop:u3-control},\,A_F,A_2,J,\chi}\leq2^7S^3,
+\]
+\[
+C_{\ref{thm:dual-difference-interchange},\,A_F,J,\chi}\leq2^3S^2.
+\]
+Substitution gives an absolute coefficient at most $2^6$ and a power of $S$ below $3$.  The uniformity exponent is
+\[
+\frac1{10}\cdot\frac14\cdot\frac14=\frac1{160}.
+\]
+The stated coefficient $2^6S^3$ is therefore valid.
+\end{proof}
+
+\begin{lemma}[Second dualization]\label{lem:second-dualization}
+Let $\mathfrak D$ be admissible and let $f_0,f_1,f_2$ be $1$-bounded with $f_i$ supported in $A_i$.  Define
+\[
+F_1(x):=\int_\R\overline{f_0(x-t)f_2(x-t+t^2)}\chi(t)\dd t.
+\]
+Then $F_1$ is supported in $A_1$ and
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\ell_1^{1/2}\Ichi(f_0,F_1,f_2)^{1/2}.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:trilinear-form} and \ref{def:admissible-data}; Cauchy--Schwarz.}
+
+\begin{proof}
+If $F_1(x)\neq0$, then $x-t\in A_0$ for some $t\in J$, so
+$x\in A_0+J\subset A_1$.  Changing variables $x\mapsto x+t$ in the original trilinear form and applying Cauchy--Schwarz on $A_1$ gives the inequality.  The squared $L^2$ norm of $F_1$ is exactly $\Lamchi(f_0,F_1,f_2)$ after the same change of variables.
+\end{proof}
+
+\begin{theorem}[Normalized nonlinear smoothing]\label{thm:normalized-smoothing}
+Let $\mathfrak D=(A_0,A_1,A_2,J,\chi)$ be admissible.  Define
+\[
+C_{\ref{thm:normalized-smoothing},\,A_0,A_1,A_2,J,\chi}
+:=
+2^6\Ssize{A_0,A_1,A_2,J}{\chi}^{3}.
+\]
+If $f_0,f_1,f_2$ are $1$-bounded and supported in $A_0,A_1,A_2$, respectively, then
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+C_{\ref{thm:normalized-smoothing},\,A_0,A_1,A_2,J,\chi}
+\hNorm{f_2}{-1/2}^{1/320}.
+\]
+\end{theorem}
+
+\uses{Lemma \ref{lem:second-dualization}; Theorem \ref{thm:u2-control}; Proposition \ref{prop:bilinear-sobolev}; Definition \ref{def:uniformity}.}
+
+\begin{proof}
+Let $S=\Ssize{A_0,A_1,A_2,J}{\chi}$ and
+$A_\chi=\max\{1,\lpNorm\chi1\}$.  Apply \cref{lem:second-dualization}, then \cref{thm:u2-control} to
+$f_0,F_1/A_\chi,f_2$.  Homogeneity gives
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\ell_1^{1/2}A_\chi^{159/320}
+C_{\ref{thm:u2-control},\,A_0,A_1,A_2,J,\chi}^{1/2}
+\uNorm{F_1}2^{1/320}.
+\]
+By \cref{def:uniformity},
+$\uNorm{F_1}2=\lpNorm{\FT{F_1}}\infty$.  For every $\xi$,
+\[
+|\FT{F_1}(\xi)|=\Ichi(f_0,e_\xi,f_2).
+\]
+Therefore \cref{prop:bilinear-sobolev} and
+$\lpNorm{f_0}2\leq\ell_0^{1/2}$ give
+\[
+\uNorm{F_1}2
+\leq
+C_{\ref{prop:bilinear-sobolev},\,J,\chi}
+\ell_0^{1/2}\hNorm{f_2}{-1/2}.
+\]
+Using the explicit constants from \cref{thm:u2-control,prop:bilinear-sobolev}, the total numerical coefficient is below $2^4$ and the power of $S$ is below $3$.  Hence $2^6S^3$ is valid.  The Sobolev exponent is $1/320$.
+\end{proof}
+
+\begin{corollary}[Homogeneous normalized smoothing]\label{cor:homogeneous-normalized}
+Under the support assumptions of \cref{thm:normalized-smoothing}, bounded inputs satisfy
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+C_{\ref{thm:normalized-smoothing},\,A_0,A_1,A_2,J,\chi}
+\lpNorm{f_0}\infty\lpNorm{f_1}\infty
+\lpNorm{f_2}\infty^{319/320}
+\hNorm{f_2}{-1/2}^{1/320}.
+\]
+\end{corollary}
+
+\uses{Theorem \ref{thm:normalized-smoothing} and homogeneity.}
+
+\begin{proof}
+If an $L^\infty$ norm vanishes, the claim is immediate.  Otherwise normalize the three inputs and apply \cref{thm:normalized-smoothing}.
+\end{proof}
+
+\section{Localization and dyadic \texorpdfstring{$L^\infty$}{L-infinity} decay}
+
+\begin{definition}[Main interaction intervals]\label{def:main-interaction-data}
+Let $K=[a,b]$ and define
+\[
+J_\chi:=[-R_\chi,R_\chi],
+\]
+\[
+I_1:=[a-R_\chi,b+R_\chi],
+\qquad
+I_2:=[a,b+R_\chi^2],
+\]
+\[
+A_0:=[a-1,b+1],
+\qquad
+A_1:=I_1+[-1,1],
+\qquad
+A_2:=I_2+[-1,1].
+\]
+Write
+\[
+\mathfrak D_{K,\chi}:=(A_0,A_1,A_2,J_\chi,\chi).
+\]
+\end{definition}
+
+\begin{lemma}[Admissibility of the interaction data]\label{lem:main-interaction-admissible}
+The datum $\mathfrak D_{K,\chi}$ from \cref{def:main-interaction-data} is admissible.
+\end{lemma}
+
+\uses{Definitions \ref{def:admissible-data} and \ref{def:main-interaction-data}.}
+
+\begin{proof}
+One has $\supp\chi\subset J_\chi$, all four intervals have positive length, and
+\[
+A_0+J_\chi=A_1.
+\]
+\end{proof}
+
+\begin{lemma}[Spatial localization of the trilinear form]\label{lem:trilinear-localization}
+If $f_0$ is supported in $K$, then
+\[
+\Lamchi(f_0,f_1,f_2)
+=
+\Lamchi(f_0,\rho_{I_1}f_1,\rho_{I_2}f_2).
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:spatial-cutoff} and \ref{def:main-interaction-data}; Lemma \ref{lem:spatial-cutoff-bounds}.}
+
+\begin{proof}
+If $x\in K$ and $t\in\supp\chi$, then
+$x+t\in I_1$ and $x+t^2\in I_2$.  The two spatial cutoffs equal $1$ at these points.
+\end{proof}
+
+\begin{lemma}[Localized negative Sobolev decay]\label{lem:localized-sobolev-decay}
+Let $I$ be a compact interval, $k\geq1$, and $g\in L^\infty(\R)$.  Define
+\[
+C_{\ref{lem:localized-sobolev-decay},\,I}
+:=
+2^{19}(2+\lvert I\rvert).
+\]
+Then
+\[
+\hNorm{\rho_IQ_kg}{-1/2}
+\leq
+C_{\ref{lem:localized-sobolev-decay},\,I}
+2^{-k/4}\lpNorm g\infty.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:fourier-sobolev}, \ref{def:spatial-cutoff}, and \ref{def:dyadic-cutoffs}; Lemmas \ref{lem:spatial-cutoff-bounds} and \ref{lem:dyadic-kernel-bounds}; Plancherel, Young's inequality, and integration by parts.}
+
+\begin{proof}
+Set $f=Q_kg$.  By \cref{lem:dyadic-kernel-bounds},
+$\lpNorm f\infty\leq2^6\lpNorm g\infty$.
+Split the Sobolev norm at $|\xi|=2^{k/2}$.  The high-frequency part is at most
+\[
+2^{-k/4}\lpNorm{\rho_If}2
+\leq
+2^6(\lvert I\rvert+2)^{1/2}2^{-k/4}\lpNorm g\infty.
+\]
+Let
+$m(\xi)=q(\xi)/(2\pi i\xi)^2$ and
+$\kappa=\mathcal F^{-1}m$.  Define
+\[
+\kappa_k(x):=2^{-k}\kappa(2^kx),
+\qquad
+u:=\kappa_k*g.
+\]
+Then $\nu''=Q_kg=f$ and
+\[
+\lpNorm\nu\infty\leq2^{10}2^{-2k}\lpNorm g\infty.
+\]
+For $|\xi|\leq2^{k/2}$, integration by parts twice gives
+\[
+|\FT{\rho_If}(\xi)|
+\leq
+\lpNorm\nu\infty
+\left(
+\lpNorm{\rho_I''}1
++4\pi|\xi|\lpNorm{\rho_I'}1
++4\pi^2|\xi|^2\lpNorm{\rho_I}1
+\right).
+\]
+Using \cref{lem:spatial-cutoff-bounds}, $\pi<4$, and
+$|\xi|\leq2^{k/2}$, the parenthesis is at most
+$2^7(2+\lvert I\rvert)2^k$.  The low-frequency interval has length $2^{1+k/2}$.  Its Sobolev contribution is therefore at most
+\[
+2^{18}(2+\lvert I\rvert)2^{-3k/4}\lpNorm g\infty.
+\]
+Adding the two contributions and enlarging $2^{-3k/4}$ to $2^{-k/4}$ gives the stated constant $2^{19}(2+\lvert I\rvert)$.
+\end{proof}
+
+\begin{proposition}[Dyadic $L^\infty$ decay]\label{prop:dyadic-linfty-decay}
+Let $k\geq1$.  Define
+\[
+C_{\ref{prop:dyadic-linfty-decay},\,K,\chi}
+:=
+2^{13}\Ssize{A_0,A_1,A_2,J_\chi}{\chi}^{4},
+\]
+where the intervals are those of \cref{def:main-interaction-data}.  If $f_0$ is supported in $K$ and $f_0,f_1,g\in L^\infty(\R)$, then
+\[
+\Ichi(f_0,f_1,Q_kg)
+\leq
+C_{\ref{prop:dyadic-linfty-decay},\,K,\chi}
+2^{-2^{-11}k}
+\lpNorm{f_0}\infty\lpNorm{f_1}\infty\lpNorm g\infty.
+\]
+\end{proposition}
+
+\uses{Lemmas \ref{lem:main-interaction-admissible}, \ref{lem:trilinear-localization}, \ref{lem:localized-sobolev-decay}, and \ref{lem:dyadic-reconstruction}; Corollary \ref{cor:homogeneous-normalized}.}
+
+\begin{proof}
+Let
+$S=\Ssize{A_0,A_1,A_2,J_\chi}{\chi}$.
+By \cref{lem:trilinear-localization}, the left-hand side equals
+\[
+\Ichi(f_0,\rho_{I_1}f_1,\rho_{I_2}Q_kg).
+\]
+Apply \cref{cor:homogeneous-normalized} to the admissible datum
+$\mathfrak D_{K,\chi}$.  The $L^\infty$ multiplier bound is $2^6$, and \cref{lem:localized-sobolev-decay} gives
+\[
+\hNorm{\rho_{I_2}Q_kg}{-1/2}
+\leq
+2^{19}(2+\lvert I_2\rvert)2^{-k/4}\lpNorm g\infty.
+\]
+Since $2+\lvert I_2\rvert\leq S$, the coefficient produced by \cref{cor:homogeneous-normalized} is at most
+\[
+2^6S^3\,(2^6)^{319/320}\,(2^{19}S)^{1/320}
+\leq2^{13}S^4.
+\]
+The exact decay exponent is $(4\cdot320)^{-1}$.  Since
+$(4\cdot320)^{-1}\geq2^{-11}$, it is bounded by the displayed decay $2^{-2^{-11}k}$.
+\end{proof}
+
+\section{The nondecaying endpoint and interpolation}
+
+\begin{lemma}[Quadratic averaging operator]\label{lem:quadratic-average}
+Define
+\[
+\mathcal A_\chi f(x):=\int_\R|f(x+t^2-t)|\chi(t)\dd t.
+\]
+Define
+\[
+C_{\ref{lem:quadratic-average},\,\chi}
+:=
+2^2(1+R_\chi)^{1/3}.
+\]
+Then, for every $f\in L^{3/2}(\R)$,
+\[
+\lpNorm{\mathcal A_\chi f}3
+\leq
+C_{\ref{lem:quadratic-average},\,\chi}\lpNorm f{3/2}.
+\]
+\end{lemma}
+
+\uses{Change of variables and Young's convolution inequality.}
+
+\begin{proof}
+Push forward $\chi(t)\dd t$ under $u=t^2-t$.  Its density $k$ satisfies
+\[
+k(u)\leq(u+1/4)^{-1/2}
+\]
+on an interval of length at most $R_\chi^2+R_\chi+1/4$.  Therefore
+\[
+\lpNorm k{3/2}
+\leq
+4^{2/3}(R_\chi^2+R_\chi+1/4)^{1/6}
+\leq
+2^2(1+R_\chi)^{1/3}.
+\]
+The operator is convolution with a reflection of $k$, so Young's inequality proves the claim.
+\end{proof}
+
+\begin{corollary}[Nondecaying $L^{3/2}$ endpoint]\label{cor:l32-endpoint}
+If $f_0\in L^\infty(\R)$ and $f_1,f_2\in L^{3/2}(\R)$, then
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+C_{\ref{lem:quadratic-average},\,\chi}
+\lpNorm{f_0}\infty\lpNorm{f_1}{3/2}\lpNorm{f_2}{3/2}.
+\]
+\end{corollary}
+
+\uses{Lemma \ref{lem:quadratic-average} and H\"older's inequality.}
+
+\begin{proof}
+After $y=x+t$,
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\lpNorm{f_0}\infty
+\int|f_1(y)|\mathcal A_\chi f_2(y)\dd y.
+\]
+Apply H\"older and \cref{lem:quadratic-average}.
+\end{proof}
+
+\begin{proposition}[Special bilinear interpolation]\label{prop:special-interpolation}
+Let $T$ be a complex bilinear form on bounded, compactly supported simple functions.  Suppose
+\[
+|T(f,g)|\leq A_0\lpNorm f\infty\lpNorm g\infty,
+\]
+\[
+|T(f,g)|\leq A_1\lpNorm f{3/2}\lpNorm g{3/2},
+\]
+where $A_0,A_1\geq0$.  Then $T$ extends to $L^2(\R)\times L^2(\R)$ and
+\[
+|T(f,g)|\leq A_0^{1/4}A_1^{3/4}\lpNorm f2\lpNorm g2.
+\]
+\end{proposition}
+
+\uses{Hadamard's three-lines theorem and density of simple functions in $L^2$.}
+
+\begin{proof}
+If an endpoint constant is zero, $T$ vanishes identically.  Assume both are positive.  Normalize $\lpNorm f2=\lpNorm g2=1$.  For a complex-valued function $h$, write
+\[
+\operatorname{sgn}h(x):=
+\begin{cases}
+h(x)/|h(x)|,&h(x)\neq0,\\
+0,&h(x)=0.
+\end{cases}
+\]
+On the strip $0\leq\Re z\leq1$, define
+\[
+f_z=|f|^{4z/3}\operatorname{sgn}f,
+\qquad
+g_z=|g|^{4z/3}\operatorname{sgn}g.
+\]  Then $f_{3/4}=f$, $g_{3/4}=g$; on $\Re z=0$ the $L^\infty$ norms are at most $1$, and on $\Re z=1$ the $L^{3/2}$ norms are $1$.  The function
+\[
+F(z):=A_0^{z-1}A_1^{-z}T(f_z,g_z)
+\]
+is analytic in the strip and bounded by $1$ on both boundary lines.  The three-lines theorem gives $|F(3/4)|\leq1$.  Homogeneity and density finish the proof.
+\end{proof}
+
+\begin{proposition}[Dyadic $L^2$ smoothing]\label{prop:dyadic-l2-decay}
+Let $k\geq1$.  Define
+\[
+C_{\ref{prop:dyadic-l2-decay},\,K,\chi}
+:=
+2^{10}\Ssize{A_0,A_1,A_2,J_\chi}{\chi}^{2}.
+\]
+If $f_0\in L^\infty(\R)$ is supported in $K$ and $f_1,g\in L^2(\R)$, then
+\[
+\Ichi(f_0,f_1,Q_kg)
+\leq
+C_{\ref{prop:dyadic-l2-decay},\,K,\chi}
+2^{-2^{-13}k}
+\lpNorm{f_0}\infty\lpNorm{f_1}2\lpNorm g2.
+\]
+\end{proposition}
+
+\uses{Proposition \ref{prop:dyadic-linfty-decay}; Corollary \ref{cor:l32-endpoint}; Proposition \ref{prop:special-interpolation}; Lemma \ref{lem:dyadic-reconstruction}.}
+
+\begin{proof}
+Fix $f_0$ and define
+\[
+T_k(f_1,g):=\Lamchi(f_0,f_1,Q_kg).
+\]
+Let $S=\Ssize{A_0,A_1,A_2,J_\chi}{\chi}$.  The $L^\infty\times L^\infty$ endpoint from \cref{prop:dyadic-linfty-decay} has constant
+\[
+2^{13}S^4\,2^{-2^{-11}k}\lpNorm{f_0}\infty.
+\]
+The $L^{3/2}\times L^{3/2}$ endpoint from \cref{cor:l32-endpoint} and the $Q_k$ multiplier bound has constant at most
+\[
+2^8S\lpNorm{f_0}\infty.
+\]
+Apply \cref{prop:special-interpolation}.  The interpolated coefficient is at most
+\[
+(2^{13}S^4)^{1/4}(2^8S)^{3/4}
+\leq2^{10}S^2.
+\]
+The interpolated decay exponent is
+$2^{-11}/4=2^{-13}$.
+\end{proof}
+
+\section{Dyadic summation and proof of the main theorem}\label{sec:main-proof}
+
+\begin{lemma}[Elementary $L^2$ endpoint]\label{lem:l2-endpoint}
+If $f_0\in L^\infty(\R)$ and $f_1,f_2\in L^2(\R)$, then
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+\lpNorm\chi1\lpNorm{f_0}\infty\lpNorm{f_1}2\lpNorm{f_2}2.
+\]
+\end{lemma}
+
+\uses{Definition \ref{def:trilinear-form} and Cauchy--Schwarz.}
+
+\begin{proof}
+For fixed $t$, Cauchy--Schwarz in $x$ and translation invariance give
+\[
+\int|f_1(x+t)f_2(x+t^2)|\dd x
+\leq\lpNorm{f_1}2\lpNorm{f_2}2.
+\]
+Integrate against $\chi(t)$ and multiply by $\lpNorm{f_0}\infty$.
+\end{proof}
+
+\begin{lemma}[Weighted dyadic square estimate]\label{lem:weighted-dyadic-square}
+Let $0<\sigma\leq1$.  For every $f\in L^2(\R)$,
+\[
+\lpNorm{P_0f}2\leq5^{\sigma/2}\hNorm f{-\sigma},
+\]
+\[
+\sum_{k=1}^\infty2^{-2\sigma k}\lpNorm{P_kf}2^2
+\leq3\cdot2^{3\sigma}\hNorm f{-\sigma}^2.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:fourier-sobolev} and \ref{def:dyadic-cutoffs}; Plancherel's theorem.}
+
+\begin{proof}
+On the support of $\eta$, $\br\xi^{2\sigma}\leq5^\sigma$, proving the low-frequency estimate.  For $k\geq1$, the multiplier of $P_k$ is supported where
+$2^{k-1}\leq|\xi|\leq2^{k+1}$, and at most three such supports overlap.  On this support,
+\[
+2^{-2\sigma k}\leq2^{3\sigma}\br\xi^{-2\sigma}.
+\]
+Sum pointwise over $k$ and apply Plancherel.
+\end{proof}
+
+\begin{lemma}[Geometric summation constant]\label{lem:geometric-summation}
+Set
+\[
+\sigma_{\mathrm B}:=2^{-14}.
+\]
+Then
+\[
+\left(
+\frac{3\cdot2^{3\sigma_{\mathrm B}}}
+{2^{2\sigma_{\mathrm B}}-1}
+\right)^{1/2}
+\leq2^8.
+\]
+\end{lemma}
+
+\uses{The inequalities $e^x-1\geq x$, $\log 2\geq1/2$, and $2^{1/4}<4/3$.}
+
+\begin{proof}
+Since $2^{2\sigma}-1=e^{2\sigma\log2}-1\geq\sigma$, the denominator is at least $\sigma_{\mathrm B}$.  Also
+$3\sigma_{\mathrm B}<1/4$, so
+$3\cdot2^{3\sigma_{\mathrm B}}<4$.  The quotient is therefore at most
+$4/\sigma_{\mathrm B}=2^{16}$, and its square root is at most $2^8$.
+\end{proof}
+
+\begin{lemma}[Comparison of the interaction size with the main size]\label{lem:interaction-size-comparison}
+Define
+\[
+\Sigma_{K,\chi}
+:=
+2+\lvert K\rvert+R_\chi^2
++\lpNorm\chi1+\lpNorm\chi2
++\lpNorm{\chi'}1+\lpNorm{\chi'}2.
+\]
+Then
+\[
+\Ssize{A_0,A_1,A_2,J_\chi}{\chi}
+\leq2^2\Sigma_{K,\chi}.
+\]
+\end{lemma}
+
+\uses{Definitions \ref{def:size-parameter} and \ref{def:main-interaction-data}.}
+
+\begin{proof}
+The interaction lengths are
+\[
+\lvert A_0\rvert=\lvert K\rvert+2,
+\qquad
+\lvert A_1\rvert=\lvert K\rvert+2R_\chi+2,
+\]
+\[
+\lvert A_2\rvert=\lvert K\rvert+R_\chi^2+2,
+\qquad
+\lvert J_\chi\rvert=2R_\chi.
+\]
+Because $R_\chi\geq1$, each is at most $2\Sigma_{K,\chi}$.  Hence the maximum in \cref{def:size-parameter} is at most $2\Sigma_{K,\chi}$, and adding the leading $2$ gives at most $3\Sigma_{K,\chi}\leq2^2\Sigma_{K,\chi}$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:main}]
+Let
+\[
+\Sigma:=
+2+\lvert K\rvert+R_\chi^2
++\lpNorm\chi1+\lpNorm\chi2
++\lpNorm{\chi'}1+\lpNorm{\chi'}2.
+\]
+By \cref{lem:dyadic-reconstruction},
+\[
+f_2=P_0f_2+\sum_{k=1}^\infty P_kf_2
+\quad\text{in }L^2.
+\]
+The elementary endpoint \cref{lem:l2-endpoint} gives continuity in the third $L^2$ input.
+
+For the low-frequency term, \cref{lem:l2-endpoint,lem:weighted-dyadic-square} and
+$5^{2^{-15}}<2$ give
+\[
+\Ichi(f_0,f_1,P_0f_2)
+\leq
+2\Sigma\lpNorm{f_0}\infty\lpNorm{f_1}2
+\hNorm{f_2}{-2^{-14}}.
+\]
+
+For $k\geq1$, one has $Q_kP_kf_2=P_kf_2$.  Apply \cref{prop:dyadic-l2-decay} and then \cref{lem:interaction-size-comparison}:
+\[
+\Ichi(f_0,f_1,P_kf_2)
+\leq
+2^{14}\Sigma^2
+2^{-2^{-13}k}
+\lpNorm{f_0}\infty\lpNorm{f_1}2\lpNorm{P_kf_2}2.
+\]
+Since $2^{-14}=2^{-13}/2$, Cauchy--Schwarz in $k$, \cref{lem:weighted-dyadic-square}, and \cref{lem:geometric-summation} give
+\[
+\sum_{k=1}^\infty
+2^{-2^{-13}k}\lpNorm{P_kf_2}2
+\leq
+2^8\hNorm{f_2}{-2^{-14}}.
+\]
+Thus the high-frequency sum is at most
+\[
+2^{22}\Sigma^2
+\lpNorm{f_0}\infty\lpNorm{f_1}2
+\hNorm{f_2}{-2^{-14}}.
+\]
+Since $\Sigma\geq2$, the low-frequency coefficient $2\Sigma$ is at most $\Sigma^2$.  Adding low and high frequencies gives
+\[
+\Ichi(f_0,f_1,f_2)
+\leq
+(2^{22}+1)\Sigma^2
+\lpNorm{f_0}\infty\lpNorm{f_1}2
+\hNorm{f_2}{-2^{-14}}.
+\]
+Finally, $2^{22}+1\leq2^{23}$.  This is exactly the constant
+$C_{\ref{thm:main},\,K,\chi}$ specified in \cref{thm:main}.
+\end{proof}
+
+\section{Dependency summary and formalization notes}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}p{0.58\textwidth}}
+\toprule
+Statement & Principal dependencies \\
+\midrule
+\endfirsthead
+\toprule
+Statement & Principal dependencies \\
+\midrule
+\endhead
+\cref{prop:gowers-differencing} & Product-cutoff Fourier estimate, Fourier inversion, Plancherel, Cauchy--Schwarz \\
+\cref{prop:u3-control} & Parameter selection and \cref{prop:gowers-differencing} \\
+\cref{thm:dual-difference-interchange} & Measurable Fourier linearization and global Cauchy--Schwarz \\
+\cref{prop:bilinear-sobolev} & Quadratic oscillatory estimate \\
+\cref{thm:sobolev-difference} & Low/high frequency split and the $u^{s+1}$ definition \\
+\cref{thm:u2-control} & First dualization, $u^3$ control, dual difference interchange, bilinear smoothing, Sobolev difference estimate \\
+\cref{thm:normalized-smoothing} & Second dualization and \cref{thm:u2-control} \\
+\cref{prop:dyadic-linfty-decay} & Spatial localization, localized Sobolev decay, normalized smoothing \\
+\cref{prop:dyadic-l2-decay} & $L^\infty$ decay, $L^{3/2}$ endpoint, explicit interpolation \\
+\cref{thm:main} & Dyadic $L^2$ decay, weighted dyadic square estimate, elementary $L^2$ endpoint \\
+\bottomrule
+\end{longtable}
+
+\begin{enumerate}[label=\arabic*.,leftmargin=2em]
+\item Every displayed inequality constant has the form
+\texttt{C\_\{\textbackslash ref\{statement-label\},parameters\}}.
+There are no independent mnemonic names such as $B(\chi)$ or $V_\chi$.
+\item The only measurable-selection step is \cref{lem:measurable-linearization}; it is reduced to least-index selection over rational frequencies.
+\item The lower-separation hypothesis in \cref{prop:gowers-differencing} uses the minimum pairwise distance, which is what the frequency Jacobians require.
+\item The dyadic cutoff functions are explicit piecewise-polynomial $W^{2,1}$ functions.  Their kernel norms are bounded by $2^6$ and $2^{10}$, avoiding unnamed universal constants.
+\item Every absolute numerical factor larger than $1000$ is written as an integer power of two.  The final smoothing exponent is the power of two $2^{-14}$.
+\item The main constant is not obtained by printing the full recursive product.  The recursive factors are bounded during the proof by powers of a single size parameter, and the theorem records the concise bound
+\[
+2^{23}
+\left(
+2+\lvert K\rvert+R_\chi^2
++\lpNorm\chi1+\lpNorm\chi2
++\lpNorm{\chi'}1+\lpNorm{\chi'}2
+\right)^2.
+\]
+This makes its quadratic asymptotic dependence explicit.
+\item In Lean, Hadamard's three-lines theorem is available in the module
+\[
+\texttt{Mathlib.Analysis.Complex.Hadamard}.
+\]
+The specialized bilinear interpolation statement is nevertheless proved locally in \cref{prop:special-interpolation}.
+\end{enumerate}
+
+\begin{thebibliography}{99}
+
+\bibitem{Bourgain1988}
+J.~Bourgain,
+\emph{A nonlinear version of Roth's theorem for sets of positive density in the real line},
+J. Anal. Math. \textbf{50} (1988), 169--181.
+
+\bibitem{DurcikRoos2024}
+P.~Durcik and J.~Roos,
+\emph{A new proof of an inequality of Bourgain},
+Math. Res. Lett. \textbf{31} (2024), no.~4, 1047--1060;
+arXiv:2210.01326.
+
+\bibitem{Gowers1998}
+W.~T.~Gowers,
+\emph{A new proof of Szemer\'edi's theorem for arithmetic progressions of length four},
+Geom. Funct. Anal. \textbf{8} (1998), 529--551.
+
+\bibitem{Peluse2019}
+S.~Peluse,
+\emph{On the polynomial Szemer\'edi theorem in finite fields},
+Duke Math. J. \textbf{168} (2019), 749--774.
+
+\bibitem{PelusePrendiville2022}
+S.~Peluse and S.~Prendiville,
+\emph{A polylogarithmic bound in the non-linear Roth theorem},
+Int. Math. Res. Not. IMRN (2022), no.~8, 5658--5684.
+
+\bibitem{SteinWainger2001}
+E.~M.~Stein and S.~Wainger,
+\emph{Oscillatory integrals related to Carleson's theorem},
+Math. Res. Lett. \textbf{8} (2001), 789--800.
+
+\end{thebibliography}
+
+\end{document}
