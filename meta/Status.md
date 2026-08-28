@@ -18,7 +18,7 @@ Lean file: BourgainSmoothing/Auto/ConventionsAndFoundationalDefinitions/Conventi
 
 ### Definitions
 
-\label{def:intervals}: [Completed] (Lean: intervalLength, intervalAdd, intervalSub) (2026-08-27 20:45 PDT)
+\label{def:intervals}: [Completed] (Lean: intervalLength, intervalAdd, intervalSub) (2026-08-27 22:47 PDT)
 \label{def:fourier-sobolev}: [Completed] (Lean: exponential, frequencyCharacter, japaneseBracket, inverseFourierTransform, sobolevNorm) (2026-08-27 20:45 PDT)
 \label{def:uniformity}: [Completed] (Lean: multiplicativeDifference, iteratedMultiplicativeDifference, uNorm) (2026-08-27 20:45 PDT)
 \label{def:trilinear-form}: [Completed] (Lean: trilinearForm, trilinearFormAbs) (2026-08-27 20:45 PDT)
@@ -26,8 +26,8 @@ Lean file: BourgainSmoothing/Auto/ConventionsAndFoundationalDefinitions/Conventi
 
 ### Theorems
 
-\label{lem:u-invariances}: [Statement completed] (Lean: uNormInvariances) (2026-08-27 20:45 PDT)
-\label{lem:difference-l2}: [Statement completed] (Lean: differenceL2Identity) (2026-08-27 22:18 PDT)
+\label{lem:u-invariances}: [Proof completed] (Lean: uNormInvariances) (2026-08-27 22:44 PDT)
+\label{lem:difference-l2}: [Proof completed] (Lean: differenceL2Identity) (2026-08-27 22:45 PDT)
 
 ## Explicit auxiliary cutoffs
 
@@ -41,10 +41,10 @@ Lean file: BourgainSmoothing/Auto/ExplicitAuxiliaryCutoffs/ExplicitAuxiliaryCuto
 
 ### Theorems
 
-\label{lem:smooth-step-bounds}: [Statement completed] (Lean: smoothStepBounds) (2026-08-27 20:45 PDT)
-\label{lem:spatial-cutoff-bounds}: [Statement completed] (Lean: spatialCutoffBounds) (2026-08-27 20:45 PDT)
-\label{lem:dyadic-kernel-bounds}: [Statement completed] (Lean: dyadicKernelBounds) (2026-08-27 20:45 PDT)
-\label{lem:dyadic-reconstruction}: [Statement completed] (Lean: dyadicReconstructionAndMultiplierBounds) (2026-08-27 20:45 PDT)
+\label{lem:smooth-step-bounds}: [Proof completed] (Lean: smoothStepBounds) (2026-08-27 23:03 PDT)
+\label{lem:spatial-cutoff-bounds}: [Proof completed] (Lean: spatialCutoffBounds) (2026-08-27 23:19 PDT)
+\label{lem:dyadic-kernel-bounds}: [Proof completed] (Lean: dyadicKernelBounds) (2026-08-28 00:43 PDT)
+\label{lem:dyadic-reconstruction}: [Proof completed] (Lean: dyadicReconstructionAndMultiplierBounds) (2026-08-28 02:24 PDT)
 
 ## Fourier estimates for products of cutoffs
 
@@ -56,8 +56,8 @@ None.
 
 ### Theorems
 
-\label{lem:fourier-l1-h1}: [Statement completed] (Lean: fourierL1LeFromH1) (2026-08-27 21:48 PDT)
-\label{lem:product-cutoff-fourier}: [Statement completed] (Lean: productCutoffFourierBounds, productCutoffFourierBoundsChi) (2026-08-27 21:48 PDT)
+\label{lem:fourier-l1-h1}: [Proof completed] (Lean: fourierL1LeFromH1) (2026-08-28 03:10 PDT)
+\label{lem:product-cutoff-fourier}: [Proof completed] (Lean: productCutoffFourierBounds, productCutoffFourierBoundsChi) (2026-08-28 03:31 PDT)
 
 ## Gowers differencing and u3 control
 
@@ -69,9 +69,9 @@ None.
 
 ### Theorems
 
-\label{prop:gowers-differencing}: [Statement completed] (Lean: gowersDifferencing) (2026-08-27 21:52 PDT)
-\label{lem:separation-selection}: [Statement completed] (Lean: separationSelection) (2026-08-27 21:52 PDT)
-\label{prop:u3-control}: [Statement completed] (Lean: u3Control) (2026-08-27 21:52 PDT)
+\label{prop:gowers-differencing}: [Proof completed] (Lean: gowersDifferencing) (2026-08-28 05:18 PDT)
+\label{lem:separation-selection}: [Proof completed] (Lean: separationSelection) (2026-08-28 05:22 PDT)
+\label{prop:u3-control}: [Proof completed] (Lean: u3Control) (2026-08-28 06:20 PDT)
 
 ## Dual difference interchange
 
@@ -83,8 +83,8 @@ None.
 
 ### Theorems
 
-\label{lem:measurable-linearization}: [Statement completed] (Lean: measurableFourierSupremumLinearization) (2026-08-27 21:54 PDT)
-\label{thm:dual-difference-interchange}: [Statement completed] (Lean: dualDifferenceInterchange) (2026-08-27 21:54 PDT)
+\label{lem:measurable-linearization}: [Proof completed] (Lean: measurableFourierSupremumLinearization) (2026-08-28 06:37 PDT)
+\label{thm:dual-difference-interchange}: [Proof completed] (Lean: dualDifferenceInterchange) (2026-08-28 07:52 PDT)
 
 ## Quadratic oscillation and bilinear smoothing
 
@@ -96,8 +96,8 @@ None.
 
 ### Theorems
 
-\label{lem:quadratic-oscillatory}: [Statement completed] (Lean: quadraticOscillatoryIntegralEstimate) (2026-08-27 21:58 PDT)
-\label{prop:bilinear-sobolev}: [Statement completed] (Lean: bilinearSobolevEstimates) (2026-08-27 21:58 PDT)
+\label{lem:quadratic-oscillatory}: [Proof completed] (Lean: quadraticOscillatoryIntegralEstimate) (2026-08-28 08:36 PDT)
+\label{prop:bilinear-sobolev}: [Proof completed] (Lean: bilinearSobolevEstimates) (2026-08-28 09:19 PDT)
 
 ## Sobolev norms of multiplicative differences
 
