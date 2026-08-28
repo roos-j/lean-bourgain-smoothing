@@ -11,7 +11,6 @@ Use this skill to continue or repair the formalization represented by this repos
 
 - Work from the repository root. Read `meta/Instructions.md`, `meta/Status.md` when present, the relevant part of `blueprint/blueprint.tex`, existing `BourgainSmoothing/Auto/` sources, and the relevant working-tree diff before editing. Resume existing work and avoid duplicating it. If `meta/Status.md` is absent, initialize it from the scoped manuscript labels in manuscript order before choosing the next `Todo` item.
 - The instruction's relative `../Auto/` work area is this project's `BourgainSmoothing/Auto/`. Put formalization sources there, in the single flat namespace `Auto`. Do not edit other Lean source files, except for the required explicit imports of permanent Auto sources in the top-level module, currently `BourgainSmoothing.lean`.
-- Keep the Introduction intentionally narrow: inside its section folder, define the twisted averages and state the main twisted theorem in `Introduction.lean`. Keep that theorem as `sorry`; it is an explicit exception and must never be marked proof-complete. If this explicit scope conflicts with the active blueprint, surface the discrepancy before substituting a different definition or theorem.
 
 ## Organize the formalization
 

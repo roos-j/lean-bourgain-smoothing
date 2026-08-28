@@ -10,11 +10,6 @@ formalization in this repository. User's instructions given in the chat may over
 - Treat the manuscript's terms *theorem*, *lemma*, and *proposition* as
   synonymous.  Every corresponding Lean result must be declared with
   `theorem`.
-- Formalize the manuscript's Introduction only as follows: define the
-  twisted averages and state the main twisted theorem.  Ignore all other
-  material in the Introduction.
-- Leave the main twisted theorem in `Introduction.lean` as `sorry`; do not
-  delete it.  
 - Your work must be placed in the ../Auto/ folder. You cannot modify any Lean files not contained in this folder.
 - Formalize the top-level sections in their respective subfolders, each named after the section title converted to CamelCase.
   Only sections get a folder, do not create further subfolders for subsections.
@@ -29,7 +24,7 @@ formalization in this repository. User's instructions given in the chat may over
 ## Faithfulness to the manuscript
 
 - Define only notions occurring in the manuscript.  Do not invent new
-  mathematical definitions.
+  mathematical definitions. 
 - Stay as close and direct as possible to the manuscript's mathematical
   wording.  Conditions needed to avoid unintented weakening of statements due to Lean junk-value behaviour 
   should be added conservatively.
