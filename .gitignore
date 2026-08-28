@@ -1,1 +1,9 @@
 /.lake
+*.synctex.gz
+*.pdf
+*.out
+*.fls
+*.fdb_latexmk
+*.aux
+*.toc
+*.log
