@@ -1,0 +1,4 @@
+interface:
+  display_name: "Autoformalize Blueprint"
+  short_description: "Continue this blueprint's Lean formalization"
+  default_prompt: "Use $autoformalize to continue the next scoped part of this blueprint's Lean formalization."
