@@ -10,7 +10,7 @@ None.
 
 ### Theorems
 
-\label{thm:main}: [Statement completed] (Lean: bourgainTrilinearSmoothing) (2026-08-27 22:18 PDT)
+\label{thm:main}: [Proof completed] (Lean: bourgainTrilinearSmoothing) (2026-08-28 18:16 PDT)
 
 ## Conventions and foundational definitions
 
@@ -169,6 +169,6 @@ None.
 ### Theorems
 
 \label{lem:l2-endpoint}: [Proof completed] (Lean: elementaryL2Endpoint) (2026-08-28 17:26 PDT)
-\label{lem:weighted-dyadic-square}: [Statement completed] (Lean: weightedDyadicSquareEstimate) (2026-08-27 22:19 PDT)
-\label{lem:geometric-summation}: [Statement completed] (Lean: geometricSummationConstant) (2026-08-27 22:19 PDT)
-\label{lem:interaction-size-comparison}: [Statement completed] (Lean: interactionSizeComparison) (2026-08-27 22:19 PDT)
+\label{lem:weighted-dyadic-square}: [Proof completed] (Lean: weightedDyadicSquareEstimate) (2026-08-28 18:05 PDT)
+\label{lem:geometric-summation}: [Proof completed] (Lean: geometricSummationConstant) (2026-08-28 18:07 PDT)
+\label{lem:interaction-size-comparison}: [Proof completed] (Lean: interactionSizeComparison) (2026-08-28 18:10 PDT)

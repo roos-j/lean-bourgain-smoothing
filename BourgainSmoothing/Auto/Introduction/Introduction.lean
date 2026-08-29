@@ -3,7 +3,7 @@ Copyright (c) 2026 Joris Roos. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joris Roos
 -/
-import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions.ConventionsAndFoundationalDefinitions
+import BourgainSmoothing.Auto.DyadicSummationAndProofOfMainTheorem.DyadicSummationAndProofOfMainTheorem
 
 /-!
 # Introduction
@@ -18,19 +18,6 @@ open MeasureTheory Set
 open scoped ENNReal Real FourierTransform
 
 namespace Auto
-
-/--
-The unmaximized size expression in \(\label{thm:main}\).
-
-This auxiliary definition records the exact sum occurring in the source
-constant and is used by `C_bourgainTrilinearSmoothing` and
-`bourgainTrilinearSmoothing`.
--/
-def aux_mainSize (K : Set ℝ) (χ : ℝ → ℝ) : ℝ :=
-  2 + intervalLength K + supportRadius χ ^ 2 +
-    (eLpNorm χ 1 volume).toReal + (eLpNorm χ 2 volume).toReal +
-      (eLpNorm (deriv χ) 1 volume).toReal +
-        (eLpNorm (deriv χ) 2 volume).toReal
 
 /--
 The explicit constant in \(\label{thm:main}\), used by
@@ -95,6 +82,34 @@ theorem bourgainTrilinearSmoothing
         (eLpNorm f₀ (∞ : ℝ≥0∞) volume).toReal *
           (eLpNorm f₁ (2 : ℝ≥0∞) volume).toReal *
             (sobolevNorm ((2 : ℝ) ^ (-14 : ℤ)) (hf₂_memLp.toLp f₂)).toReal := by
-  sorry
+  rcases hK with ⟨a, b, hab, rfl⟩
+  have hχ_memLp : MemLp χ (1 : ℝ≥0∞) volume :=
+    hχ_smooth.continuous.memLp_of_hasCompactSupport hχ_compact
+  have hχ : Integrable (fun t : ℝ ↦ (χ t : ℂ)) :=
+    memLp_one_iff_integrable.mp hχ_memLp.ofReal
+  let S : ℝ := aux_mainSize (Set.Icc a b) χ
+  let A : ℝ := (eLpNorm f₀ (∞ : ℝ≥0∞) volume).toReal
+  let B : ℝ := (eLpNorm f₁ (2 : ℝ≥0∞) volume).toReal
+  let H : ℝ := (sobolevNorm aux_bourgainSmoothingExponent (hf₂_memLp.toLp f₂)).toReal
+  have hS : 2 ≤ S := by
+    simpa only [S] using aux_mainSize_two_le (Set.Icc a b) χ
+  have hABH : 0 ≤ A * B * H := by
+    dsimp only [A, B, H]
+    positivity
+  have hLow : trilinearFormAbs χ f₀ f₁ (P 0 f₂) ≤ 2 * S * A * B * H := by
+    simpa only [S, A, B, H] using
+      aux_main_low_frequency_bound (Set.Icc a b) χ f₀ f₁ f₂ hχ_memLp
+        hf₀_memLp hf₁_memLp hf₂_memLp
+  have hHigh : ∀ N : ℕ, ∑ k ∈ Finset.range N,
+      trilinearFormAbs χ f₀ f₁ (P (k + 1) f₂) ≤
+        (2 : ℝ) ^ 22 * S ^ 2 * A * B * H := by
+    intro N
+    simpa only [S, A, B, H] using
+      aux_main_high_frequency_bound a b χ hab hχ_smooth hχ_compact hχ_nonneg hχ_le_one
+        f₀ f₁ f₂ hf₀_memLp hf₁_memLp hf₂_memLp hf₀_support N
+  have hmain := aux_main_from_dyadic_partial_bounds χ f₀ f₁ f₂ hχ
+    hf₀_memLp hf₁_memLp hf₂_memLp S A B H hS hABH hLow hHigh
+  simpa only [C_bourgainTrilinearSmoothing, S, A, B, H,
+    aux_bourgainSmoothingExponent] using hmain
 
 end Auto
