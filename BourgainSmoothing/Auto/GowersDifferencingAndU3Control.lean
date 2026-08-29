@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.FourierEstimatesForProductsOfCutoffs.FourierEstimatesForProductsOfCutoffs
+import BourgainSmoothing.Auto.FourierEstimatesForProductsOfCutoffs
 import Mathlib.Analysis.Fourier.Convolution
 import Mathlib.Analysis.Fourier.Inversion
 import Mathlib.Analysis.Real.Pi.Bounds
@@ -593,7 +588,7 @@ lemma aux_gowersInteractionRange_Icc_of_pos
 /-- Explicit interval form of the zero-slope interaction range used in
 \(\label{prop:gowers-differencing}\), formalized by `gowersDifferencing`. -/
 lemma aux_gowersInteractionRange_Icc_of_zero
-    (a b p q : ℝ) (hab : a ≤ b) (hpq : p ≤ q) :
+    (a b p q : ℝ) (_hab : a ≤ b) (hpq : p ≤ q) :
     aux_gowersInteractionRange (Set.Icc a b) (Set.Icc p q) 0 = Set.Icc a b := by
   ext y
   constructor
@@ -830,7 +825,7 @@ lemma aux_memLp_of_ae_bound_of_ae_support
     · simp [hxin, hx hxin]
   have hindicator : MemLp (S.indicator f) p μ := by
     rw [memLp_indicator_iff_restrict hS]
-    letI : Fact (μ S < ∞) := ⟨hSfinite⟩
+    have : Fact (μ S < ∞) := ⟨hSfinite⟩
     exact MemLp.of_bound hf.restrict C (ae_restrict_of_ae hbound)
   exact (memLp_congr_ae heq).mpr hindicator
 
@@ -1063,8 +1058,15 @@ lemma aux_gowers_integrand_integrable
         rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (hψnonneg _)]
         exact hψle _
       rw [aux_gowersIntegrand, norm_mul, norm_mul, norm_mul, norm_mul]
-      exact mul_le_one₀ (mul_le_one₀ (mul_le_one₀ (mul_le_one₀ hp0 (norm_nonneg _) hp1)
-        (norm_nonneg _) hp2) (norm_nonneg _) hp3) (norm_nonneg _) hψ
+      have h01 : ‖g 0 p.1‖ * ‖g 1 (p.1 + c 1 * p.2)‖ ≤ 1 :=
+        (mul_le_of_le_one_left (norm_nonneg _) hp0).trans hp1
+      have h012 : (‖g 0 p.1‖ * ‖g 1 (p.1 + c 1 * p.2)‖) *
+          ‖g 2 (p.1 + c 2 * p.2)‖ ≤ 1 :=
+        (mul_le_of_le_one_left (norm_nonneg _) h01).trans hp2
+      have h0123 : ((‖g 0 p.1‖ * ‖g 1 (p.1 + c 1 * p.2)‖) *
+          ‖g 2 (p.1 + c 2 * p.2)‖) * ‖g 3 (p.1 + c 3 * p.2)‖ ≤ 1 :=
+        (mul_le_of_le_one_left (norm_nonneg _) h012).trans hp3
+      exact (mul_le_of_le_one_left (norm_nonneg _) h0123).trans hψ
     · rw [Set.indicator_of_notMem (by simp [hpJ])]
       have hts : p.2 ∉ tsupport ψ := fun ht ↦ hpJ (hψsupport ht)
       have hψzero : ψ p.2 = 0 := image_eq_zero_of_notMem_tsupport hts
@@ -1170,7 +1172,8 @@ lemma aux_autocorrelation_qmp_unshifted :
     exact MeasureTheory.QuasiMeasurePreserving.prodMap
       (Measure.QuasiMeasurePreserving.id (α := ℝ) volume)
       (Measure.quasiMeasurePreserving_snd (μ := volume) (ν := volume))
-  convert hproj.comp (measurePreserving_prodAssoc volume volume volume).quasiMeasurePreserving using 1
+  convert hproj.comp
+    (measurePreserving_prodAssoc volume volume volume).quasiMeasurePreserving using 1
   rfl
 
 /-- The shifted projection used to pull a two-variable function to the
@@ -1190,7 +1193,8 @@ lemma aux_autocorrelation_qmp_shifted :
       ((volume : Measure ℝ).prod (volume : Measure ℝ)) := by
     exact MeasureTheory.QuasiMeasurePreserving.prodMap
       (Measure.QuasiMeasurePreserving.id (α := ℝ) volume) hadd
-  convert hpair.comp (measurePreserving_prodAssoc volume volume volume).quasiMeasurePreserving using 1
+  convert hpair.comp
+    (measurePreserving_prodAssoc volume volume volume).quasiMeasurePreserving using 1
   rfl
 
 /-- Measurability of the three-variable autocorrelation integrand. -/
@@ -1379,7 +1383,7 @@ lemma aux_single_autocorrelation_integral (f : ℝ → ℂ) (hf : Integrable f v
     (↑(‖∫ t : ℝ, f t‖ ^ (2 : ℕ)) : ℂ) =
         (∫ t : ℝ, f t) * ∫ s : ℝ, starRingEnd ℂ (f s) := by
       rw [integral_conj]
-      convert (RCLike.mul_conj (∫ t : ℝ, f t)).symm using 1 <;> simp
+      convert (RCLike.mul_conj (∫ t : ℝ, f t)).symm using 1 ; simp
     _ = ∫ z : ℝ × ℝ, K z ∂volume.prod volume := by
       exact (integral_prod_mul f (fun s : ℝ ↦ starRingEnd ℂ (f s))).symm
     _ = ∫ z : ℝ × ℝ, f z.1 * starRingEnd ℂ (f (z.1 + z.2)) ∂volume.prod volume := by
@@ -1866,9 +1870,9 @@ lemma aux_gowersFourier_integral_x_t_to_ax_bt (a b : ℝ) (hab : a ≠ b)
       |(b - a)⁻¹| • ∫ q : Fin 2 → ℝ, F q := by
   rw [← aux_gowersFourier_det_linearMap_x_t_to_ax_bt]
   apply aux_integral_comp_linearMap_volume
-  rw [aux_gowersFourier_det_linearMap_x_t_to_ax_bt]
-  exact sub_ne_zero.mpr hab.symm
-  exact hF
+  · rw [aux_gowersFourier_det_linearMap_x_t_to_ax_bt]
+    exact sub_ne_zero.mpr hab.symm
+  · exact hF
 
 /-- A nonzero affine change of variables preserves `L^p` membership.  The
 explicit scale factor is absorbed into the measure before using
@@ -1919,9 +1923,9 @@ lemma aux_gowersFourier_integral_norm_mul_comp_affine_le
       (∫ x : ℝ, ‖F (a * x + r)‖ ^ (2 : ℝ)) ^ (1 / (2 : ℝ)) *
         (∫ x : ℝ, ‖H (b * x + s)‖ ^ (2 : ℝ)) ^ (1 / (2 : ℝ)) := by
   have hFa : MemLp (fun x : ℝ ↦ F (a * x + r)) (ENNReal.ofReal (2 : ℝ)) volume := by
-    convert aux_gowersFourier_memLp_comp_affine F (2 : ℝ≥0∞) hF a r ha using 1 <;> norm_num
+    convert aux_gowersFourier_memLp_comp_affine F (2 : ℝ≥0∞) hF a r ha using 1 ; norm_num
   have hHa : MemLp (fun x : ℝ ↦ H (b * x + s)) (ENNReal.ofReal (2 : ℝ)) volume := by
-    convert aux_gowersFourier_memLp_comp_affine H (2 : ℝ≥0∞) hH b s hb using 1 <;> norm_num
+    convert aux_gowersFourier_memLp_comp_affine H (2 : ℝ≥0∞) hH b s hb using 1 ; norm_num
   simpa using
     (MeasureTheory.integral_mul_norm_le_Lp_mul_Lq Real.HolderConjugate.two_two
       hFa hHa)
@@ -2071,7 +2075,8 @@ lemma aux_gowersFourier_fourier_modulatedAffineKernel_eq_joint_pair
   rw [Circle.smul_def, smul_eq_mul, ← integral_const_mul]
   apply integral_congr_ae
   filter_upwards with t
-  simp [aux_gowersFourier_modulatedKernelJointPair, aux_gowersFourier_modulatedKernelJoint, Circle.smul_def]
+  simp [aux_gowersFourier_modulatedKernelJointPair,
+    aux_gowersFourier_modulatedKernelJoint]
   ring
 
 lemma aux_gowersFourier_integral_modulatedKernelJoint_eq_joint_pair
@@ -2185,7 +2190,8 @@ lemma aux_gowersFourier_integrable_modulatedKernelJointPair
     funext p
     exact (aux_gowersFourier_modulatedKernelJointTrans_comp_linear a b s ξ G H hab p).symm
   let e := MeasurableEquiv.piFinTwo (fun _ : Fin 2 ↦ ℝ)
-  have hcompPair : Integrable (aux_gowersFourier_modulatedKernelJointPair a b s ξ G H ∘ e) volume := by
+  have hcompPair :
+      Integrable (aux_gowersFourier_modulatedKernelJointPair a b s ξ G H ∘ e) volume := by
     convert hJ using 1
     funext p
     have hp : p = ![p 0, p 1] := by
@@ -2209,7 +2215,9 @@ lemma aux_gowersFourier_fourier_modulatedAffineKernel_eq_of_integrable
           (𝓕 H (-(s + a * ξ) / (b - a)))) := by
   apply aux_gowersFourier_fourier_modulatedAffineKernel_eq a b s ξ G H hab
   · exact aux_gowersFourier_integrable_modulatedKernelJointPair a b s ξ G H hab hG hH
-  · exact (aux_gowersFourier_integrable_modulatedKernelJointTrans a b s ξ G H hG hH).aestronglyMeasurable
+  · exact
+      (aux_gowersFourier_integrable_modulatedKernelJointTrans
+        a b s ξ G H hG hH).aestronglyMeasurable
 
 lemma aux_gowersFourier_integrable_fourier_modulatedAffineKernel
     (a b s : ℝ) (G H : ℝ → ℂ) (hab : a ≠ b) (ha : a ≠ 0) (hb : b ≠ 0)
@@ -2243,10 +2251,10 @@ lemma aux_gowersFourier_integrable_fourier_modulatedAffineKernel
   congr 3
   · dsimp [α, r]
     field_simp [hba]
-    ring
+    ring_nf
   · dsimp [β, q]
     field_simp [hba]
-    ring
+    ring_nf
 
 /-- The Fourier `L¹` bound following from the raw factorization and affine
 Cauchy--Schwarz. `G,H` are required in `L¹` only for the raw factorization;
@@ -2271,7 +2279,7 @@ lemma aux_gowersFourier_integral_norm_fourier_modulatedAffineKernel_le
       apply integral_congr_ae
       filter_upwards with ξ
       rw [aux_gowersFourier_fourier_modulatedAffineKernel_eq_of_integrable a b s ξ G H hab hG hH]
-      congr 3 <;> field_simp [hba] <;> ring
+      congr 3 <;> field_simp [hba] <;> ring_nf
     _ ≤ _ := by
       simpa only [abs_abs] using
         (aux_gowersFourier_integral_norm_smul_affine_fourier_product_le (𝓕 G) (𝓕 H) hFG hFH
@@ -2313,7 +2321,8 @@ lemma aux_gowersFourier_integrable_modulatedAffineKernel
         (𝐞 (s * z.2) : ℂ)) (volume.prod volume) := by
     convert hjoint using 1
     funext z
-    simp [aux_gowersFourier_modulatedKernelJointPair, aux_gowersFourier_modulatedKernelJoint, Circle.smul_def]
+    simp [aux_gowersFourier_modulatedKernelJointPair,
+      aux_gowersFourier_modulatedKernelJoint]
     ring
   have hleft := hjoint'.integral_prod_left
   change Integrable (fun x : ℝ ↦ ∫ t : ℝ,
@@ -2339,7 +2348,7 @@ lemma aux_gowersFourier_norm_modulatedAffineKernel_le
       filter_upwards with t
       rw [norm_mul, norm_mul]
       rw [add_comm x (a * t), add_comm x (b * t)]
-      simp [mul_comm, mul_left_comm, mul_assoc]
+      simp
     _ ≤ _ := aux_gowersFourier_integral_norm_mul_comp_affine_le_scaled G H hG hH
       a b x x ha hb
 
@@ -2658,10 +2667,11 @@ lemma aux_gowersFourier_integrable_weighted_modulatedAffineJoint
         apply integral_congr_ae
         filter_upwards with t
         rw [norm_mul, norm_mul, add_comm y (a * t), add_comm y (b * t)]
-        simp [mul_comm, mul_left_comm, mul_assoc]
+        simp
       _ ≤ _ := aux_gowersFourier_integral_norm_mul_comp_affine_le_scaled G H hG hH
         a b y y ha hb
-  apply aux_gowersFourier_integrable_weighted_bilinear_of_section_bound f hf B hBmeas hBint C hBbound
+  apply aux_gowersFourier_integrable_weighted_bilinear_of_section_bound
+    f hf B hBmeas hBint C hBbound
 
 /-- The uniform `L¹` bound for the preceding joint integrand. -/
 lemma aux_gowersFourier_integral_norm_weighted_modulatedAffineJoint_le
@@ -2694,7 +2704,7 @@ lemma aux_gowersFourier_integral_norm_weighted_modulatedAffineJoint_le
         apply integral_congr_ae
         filter_upwards with t
         rw [norm_mul, norm_mul, add_comm y (a * t), add_comm y (b * t)]
-        simp [mul_comm, mul_left_comm, mul_assoc]
+        simp
       _ ≤ _ := aux_gowersFourier_integral_norm_mul_comp_affine_le_scaled G H hG hH
         a b y y ha hb
   have hright : Integrable (fun y : ℝ ↦ ‖f y‖ * C) volume := hf.norm.mul_const C
@@ -2712,11 +2722,16 @@ lemma aux_gowersFourier_integral_norm_weighted_modulatedAffineJoint_le
         rw [norm_mul]
       rw [hinner, integral_const_mul]
     _ ≤ ∫ y : ℝ, ‖f y‖ * C := by
-      apply integral_mono_of_nonneg
-        (Filter.Eventually.of_forall fun y ↦ mul_nonneg (norm_nonneg _) (integral_nonneg fun t ↦ norm_nonneg _))
-        hright
-      filter_upwards with y
-      exact mul_le_mul_of_nonneg_left (hBbound y) (norm_nonneg _)
+      have hnonneg :
+          ∀ᵐ y : ℝ ∂volume, 0 ≤ ‖f y‖ * ∫ t : ℝ, ‖B y t‖ := by
+        exact Filter.Eventually.of_forall fun y ↦
+          mul_nonneg (norm_nonneg _) (integral_nonneg fun t ↦ norm_nonneg _)
+      have hle :
+          ∀ᵐ y : ℝ ∂volume,
+            ‖f y‖ * ∫ t : ℝ, ‖B y t‖ ≤ ‖f y‖ * C := by
+        exact Filter.Eventually.of_forall fun y ↦
+          mul_le_mul_of_nonneg_left (hBbound y) (norm_nonneg _)
+      exact integral_mono_of_nonneg hnonneg hright hle
     _ = _ := integral_mul_const C (fun y : ℝ ↦ ‖f y‖)
 
 /-- The full Fubini condition for cutoff inversion follows from `L¹` for the
@@ -2757,7 +2772,7 @@ lemma aux_gowersFourier_integrable_frequency_trilinear_joint
       ((volume.prod volume).prod volume) volume := by
     apply QuasiMeasurePreserving.prod_of_right (by fun_prop)
     filter_upwards with z
-    convert (MeasurePreserving.id volume).quasiMeasurePreserving using 1 <;> rfl
+    convert (MeasurePreserving.id volume).quasiMeasurePreserving using 1 ; rfl
   have hphase : AEStronglyMeasurable
       (fun p : (ℝ × ℝ) × ℝ ↦ (𝐞 (p.2 * p.1.2) : ℂ))
       ((volume.prod volume).prod volume) :=
@@ -2804,7 +2819,7 @@ lemma aux_gowersFourier_integrable_frequency_trilinear_joint
                 (𝐞 (s * z.2) : ℂ))‖ by
           funext z
           rw [norm_mul]
-          ring]
+          ring_nf]
         rw [integral_const_mul]
       _ ≤ ‖𝓕 w s‖ * D := by
         apply mul_le_mul_of_nonneg_left
@@ -3573,7 +3588,6 @@ theorem gowersDifferencing
   have hcoordScaled : C =ᵐ[volume] fun h ↦ D (c 1 * h) := by
     have hpull := (aux_gowers_local_qmp_affine_t 0 (c 1) hc1).ae hcoord
     filter_upwards [hpull] with h hh
-    change C h = D (c 1 * h)
     have hscale : (c 1)⁻¹ * (c 1 * h) = h := by
       field_simp
     simpa [C, D, hscale] using hh
@@ -3801,7 +3815,6 @@ theorem gowersDifferencing
     have hS2 : 2 ≤ S := by
       dsimp only [S]
       unfold sizeParameter
-      change 2 ≤ 2 + max _ _
       exact le_add_of_nonneg_right (by positivity)
     have hS0 : 0 ≤ S := zero_le_two.trans hS2
     have hM0 : 0 ≤ M := zero_le_one.trans hM_one
@@ -4604,8 +4617,10 @@ lemma aux_u3_correlationIntegrand_aestronglyMeasurable
   have hχ' : AEStronglyMeasurable
       (fun z : ℝ × ℝ ↦ ((χ z.2 * χ (z.2 + h) : ℝ) : ℂ))
       (volume.prod volume) := by
-    exact (Complex.continuous_ofReal.comp
-      ((hχ.comp continuous_snd).mul (hχ.comp (continuous_snd.add continuous_const)))).aestronglyMeasurable
+    exact
+      (Complex.continuous_ofReal.comp
+        ((hχ.comp continuous_snd).mul
+          (hχ.comp (continuous_snd.add continuous_const)))).aestronglyMeasurable
   exact h0.mul h1 |>.mul h2.star |>.mul h3.star |>.mul hχ'
 
 /-- A fixed correlation integrand is one-bounded when its factors and
@@ -4760,7 +4775,7 @@ lemma aux_u3_coefficients_bounded_on_sub
   have hone : (1 : ℝ) ≤ 2 * S := by linarith
   have hdifference : |s - t| ≤ S := by linarith
   intro i j hij
-  fin_cases i <;> fin_cases j <;> simp at hij
+  fin_cases i <;> fin_cases j <;> norm_num at hij
   all_goals norm_num
   · simpa [S] using hdifference
   · simpa [S] using hone
@@ -5129,7 +5144,7 @@ lemma aux_u3_supportRadius_mono
       intro hnonempty
       rcases hnonempty with ⟨x, hx⟩
       have : x ∈ tsupport g := hsub hx
-      simpa [hgzero] using this
+      simp [hgzero] at this
     exact (hf (tsupport_eq_empty_iff.mp hempty)).elim
   have hrf : supportRadius f =
       1 + sSup (Set.image (fun t : ℝ ↦ |t|) (tsupport f)) := by
@@ -5483,7 +5498,7 @@ lemma aux_u3_uNorm_three_translate (f : ℝ → ℂ) (y : ℝ) :
       fun x ↦ multiplicativeDifference h f (x + y) := by
     funext x
     simp only [multiplicativeDifference]
-    ring
+    ring_nf
   rw [hdiff, aux_fourier_linf_translate]
 
 /-- The `u³` seminorm is invariant under complex conjugation. -/
@@ -5551,7 +5566,7 @@ lemma aux_u3_fixed_h_gowers_bound
     exact mul_nonneg (hχ_nonneg _) (hχ_nonneg _)
   have hψh_le_one : ∀ t : ℝ, ψh t ≤ 1 := by
     intro t
-    exact mul_le_one₀ (hχ_le_one _) (hχ_nonneg _) (hχ_le_one _)
+    exact (mul_le_of_le_one_left (hχ_nonneg _) (hχ_le_one _)).trans (hχ_le_one _)
   have hψh_support : tsupport ψh ⊆ Set.Icc p q := by
     exact (show tsupport (fun t : ℝ ↦ χ t * χ (t + h)) ⊆ tsupport χ from
       tsupport_mul_subset_left).trans hχ_support
@@ -5615,8 +5630,20 @@ lemma aux_u3_fixed_h_gowers_bound
       _ = uNorm 3 f₀' := by
         simpa only [sub_eq_add_neg] using aux_u3_uNorm_three_translate f₀' (-(h ^ (2 : ℕ)))
       _ = uNorm 3 f₀ := hu₀'
-  simp [g, c] at hraw
+  change
+    ENNReal.ofReal ‖∫ x : ℝ, ∫ t : ℝ,
+        f₀' x *
+          starRingEnd ℂ (f₀' (x + (-2 * h) * t - h ^ (2 : ℕ))) *
+          f₁ (x + 1 * t) *
+          starRingEnd ℂ (f₁ (x + (1 - 2 * h) * t + h - h ^ (2 : ℕ))) *
+          ((χ t * χ (t + h) : ℝ) : ℂ)‖ ≤
+      ENNReal.ofReal
+          (C_gowersDifferencing (Set.Icc a b) (Set.Icc p q)
+            (fun t : ℝ ↦ χ t * χ (t + h)) * M * δ ^ (-(3 / 2 : ℝ))) *
+        uNorm 3 (fun y : ℝ ↦ starRingEnd ℂ (f₀' (y - h ^ (2 : ℕ))))
+    at hraw
   rw [hg1unorm] at hraw
+  simp only [ofReal_norm] at hraw
   convert hraw using 1
   · rw [ofReal_norm]
     congr 1
@@ -5624,8 +5651,8 @@ lemma aux_u3_fixed_h_gowers_bound
     filter_upwards with x
     apply integral_congr_ae
     filter_upwards with t
-    dsimp [f₀', ψh]
-    ring
+    dsimp [f₀']
+    ring_nf
 
 /-- Elementary real `rpow` evaluation used in the selected-parameter
 constant calculation. -/
@@ -5819,7 +5846,7 @@ lemma aux_u3_select_separated_shift
     (hA : ∃ a b : ℝ, a < b ∧ A = Set.Icc a b)
     (hC : ∃ a b : ℝ, a < b ∧ C = Set.Icc a b)
     (hJ : ∃ a b : ℝ, a < b ∧ J = Set.Icc a b)
-    (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
+    (hχ_smooth : ContDiff ℝ ⊤ χ) (_hχ_compact : HasCompactSupport χ)
     (hχ_nonneg : ∀ t : ℝ, 0 ≤ χ t) (hχ_le_one : ∀ t : ℝ, χ t ≤ 1)
     (hχ_support : tsupport χ ⊆ J)
     (f₀ f₁ f₂ : ℝ → ℂ)
@@ -5985,21 +6012,20 @@ lemma aux_u3_select_separated_shift
     have htri_bound := aux_u3_norm_doubleIntegral_le_measure_product A J hAcompact hJcompact
       T
       (by
-        change AEStronglyMeasurable (Function.uncurry T) (volume.prod volume)
         apply (aux_u3_trilinearIntegrand_aestronglyMeasurable f₀A f₁ f₂ χ
           hf₀A_meas (hf_measurable 1) (hf_measurable 2) hχ_smooth.continuous).congr
         filter_upwards with z
         rcases z with ⟨x, t⟩
         rfl)
       (by
-        change ∀ᵐ z : ℝ × ℝ ∂volume.prod volume, ‖T z.1 z.2‖ ≤ 1
-        simpa [T, aux_u3_trilinearIntegrand] using aux_u3_trilinearIntegrand_ae_one_bounded f₀A f₁ f₂ χ
-          hf₀A_bound (hf_one_bounded 1) (hf_one_bounded 2) hχ_nonneg hχ_le_one)
+        simpa [T, aux_u3_trilinearIntegrand] using
+          aux_u3_trilinearIntegrand_ae_one_bounded f₀A f₁ f₂ χ
+            hf₀A_bound (hf_one_bounded 1) (hf_one_bounded 2) hχ_nonneg hχ_le_one)
       (by
         filter_upwards with z
-        change z ∉ A ×ˢ J → T z.1 z.2 = 0
-        simpa [T, aux_u3_trilinearIntegrand] using aux_u3_trilinearIntegrand_zero_outside A J f₀A f₁ f₂ χ
-          hf₀A_support hχ_support z)
+        simpa [T, aux_u3_trilinearIntegrand] using
+          aux_u3_trilinearIntegrand_zero_outside A J f₀A f₁ f₂ χ
+            hf₀A_support hχ_support z)
     dsimp [I, trilinearFormAbs]
     rw [← hform_eq]
     simpa only [T, trilinearForm] using htri_bound

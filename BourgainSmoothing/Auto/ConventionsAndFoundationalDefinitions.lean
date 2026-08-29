@@ -1,8 +1,3 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
 import Mathlib.Analysis.Fourier.LpSpace
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
@@ -489,11 +484,10 @@ quantity. Then
 \]
 -/
 theorem uNormInvariances (r : ℕ) (hr : 2 ≤ r) (a : ℂ) (y : ℝ) (f : ℝ → ℂ)
-    (hf : uNorm r f ≠ ∞) :
+    (_hf : uNorm r f ≠ ∞) :
     uNorm r (a • f) = ENNReal.ofReal ‖a‖ * uNorm r f ∧
       uNorm r (fun x ↦ f (x + y)) = uNorm r f ∧
         uNorm r (fun x ↦ starRingEnd ℂ (f x)) = uNorm r f := by
-  clear hf
   rcases Nat.eq_or_lt_of_le hr with hr | hr
   · subst r
     constructor
@@ -511,7 +505,7 @@ theorem uNormInvariances (r : ℕ) (hr : 2 ≤ r) (a : ℂ) (y : ℝ) (f : ℝ �
   have hne : s + 3 ≠ 2 := by omega
   have hgt : 2 < s + 3 := by omega
   constructor
-  · simp only [uNorm, if_neg hne, if_pos hgt]
+  · simp only [uNorm, ite_eq_right hne, ite_eq_left hgt]
     rw [hs]
     have hpoint (h : Fin (s + 1) → ℝ) :
         eLpNorm (𝓕 (iteratedMultiplicativeDifference (s + 1) h (a • f))) ∞ volume =
@@ -529,14 +523,14 @@ theorem uNormInvariances (r : ℕ) (hr : 2 ≤ r) (a : ℂ) (y : ℝ) (f : ℝ �
       rw [hpow, ENNReal.rpow_one]
     rw [hroot]
   constructor
-  · simp only [uNorm, if_neg hne, if_pos hgt]
+  · simp only [uNorm, ite_eq_right hne, ite_eq_left hgt]
     rw [hs]
     congr 1
     apply lintegral_congr
     intro h
     rw [aux_iteratedMultiplicativeDifference_translate (s + 1) h y f,
       aux_fourier_linf_translate]
-  · simp only [uNorm, if_neg hne, if_pos hgt]
+  · simp only [uNorm, ite_eq_right hne, ite_eq_left hgt]
     rw [hs]
     congr 1
     apply lintegral_congr

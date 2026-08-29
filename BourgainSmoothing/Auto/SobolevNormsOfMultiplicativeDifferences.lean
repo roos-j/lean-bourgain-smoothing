@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.QuadraticOscillationAndBilinearSmoothing.QuadraticOscillationAndBilinearSmoothing
+import BourgainSmoothing.Auto.QuadraticOscillationAndBilinearSmoothing
 
 /-!
 # Sobolev norms of multiplicative differences
@@ -346,7 +341,7 @@ lemma aux_sobolevDifference_fourier_differenceKernel
     ring] at hreflect
   rw [hreflect]
   simp only [inv_neg, inv_one, abs_neg, abs_one, one_smul]
-  ring
+  ring_nf
 
 /-- Plancherel identifies the Fourier transform in the difference parameter
 with a product of two raw Fourier transforms. -/
@@ -374,7 +369,7 @@ lemma aux_sobolevDifference_l2Fourier_differenceCorrelation_ae
     (fun x ↦ starRingEnd ℂ (g x)) hg1star hg2star
   have hstar : aux_l2Fourier (fun x ↦ starRingEnd ℂ (g x)) =ᵐ[volume]
       𝓕 (fun x ↦ starRingEnd ℂ (g x)) := by
-    rw [aux_l2Fourier, dif_pos hg2star]
+    rw [aux_l2Fourier, dite_eq_left hg2star]
     exact hstar0
   change aux_l2Fourier
       (aux_convolution (aux_sobolevDifference_differenceKernel ξ g)
@@ -388,8 +383,8 @@ lemma aux_sobolevDifference_differenceCorrelation_memLp_two
     (hg1 : MemLp g (1 : ℝ≥0∞) volume)
     (hg2 : MemLp g (2 : ℝ≥0∞) volume) :
     MemLp (aux_sobolevDifference_differenceCorrelation ξ g) (2 : ℝ≥0∞) volume := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   rw [aux_sobolevDifference_differenceCorrelation]
   have hκ : Integrable (aux_sobolevDifference_differenceKernel ξ g) volume :=
     aux_sobolevDifference_differenceKernel_integrable ξ g
@@ -432,7 +427,7 @@ lemma aux_sobolevDifference_eLpNorm_two_sq_eq_lintegral_enorm
     (F : ℝ → ℂ) :
     (eLpNorm F (2 : ℝ≥0∞) volume) ^ (2 : ℝ) =
       ∫⁻ x : ℝ, ‖F x‖ₑ ^ (2 : ℕ) := by
-  rw [eLpNorm_eq_lintegral_rpow_enorm (by norm_num : (2 : ℝ≥0∞) ≠ 0)
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
     (by norm_num : (2 : ℝ≥0∞) ≠ ∞), ← ENNReal.rpow_mul]
   norm_num
 
@@ -466,9 +461,9 @@ lemma aux_sobolevDifference_lintegral_enorm_mul_translate_reflect_le
         hleft.enorm hright.enorm
     _ = eLpNorm (fun η : ℝ ↦ F (ξ - η)) (2 : ℝ≥0∞) volume *
           eLpNorm (fun η : ℝ ↦ F (-η)) (2 : ℝ≥0∞) volume := by
-      rw [eLpNorm_eq_lintegral_rpow_enorm (by norm_num : (2 : ℝ≥0∞) ≠ 0)
+      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
         (by norm_num : (2 : ℝ≥0∞) ≠ ∞),
-        eLpNorm_eq_lintegral_rpow_enorm (by norm_num : (2 : ℝ≥0∞) ≠ 0)
+        eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
         (by norm_num : (2 : ℝ≥0∞) ≠ ∞)]
       norm_num
     _ = _ := by
@@ -529,7 +524,7 @@ lemma aux_sobolevDifference_lintegral_squared_fourier_product_le
 /-- The symmetric frequency window has Lebesgue measure `2 * R`. -/
 lemma aux_sobolevDifference_lintegral_Icc_const
     (R : ℝ) (_hR : 0 ≤ R) (C : ℝ≥0∞) :
-    ∫⁻ ξ : ℝ in Set.Icc (-R) R, C = ENNReal.ofReal (2 * R) * C := by
+    ∫⁻ _ξ : ℝ in Set.Icc (-R) R, C = ENNReal.ofReal (2 * R) * C := by
   rw [MeasureTheory.lintegral_const]
   simp only [Measure.restrict_apply_univ, Real.volume_Icc]
   have hlength : R - -R = 2 * R := by ring
@@ -693,7 +688,7 @@ lemma aux_sobolevDifference_sobolevNormRaw_sq_eq_raw_fourier_energy
   have hraw : (fun ξ : ℝ ↦
       (Lp.fourierTransformₗᵢ ℝ ℂ (hg2.toLp g)) ξ) =ᵐ[volume] 𝓕 g :=
     aux_l2Fourier_eq_raw_ae g hg1 hg2
-  rw [aux_sobolevNormRaw, dif_pos hg2, sobolevNorm,
+  rw [aux_sobolevNormRaw, dite_eq_left hg2, sobolevNorm,
     aux_sobolevDifference_eLpNorm_two_sq_eq_lintegral_enorm]
   apply MeasureTheory.lintegral_congr_ae
   filter_upwards [hraw] with ξ hξ
@@ -740,8 +735,7 @@ lemma aux_sobolevDifference_measurePreserving_cons (s : ℕ) :
     (volume : Measure (Fin s → ℝ)) (volume : Measure ℝ)
   have h := hassoc.comp hprod
   have hzero (q : Fin (s + 1) → ℝ) : (e q).1 = q 0 := by
-    have hq := congrFun (e.symm_apply_apply q) 0
-    simpa [e] using hq
+    simp [e]
   have htail (q : Fin (s + 1) → ℝ) (i : Fin s) : (e q).2 i = q i.succ := by
     have hq := congrFun (e.symm_apply_apply q) i.succ
     simpa [e] using hq
@@ -875,12 +869,13 @@ lemma aux_sobolevDifference_iteratedDifference_joint_data
       refine ⟨?_, ?_, ?_⟩
       · simpa [P, L, R, iteratedMultiplicativeDifference, multiplicativeDifference] using hsrcmeas
       · simpa [P, L, R, iteratedMultiplicativeDifference, multiplicativeDifference] using hsrcbound
-      · simpa [P, L, R, iteratedMultiplicativeDifference, multiplicativeDifference] using hsrcsupport
+      · simpa [P, L, R, iteratedMultiplicativeDifference,
+          multiplicativeDifference] using hsrcsupport
 
 /-- A one-bounded iterated difference supported in `[a,b]` has joint energy
 supported in the spatial interval and the parameter box `[a-b,b-a]^s`. -/
 lemma aux_sobolevDifference_iteratedDifference_energy_le
-    (s : ℕ) (a b : ℝ) (hab : a ≤ b) (f : ℝ → ℂ)
+    (s : ℕ) (a b : ℝ) (_hab : a ≤ b) (f : ℝ → ℂ)
     (hfmeas : AEStronglyMeasurable f volume)
     (hbound : ∀ᵐ x ∂volume, ‖f x‖ ≤ 1)
     (hsupp : ∀ᵐ x ∂volume, x ∉ Set.Icc a b → f x = 0) :
@@ -915,18 +910,18 @@ lemma aux_sobolevDifference_iteratedDifference_energy_le
           exact ENNReal.ofReal_le_ofReal hpbound
         exact ENNReal.rpow_le_one henorm (by norm_num)
       · rw [Set.indicator_of_mem hp, Set.indicator_of_notMem hx, mul_zero]
-        simpa [hpsupp (Or.inl hx)]
+        simp [hpsupp (Or.inl hx)]
     · rw [Set.indicator_of_notMem hp, zero_mul]
       have hbad : ∃ i : Fin s, p.1 i ∉ aux_sobolevDifference_differenceSet A := by
         by_contra hnone
-        push_neg at hnone
+        push Not at hnone
         apply hp
         constructor
         · intro i
           exact (hdiffsubset (hnone i)).1
         · intro i
           exact (hdiffsubset (hnone i)).2
-      simpa [hpsupp (Or.inr hbad)]
+      simp [hpsupp (Or.inr hbad)]
   have hPmeas : MeasurableSet P := measurableSet_Icc
   have hAmeas : MeasurableSet A := measurableSet_Icc
   have hPind_meas : AEMeasurable (P.indicator (fun _ ↦ (1 : ℝ≥0∞))) volume :=
@@ -998,7 +993,7 @@ lemma aux_sobolevDifference_iteratedDifference_section_data
         simpa [g, iteratedMultiplicativeDifference, multiplicativeDifference] using hprod
       · filter_upwards [hgsupp] with x hx
         intro hxA
-        simp [g, iteratedMultiplicativeDifference, multiplicativeDifference, hx hxA]
+        simp [iteratedMultiplicativeDifference, multiplicativeDifference, hx hxA]
 
 /-- Every fixed interval-supported iterated difference lies in every `Lᵖ`.
 In particular, it has a canonical `L²` representative. -/
@@ -1018,7 +1013,7 @@ lemma aux_sobolevDifference_iteratedDifference_memLp_Icc
 lemma aux_sobolevDifference_sobolevNormRaw_eq_sobolevNorm
     (σ : ℝ) (g : ℝ → ℂ) (hg : MemLp g 2 volume) :
     aux_sobolevNormRaw σ g = sobolevNorm σ hg.toLp := by
-  simp only [aux_sobolevNormRaw, dif_pos hg]
+  simp only [aux_sobolevNormRaw, dite_eq_left hg]
 
 /-- The raw Sobolev wrapper for each interval-supported iterated difference
 is on its `L²` branch. -/
@@ -1029,7 +1024,8 @@ lemma aux_sobolevDifference_iterated_sobolevNormRaw_eq
     (hsupp : ∀ᵐ x ∂volume, x ∉ Set.Icc a b → f x = 0) :
     aux_sobolevNormRaw σ (iteratedMultiplicativeDifference s h f) =
       sobolevNorm σ
-        (aux_sobolevDifference_iteratedDifference_memLp_Icc s h a b f hfmeas hbound hsupp 2).toLp := by
+        (aux_sobolevDifference_iteratedDifference_memLp_Icc s h a b f hfmeas
+          hbound hsupp 2).toLp := by
   exact aux_sobolevDifference_sobolevNormRaw_eq_sobolevNorm _ _
     (aux_sobolevDifference_iteratedDifference_memLp_Icc s h a b f hfmeas hbound hsupp 2)
 
@@ -1138,7 +1134,7 @@ lemma aux_sobolevDifference_highFrequency_eq_lowFrequency_compl (R : ℝ) :
     aux_sobolevDifference_highFrequency R = (aux_sobolevDifference_lowFrequency R)ᶜ := by
   ext ξ
   simp only [aux_sobolevDifference_highFrequency, aux_sobolevDifference_lowFrequency,
-    Set.mem_setOf_eq, Set.mem_compl_iff, Set.mem_Icc, not_and_or, not_le]
+    Set.mem_ofPred_eq, Set.mem_compl_iff, Set.mem_Icc, not_and_or, not_le]
   rw [lt_abs]
   constructor
   · rintro (hleft | hright)
@@ -1153,8 +1149,7 @@ lemma aux_sobolevDifference_measurableSet_highFrequency (R : ℝ) :
     MeasurableSet (aux_sobolevDifference_highFrequency R) := by
   rw [aux_sobolevDifference_highFrequency_eq_lowFrequency_compl]
   have hlow : MeasurableSet (aux_sobolevDifference_lowFrequency R) := by
-    simpa [aux_sobolevDifference_lowFrequency] using
-      (measurableSet_Icc : MeasurableSet (Set.Icc (-R) R))
+    simp [aux_sobolevDifference_lowFrequency]
   exact hlow.compl
 
 /-- The Japanese bracket dominates absolute value. -/
@@ -1264,8 +1259,7 @@ lemma aux_sobolevDifference_sobolevNorm_energy_split
         (↑(2 : NNReal) : ℝ) = _
   rw [eLpNorm_nnreal_pow_eq_lintegral (p := (2 : NNReal)) (by norm_num)]
   rw [← lintegral_add_compl _ (A := aux_sobolevDifference_lowFrequency R)
-    (by simpa [aux_sobolevDifference_lowFrequency] using
-      (measurableSet_Icc : MeasurableSet (Set.Icc (-R) R)))]
+    (by simp [aux_sobolevDifference_lowFrequency])]
   rw [← aux_sobolevDifference_highFrequency_eq_lowFrequency_compl]
   norm_num
 
@@ -1364,7 +1358,8 @@ lemma aux_sobolevDifference_iteratedDifferenceLp_coeFn_ae
     (hsupp : ∀ᵐ x ∂volume, x ∉ Set.Icc a b → f x = 0) :
     (aux_sobolevDifference_iteratedDifferenceLp s h a b f hfmeas hbound hsupp : ℝ → ℂ) =ᵐ[volume]
       iteratedMultiplicativeDifference s h f := by
-  exact (aux_sobolevDifference_iteratedDifference_memLp_Icc s h a b f hfmeas hbound hsupp 2).coeFn_toLp
+  exact
+    (aux_sobolevDifference_iteratedDifference_memLp_Icc s h a b f hfmeas hbound hsupp 2).coeFn_toLp
 
 /-- The full parameter-integrated high-frequency Sobolev energy of iterated
 differences has the exact compact-support bound used in the main estimate. -/
@@ -1508,7 +1503,8 @@ lemma aux_sobolevDifference_iteratedDifference_next_joint_aestronglyMeasurable
       (fun z : ((Fin n → ℝ) × ℝ) × ℝ ↦ (z.1.1, z.2 + z.1.2))
       ((volume.prod volume).prod volume) (volume.prod volume) := by
     convert hpair.comp
-      (measurePreserving_prodAssoc (volume : Measure (Fin n → ℝ)) volume volume).quasiMeasurePreserving
+      (measurePreserving_prodAssoc
+        (volume : Measure (Fin n → ℝ)) volume volume).quasiMeasurePreserving
       using 1
     rfl
   have hright : AEStronglyMeasurable
@@ -1640,8 +1636,7 @@ lemma aux_sobolevDifference_measurePreserving_lowTailCoordinates (n : ℕ) (R : 
         (μ := volume.restrict (Set.Icc (-R) R)) (ν := (volume : Measure ℝ)))
   have h := hswap₂.comp (hassoc₂.comp (hswap₁.comp (hassoc.comp hfirst)))
   have hzero (q : Fin (n + 1) → ℝ) : (e q).1 = q 0 := by
-    have hq := congrFun (e.symm_apply_apply q) 0
-    simpa [e] using hq
+    simp [e]
   have htail (q : Fin (n + 1) → ℝ) (i : Fin n) : (e q).2 i = q i.succ := by
     have hq := congrFun (e.symm_apply_apply q) i.succ
     simpa [e] using hq
@@ -1780,16 +1775,15 @@ lemma aux_sobolevDifference_uNorm_succ_rpow_eq_lintegral
     have hgt : 2 < n + 2 + 1 := by omega
     have hsub₁ : n + 2 + 1 - 2 = n + 1 := by omega
     have hsub₂ : n + 2 - 1 = n + 1 := by omega
-    rw [uNorm, if_neg hne, if_pos hgt, hsub₁, hsub₂]
+    rw [uNorm, ite_eq_right hne, ite_eq_left hgt, hsub₁, hsub₂]
     rw [← ENNReal.rpow_mul]
-    congr 1
     field_simp
     simp
 
 /-- A unit-bounded interval-supported function has raw Fourier `L²` energy
 at most the interval length. -/
 lemma aux_sobolevDifference_eLpNorm_fourier_two_mul_le_interval
-    (a b : ℝ) (hab : a ≤ b) (g : ℝ → ℂ)
+    (a b : ℝ) (_hab : a ≤ b) (g : ℝ → ℂ)
     (hg : AEStronglyMeasurable g volume)
     (hbound : ∀ᵐ x : ℝ ∂volume, ‖g x‖ ≤ 1)
     (hsupp : ∀ᵐ x : ℝ ∂volume, x ∉ Set.Icc a b → g x = 0) :
@@ -1799,7 +1793,7 @@ lemma aux_sobolevDifference_eLpNorm_fourier_two_mul_le_interval
     aux_memLp_of_ae_bound_of_ae_support g hg 1 hbound (Set.Icc a b)
       measurableSet_Icc isCompact_Icc.measure_lt_top hsupp 2
   have hraw : aux_l2Fourier g =ᵐ[volume] 𝓕 g := by
-    rw [aux_l2Fourier, dif_pos hg2]
+    rw [aux_l2Fourier, dite_eq_left hg2]
     exact aux_l2Fourier_eq_raw_ae g
       (aux_memLp_of_ae_bound_of_ae_support g hg 1 hbound (Set.Icc a b)
         measurableSet_Icc isCompact_Icc.measure_lt_top hsupp 1) hg2
@@ -1848,7 +1842,7 @@ lemma aux_sobolevDifference_enorm_fourier_le_interval
     aux_memLp_of_ae_bound_of_ae_support g hg 1 hbound (Set.Icc a b)
       measurableSet_Icc isCompact_Icc.measure_lt_top hsupp 1
   have hgint : Integrable (fun x : ℝ ↦ ‖g x‖) volume := by
-    convert hg1.integrable_norm_rpow (by norm_num) (by norm_num) using 1 <;> norm_num
+    convert hg1.integrable_norm_rpow (by norm_num) (by norm_num) using 1; norm_num
   have hind : Integrable ((Set.Icc a b).indicator (fun _ ↦ (1 : ℝ))) volume := by
     rw [integrable_indicator_iff measurableSet_Icc]
     exact integrableOn_const isCompact_Icc.measure_lt_top.ne

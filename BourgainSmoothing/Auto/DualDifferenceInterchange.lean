@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.GowersDifferencingAndU3Control.GowersDifferencingAndU3Control
+import BourgainSmoothing.Auto.GowersDifferencingAndU3Control
 
 /-!
 # Dual difference interchange
@@ -157,11 +152,11 @@ For every $n\geq1$, there exists a measurable $\phi_n:\R\to\R$ such that
 \]
 -/
 theorem measurableFourierSupremumLinearization
-    (A : Set ℝ) (hA : ∃ a b : ℝ, a ≤ b ∧ A = Set.Icc a b)
+    (A : Set ℝ) (_hA : ∃ a b : ℝ, a ≤ b ∧ A = Set.Icc a b)
     (g : ℝ → ℝ → ℂ)
     (hg_measurable : Measurable (Function.uncurry g))
     (hg_integrable : ∀ h : ℝ, Integrable (g h))
-    (hg_support : ∀ h : ℝ, ∀ᵐ x ∂volume, x ∉ A → g h x = 0)
+    (_hg_support : ∀ h : ℝ, ∀ᵐ x ∂volume, x ∉ A → g h x = 0)
     (hg_fourier_integrable :
       Integrable (fun h : ℝ ↦ (eLpNorm (𝓕 (g h)) (∞ : ℝ≥0∞) volume).toReal))
     (n : ℕ) (hn : 1 ≤ n) :
@@ -298,7 +293,8 @@ lemma aux_phase_measurable (z : ℝ → ℂ) (hz : Measurable z) :
     Measurable (fun h : ℝ ↦ if z h = 0 then 0 else star (z h) / (‖z h‖ : ℂ)) := by
   have hzero : MeasurableSet {h : ℝ | z h = 0} := measurableSet_eq_fun hz measurable_const
   have hstar : Measurable (fun h : ℝ ↦ star (z h)) := continuous_star.measurable.comp hz
-  have hnorm : Measurable (fun h : ℝ ↦ (‖z h‖ : ℂ)) := Complex.measurable_ofReal.comp hz.norm
+  have hnorm : Measurable (fun h : ℝ ↦ (‖z h‖ : ℂ)) :=
+    Complex.measurable_ofReal.comp hz.norm
   exact Measurable.ite hzero measurable_const (hstar.div hnorm)
 
 /-- For \(\label{thm:dual-difference-interchange}\), this is the pointwise
@@ -308,7 +304,7 @@ lemma aux_mul_phase_eq_norm (z : ℂ) :
     z * (if z = 0 then 0 else star z / (‖z‖ : ℂ)) = (‖z‖ : ℂ) := by
   by_cases hz : z = 0
   · simp [hz]
-  · rw [if_neg hz]
+  · rw [ite_eq_right hz]
     calc
       z * (star z / (‖z‖ : ℂ)) = (z * star z) / (‖z‖ : ℂ) := by ring
       _ = (‖z‖ : ℂ) ^ (2 : ℕ) / (‖z‖ : ℂ) := by
@@ -350,7 +346,7 @@ lemma aux_norm_phase_le_one (z : ℂ) :
     ‖if z = 0 then 0 else star z / (‖z‖ : ℂ)‖ ≤ 1 := by
   by_cases hz : z = 0
   · simp [hz]
-  · rw [if_neg hz, norm_div, norm_star, Complex.norm_real,
+  · rw [ite_eq_right hz, norm_div, norm_star, Complex.norm_real,
       Real.norm_eq_abs, abs_of_nonneg (norm_nonneg z)]
     field_simp [norm_ne_zero_iff.mpr hz]
     exact le_rfl
@@ -594,7 +590,9 @@ lemma aux_dual_difference_norm_integrable
     simpa [Function.comp_def, Prod.swap] using hKshear.swap
   have hRnorm : Integrable (fun z : ℝ × ℝ ↦
       ‖multiplicativeDifference z.1 f z.2‖) (volume.prod volume) := by
-    convert hR.norm using 1 <;> ext z <;> simp [multiplicativeDifference]
+    convert hR.norm using 1
+    ext z
+    simp [multiplicativeDifference]
   exact hRnorm.integral_prod_left
 
 /-- For \(\label{thm:dual-difference-interchange}\), this supplies
@@ -1059,7 +1057,8 @@ lemma aux_autocorrelation_product_sections_and_integrable
     (Z : Set (ℝ × ℝ)) (D : Set ℝ) (hZ : IsCompact Z) (hD : IsCompact D)
     (P : (ℝ × ℝ) → ℝ → ℂ)
     (hPmeas : Measurable (Function.uncurry P))
-    (hPbound : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume), ‖P q.1 q.2‖ ≤ 1)
+    (hPbound : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume),
+      ‖P q.1 q.2‖ ≤ 1)
     (hPsupp : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume),
       q ∉ Z ×ˢ D → P q.1 q.2 = 0) :
     (∀ᵐ z : ℝ × ℝ ∂aux_dualPairMeasure, Integrable
@@ -1239,7 +1238,8 @@ lemma aux_autocorrelation_product_integrable_shift_first
     (Z : Set (ℝ × ℝ)) (D : Set ℝ) (hZ : IsCompact Z) (hD : IsCompact D)
     (P : (ℝ × ℝ) → ℝ → ℂ)
     (hPmeas : Measurable (Function.uncurry P))
-    (hPbound : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume), ‖P q.1 q.2‖ ≤ 1)
+    (hPbound : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume),
+      ‖P q.1 q.2‖ ≤ 1)
     (hPsupp : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂(aux_dualPairMeasure.prod volume),
       q ∉ Z ×ˢ D → P q.1 q.2 = 0) :
     Integrable
@@ -1378,7 +1378,7 @@ lemma aux_dualP_autocorrelation_pointwise
     rw [← aux_phase_exponential_add, ← aux_phase_exponential_add]
     congr 1
     ring
-  simp [Complex.star_def, multiplicativeDifference]
+  simp only [Complex.conj_ofReal, RingHomCompTriple.comp_apply, RingHom.id_apply]
   calc
     _ =
         (((Real.sqrt (χ t) : ℝ) : ℂ) * ((Real.sqrt (χ t) : ℝ) : ℂ)) *
@@ -1391,7 +1391,9 @@ lemma aux_dualP_autocorrelation_pointwise
           (exponential (s * (ψ (s + r) - ψ s)) *
             exponential (-((x + s) * (ψ (s + r) - ψ s)))) *
           (u s * starRingEnd ℂ (u (s + r))) := by rw [hsqrt, hphase]
-    _ = _ := by ring
+    _ = _ := by
+      simp only [multiplicativeDifference, map_mul, starRingEnd_apply, star_star]
+      ring_nf
 
 /-- For \(\label{thm:dual-difference-interchange}\), this shows that a
 multiplicative difference vanishes off the compact difference set.  It is
@@ -1885,7 +1887,8 @@ lemma aux_first_physical_cauchy_sq_with_dualP
     (hH : MemLp (fun z : ℝ × ℝ ↦ ∫ h : ℝ, aux_dualP Ft χ φ u z h)
       (2 : ℝ≥0∞) (volume.prod volume)) :
     ‖∫ h : ℝ,
-      (∫ x : ℝ, multiplicativeDifference h F x * exponential (x * φ h)) * u h‖ ^ (2 : ℕ) ≤
+      (∫ x : ℝ, multiplicativeDifference h F x * exponential (x * φ h)) *
+        u h‖ ^ (2 : ℕ) ≤
       volume.real A * (volume.real J) ^ (3 : ℕ) *
         ∫ z : ℝ × ℝ, ‖∫ h : ℝ, aux_dualP Ft χ φ u z h‖ ^ (2 : ℝ)
           ∂(volume.prod volume) := by
@@ -2053,7 +2056,8 @@ lemma aux_target_indicator_properties
       (volume.prod volume) := by
     rw [← memLp_one_iff_integrable]
     apply aux_memLp_of_ae_bound_of_ae_support _
-      ((hRmeas.comp ((measurable_const.prodMk measurable_fst).prodMk measurable_snd)).aestronglyMeasurable)
+      ((hRmeas.comp
+        ((measurable_const.prodMk measurable_fst).prodMk measurable_snd)).aestronglyMeasurable)
       1 (hRbound s) (A ×ˢ J) hboxmeas hboxfinite (hRsupport s) 1
   have hTbound (s : ℝ) : ‖T s‖ ≤ volume.real A * volume.real J := by
     calc
@@ -2461,7 +2465,8 @@ lemma aux_square_timeIntegral_le_target_doubleIntegralOnCoeff
   have hinitial := aux_square_timeIntegral_le_autocorrelation_prod P hsections hH hshift
   have houter : Integrable
       (fun r : ℝ ↦ ∫ p : (ℝ × ℝ) × ℝ,
-        P p.1 p.2 * starRingEnd ℂ (P p.1 (p.2 + r)) ∂(aux_dualPairMeasure.prod volume)) volume := by
+        P p.1 p.2 * starRingEnd ℂ (P p.1 (p.2 + r))
+          ∂(aux_dualPairMeasure.prod volume)) volume := by
     convert hbase.swap.integral_prod_left using 1
     ext r
     congr 1
@@ -3013,7 +3018,8 @@ theorem dualDifferenceInterchange
   have hZcompact : IsCompact Z := hXcompact.prod hJcompact
   have hPmeas : AEStronglyMeasurable (Function.uncurry (aux_dualP Ft χ ψ u))
       ((volume.prod volume).prod volume) :=
-    (aux_dualP_measurable Ft χ ψ u hFt_measurable hχ_measurable hψmeas humeas).aestronglyMeasurable
+    (aux_dualP_measurable Ft χ ψ u hFt_measurable hχ_measurable hψmeas
+      humeas).aestronglyMeasurable
   have hPbound : ∀ᵐ q : (ℝ × ℝ) × ℝ ∂((volume.prod volume).prod volume),
       ‖aux_dualP Ft χ ψ u q.1 q.2‖ ≤ 1 :=
     aux_dualP_ae_one_bounded Ft χ ψ u hFt_measurable hFt_one_bounded hχ_le_one hubound

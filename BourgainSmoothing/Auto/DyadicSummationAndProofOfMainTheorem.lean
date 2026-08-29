@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.NondecayingEndpointAndInterpolation.NondecayingEndpointAndInterpolation
+import BourgainSmoothing.Auto.NondecayingEndpointAndInterpolation
 import Mathlib.Algebra.Field.GeomSum
 
 /-!
@@ -57,7 +52,8 @@ theorem elementaryL2Endpoint
   rw [← hχnorm]
   exact aux_trilinearFormAbs_le_linf_l2_l2 χ f₀ f₁ f₂ hχint hf₀_memLp hf₁_memLp hf₂_memLp
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: the negative Sobolev multiplier preserves `L²`. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+the negative Sobolev multiplier preserves `L²`. -/
 lemma aux_weight_memLp_two (σ : ℝ) (hσ : 0 ≤ σ)
     (G : Lp (α := ℝ) ℂ 2 volume) :
     MemLp (fun ζ ↦ (japaneseBracket ζ ^ (-σ)) • G ζ)
@@ -87,17 +83,19 @@ lemma aux_weight_memLp_two (σ : ℝ) (hσ : 0 ≤ σ)
       (∞ : ℝ≥0∞) volume :=
     memLp_top_of_bound hweight_cont.aestronglyMeasurable 1
       (Filter.Eventually.of_forall hweight_bound)
-  letI : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
+  let _ : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
   exact (Lp.memLp G).smul hweight
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: the Sobolev norm used below is finite. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+the Sobolev norm used below is finite. -/
 lemma aux_sobolevNorm_lt_top (σ : ℝ) (hσ : 0 ≤ σ)
     (G : Lp (α := ℝ) ℂ 2 volume) :
     sobolevNorm σ G < ∞ := by
   unfold sobolevNorm
   exact (aux_weight_memLp_two σ hσ (Lp.fourierTransformₗᵢ ℝ ℂ G)).eLpNorm_lt_top
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: transfers a pointwise multiplier bound to an `L²` norm bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+transfers a pointwise multiplier bound to an `L²` norm bound. -/
 lemma aux_weighted_multiplier_toReal_bound
     (σ : ℝ) (m F : ℝ → ℂ) (C : ℝ) (hC : 0 ≤ C)
     (hm : ∀ ζ : ℝ, ‖m ζ‖ ≤ C * japaneseBracket ζ ^ (-σ))
@@ -132,7 +130,8 @@ lemma aux_weighted_multiplier_toReal_bound
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hC] at hreal
   exact hreal
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: bounds the Japanese bracket on the low-frequency support. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+bounds the Japanese bracket on the low-frequency support. -/
 lemma aux_japaneseBracket_le_sqrt_five {ξ : ℝ} (hξ : |ξ| ≤ 2) :
     japaneseBracket ξ ≤ Real.sqrt 5 := by
   unfold japaneseBracket
@@ -140,14 +139,16 @@ lemma aux_japaneseBracket_le_sqrt_five {ξ : ℝ} (hξ : |ξ| ≤ 2) :
     Real.sq_sqrt (by positivity), Real.sq_sqrt (by positivity)]
   nlinarith [mul_nonneg (sub_nonneg.mpr hξ) (by positivity : 0 ≤ 2 + |ξ|)]
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: rewrites the low-frequency constant. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+rewrites the low-frequency constant. -/
 lemma aux_sqrt_five_rpow (σ : ℝ) :
     (Real.sqrt 5) ^ σ = (5 : ℝ) ^ (σ / 2) := by
   rw [Real.sqrt_eq_rpow, ← Real.rpow_mul (by norm_num : 0 ≤ (5 : ℝ))]
   congr 1
   ring
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: pointwise low-frequency multiplier estimate. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+pointwise low-frequency multiplier estimate. -/
 lemma aux_low_multiplier_bound (σ : ℝ) (hσ : 0 ≤ σ) (ξ : ℝ) :
     ‖(lowFrequencyCutoff ξ : ℂ)‖ ≤
       (5 : ℝ) ^ (σ / 2) * japaneseBracket ξ ^ (-σ) := by
@@ -180,7 +181,8 @@ lemma aux_low_multiplier_bound (σ : ℝ) (hσ : 0 ≤ σ) (ξ : ℝ) :
   rw [← aux_sqrt_five_rpow σ]
   exact hcut.trans hfactor
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: proves its low-frequency estimate. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+proves its low-frequency estimate. -/
 lemma aux_low_projection_estimate (σ : ℝ) (hσ : 0 ≤ σ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) :
     (eLpNorm (P 0 f) (2 : ℝ≥0∞) volume).toReal ≤
@@ -213,7 +215,8 @@ lemma aux_low_projection_estimate (σ : ℝ) (hσ : 0 ≤ σ)
       rw [aux_l2Fourier, dite_eq_left hf]
       rfl
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: monotonicity of the cutoff transition. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+monotonicity of the cutoff transition. -/
 lemma aux_smoothStep_monotoneOn_unit : MonotoneOn smoothStep (Set.Icc (0 : ℝ) 1) := by
   apply monotoneOn_of_deriv_nonneg (convex_Icc _ _)
   · exact aux_continuous_smoothStep.continuousOn
@@ -227,7 +230,8 @@ lemma aux_smoothStep_monotoneOn_unit : MonotoneOn smoothStep (Set.Icc (0 : ℝ) 
     have hprod : 0 ≤ x * (1 - x) := mul_nonneg hx'.1.le (by linarith [hx'.2])
     nlinarith
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: global monotonicity needed for dyadic telescoping. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+global monotonicity needed for dyadic telescoping. -/
 lemma aux_smoothStep_monotone : Monotone smoothStep := by
   intro x y hxy
   by_cases hy0 : y ≤ 0
@@ -247,7 +251,8 @@ lemma aux_smoothStep_monotone : Monotone smoothStep := by
     · exact ⟨le_trans (le_of_not_ge hx0) hxy, (lt_of_not_ge hy1).le⟩
     · exact hxy
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: nonnegativity of each dyadic cutoff. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+nonnegativity of each dyadic cutoff. -/
 lemma aux_dyadicCutoff_nonneg (ξ : ℝ) : 0 ≤ dyadicCutoff ξ := by
   unfold dyadicCutoff lowFrequencyCutoff
   have habs : |2 * ξ| = 2 * |ξ| := by
@@ -257,20 +262,23 @@ lemma aux_dyadicCutoff_nonneg (ξ : ℝ) : 0 ≤ dyadicCutoff ξ := by
   have h : 2 - 2 * |ξ| ≤ 2 - |ξ| := by nlinarith [abs_nonneg ξ]
   exact sub_nonneg.mpr (aux_smoothStep_monotone h)
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: upper bound for each dyadic cutoff. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+upper bound for each dyadic cutoff. -/
 lemma aux_dyadicCutoff_le_one (ξ : ℝ) : dyadicCutoff ξ ≤ 1 := by
   unfold dyadicCutoff lowFrequencyCutoff
   have h1 := (aux_smoothStep_nonneg_le_one (2 - |ξ|)).2
   have h2 := (aux_smoothStep_nonneg_le_one (2 - |2 * ξ|)).1
   linarith
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: square cutoff domination used in telescoping. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+square cutoff domination used in telescoping. -/
 lemma aux_dyadicCutoff_sq_le_self (ξ : ℝ) : dyadicCutoff ξ ^ 2 ≤ dyadicCutoff ξ := by
   have h0 := aux_dyadicCutoff_nonneg ξ
   have h1 := aux_dyadicCutoff_le_one ξ
   nlinarith
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: finite square-sum cutoff bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+finite square-sum cutoff bound. -/
 lemma aux_dyadicCutoff_finite_square_sum_le_one (N : ℕ) (ξ : ℝ) :
     ∑ k ∈ Finset.range N, dyadicCutoff (ξ / (2 : ℝ) ^ (k + 1)) ^ 2 ≤ 1 := by
   calc
@@ -286,7 +294,8 @@ lemma aux_dyadicCutoff_finite_square_sum_le_one (N : ℕ) (ξ : ℝ) :
         (aux_smoothStep_nonneg_le_one _).2
       linarith
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: Plancherel energy identity for a positive dyadic projection. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+Plancherel energy identity for a positive dyadic projection. -/
 lemma aux_positive_projection_energy_eq (f : ℝ → ℂ)
     (hf : MemLp f (2 : ℝ≥0∞) volume) (k : ℕ) :
     (eLpNorm (P (k + 1) f) (2 : ℝ≥0∞) volume) ^ (2 : ℝ) =
@@ -309,13 +318,14 @@ lemma aux_positive_projection_energy_eq (f : ℝ → ℂ)
       filter_upwards [hFourier] with ξ hξ
       rw [hξ]
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: sharp support-based Japanese bracket bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+sharp support-based Japanese bracket bound. -/
 lemma aux_japaneseBracket_sq_le_dyadic_sharp (k : ℕ) (ξ : ℝ)
     (hφ : dyadicCutoff (ξ / (2 : ℝ) ^ (k + 1)) ≠ 0) :
     japaneseBracket ξ ^ 2 ≤ (2 : ℝ) ^ (2 * k + 5) := by
   have hsupp := aux_scaled_dyadicCutoff_support (k := k + 1) (by omega) hφ
   have hupper : |ξ| ≤ (2 : ℝ) ^ (k + 2) := by
-    convert hsupp.2 using 1 <;> omega
+    convert hsupp.2 using 1
   have hpow : ((2 : ℝ) ^ (k + 2)) ^ 2 = (2 : ℝ) ^ (2 * k + 4) := by
     rw [← pow_mul]
     congr 1
@@ -335,7 +345,8 @@ lemma aux_japaneseBracket_sq_le_dyadic_sharp (k : ℕ) (ξ : ℝ)
   rw [hpowtwo]
   linarith
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: raises the sharp support bound to the Sobolev exponent. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+raises the sharp support bound to the Sobolev exponent. -/
 lemma aux_japaneseBracket_weight_bound_sharp (σ : ℝ) (hσ : 0 ≤ σ) (k : ℕ) (ξ : ℝ)
     (hφ : dyadicCutoff (ξ / (2 : ℝ) ^ (k + 1)) ≠ 0) :
     japaneseBracket ξ ^ (2 * σ) ≤
@@ -358,7 +369,8 @@ lemma aux_japaneseBracket_weight_bound_sharp (σ : ℝ) (hσ : 0 ≤ σ) (k : �
       push_cast
       ring
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: sharp `3σ` scalar dyadic weight estimate. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+sharp `3σ` scalar dyadic weight estimate. -/
 lemma aux_dyadic_weight_bound_sharp (σ : ℝ) (hσ : 0 < σ) (k : ℕ) (ξ : ℝ)
     (hφ : dyadicCutoff (ξ / (2 : ℝ) ^ (k + 1)) ≠ 0) :
     (2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ)) ≤
@@ -394,7 +406,8 @@ lemma aux_dyadic_weight_bound_sharp (σ : ℝ) (hσ : 0 < σ) (k : ℕ) (ξ : �
               rw [hcancel]
         _ = _ := by ring
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: real pointwise weighted dyadic energy bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+real pointwise weighted dyadic energy bound. -/
 lemma aux_pointwise_weighted_projection_energy_bound
     (σ : ℝ) (hσ : 0 < σ) (k : ℕ) (ξ : ℝ) (F : ℂ) :
     (2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ)) *
@@ -411,7 +424,7 @@ lemma aux_pointwise_weighted_projection_energy_bound
     positivity
   have hpow : B ^ (-2 * σ) = (B ^ (-σ)) ^ 2 := by
     calc
-      B ^ (-2 * σ) = B ^ ((-σ) * (2 : ℝ)) := by congr 1 <;> ring
+      B ^ (-2 * σ) = B ^ ((-σ) * (2 : ℝ)) := by congr 1 ; ring
       _ = (B ^ (-σ)) ^ (2 : ℝ) := Real.rpow_mul hBnonneg (-σ) (2 : ℝ)
       _ = (B ^ (-σ)) ^ (2 : ℕ) := Real.rpow_natCast _ 2
   by_cases hφ : φ = 0
@@ -440,7 +453,8 @@ lemma aux_pointwise_weighted_projection_energy_bound
       rw [hpow]
       ring
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: ENNReal version of the pointwise dyadic energy bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+ENNReal version of the pointwise dyadic energy bound. -/
 lemma aux_ennreal_pointwise_weighted_projection_energy_bound
     (σ : ℝ) (hσ : 0 < σ) (k : ℕ) (ξ : ℝ) (F : ℂ) :
     ENNReal.ofReal ((2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ))) *
@@ -457,10 +471,11 @@ lemma aux_ennreal_pointwise_weighted_projection_energy_bound
   rw [ENNReal.ofReal_mul hC] at henn
   rw [ENNReal.ofReal_pow (norm_nonneg _) 2,
     ENNReal.ofReal_pow (norm_nonneg _) 2,
-    ofReal_norm_eq_enorm, ofReal_norm_eq_enorm] at henn
+    ofReal_norm, ofReal_norm] at henn
   exact henn
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: measurability for Tonelli's theorem. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+measurability for Tonelli's theorem. -/
 lemma aux_weighted_projection_integrand_aemeasurable
     (σ : ℝ) (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) (k : ℕ) :
     AEMeasurable (fun ξ : ℝ ↦
@@ -477,7 +492,8 @@ lemma aux_weighted_projection_integrand_aemeasurable
     exact (Lp.memLp _).aestronglyMeasurable
   exact ((hφ.mul hF).aemeasurable.enorm.pow_const (2 : ℕ)).const_mul _
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: measurability of a positive projection energy. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+measurability of a positive projection energy. -/
 lemma aux_positive_projection_fourier_energy_aemeasurable
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) (k : ℕ) :
     AEMeasurable (fun ξ : ℝ ↦
@@ -493,7 +509,8 @@ lemma aux_positive_projection_fourier_energy_aemeasurable
     exact (Lp.memLp _).aestronglyMeasurable
   exact (hφ.mul hF).aemeasurable.enorm.pow_const (2 : ℕ)
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: Sobolev energy as a Fourier `lintegral`. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+Sobolev energy as a Fourier `lintegral`. -/
 lemma aux_sobolev_energy_eq_lintegral (σ : ℝ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) :
     (sobolevNorm σ (hf.toLp f)) ^ (2 : ℝ) =
@@ -506,7 +523,8 @@ lemma aux_sobolev_energy_eq_lintegral (σ : ℝ)
       (Lp.fourierTransformₗᵢ ℝ ℂ (hf.toLp f)) ξ)
     (μ := volume) (p := (2 : NNReal)) (by norm_num) using 1 <;> norm_num
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: ENNReal dyadic cutoff square-sum bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+ENNReal dyadic cutoff square-sum bound. -/
 lemma aux_dyadicCutoff_ennreal_tsum_square_le_one (ξ : ℝ) :
     ∑' k : ℕ,
       ENNReal.ofReal (dyadicCutoff (ξ / (2 : ℝ) ^ (k + 1)) ^ 2) ≤ 1 := by
@@ -524,7 +542,8 @@ lemma aux_dyadicCutoff_ennreal_tsum_square_le_one (ξ : ℝ) :
       positivity
     _ ≤ 1 := aux_dyadicCutoff_finite_square_sum_le_one N ξ
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: pointwise ENNReal weighted energy summation. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+pointwise ENNReal weighted energy summation. -/
 lemma aux_ennreal_pointwise_tsum_weighted_projection_energy_bound
     (σ : ℝ) (hσ : 0 < σ) (ξ : ℝ) (F : ℂ) :
     ∑' k : ℕ,
@@ -557,7 +576,8 @@ lemma aux_ennreal_pointwise_tsum_weighted_projection_energy_bound
         ‖(japaneseBracket ξ ^ (-σ)) • F‖ₑ ^ (2 : ℕ) := by
       simp [C, W]
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: Tonelli transfer of the sharp pointwise estimate. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+Tonelli transfer of the sharp pointwise estimate. -/
 lemma aux_weighted_dyadic_energy_ennreal_bound
     (σ : ℝ) (hσ : 0 < σ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) :
@@ -631,13 +651,15 @@ lemma aux_weighted_dyadic_energy_ennreal_bound
         (sobolevNorm σ (hf.toLp f)) ^ (2 : ℝ) := by
       rw [hSob]
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: converts a finite ENNReal squared energy to a real expression. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+converts a finite ENNReal squared energy to a real expression. -/
 lemma aux_toReal_ofReal_mul_rpow_two (a : ℝ) (ha : 0 ≤ a) (x : ℝ≥0∞) :
     (ENNReal.ofReal a * x ^ (2 : ℝ)).toReal = a * x.toReal ^ (2 : ℕ) := by
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal ha, ← ENNReal.toReal_rpow]
   exact congrArg (fun y : ℝ ↦ a * y) (Real.rpow_natCast x.toReal 2)
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: real infinite weighted dyadic energy bound. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+real infinite weighted dyadic energy bound. -/
 lemma aux_weighted_dyadic_energy_toReal_bound
     (σ : ℝ) (hσ : 0 < σ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) :
@@ -678,7 +700,8 @@ lemma aux_weighted_dyadic_energy_toReal_bound
   rw [aux_toReal_ofReal_mul_rpow_two _ (Real.rpow_nonneg (by norm_num) _) S] at hreal
   exact hreal
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: finite weighted dyadic energy bound for later summation. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+finite weighted dyadic energy bound for later summation. -/
 lemma aux_weighted_dyadic_energy_partial_sum_bound
     (σ : ℝ) (hσ : 0 < σ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) (N : ℕ) :
@@ -731,7 +754,8 @@ lemma aux_weighted_dyadic_energy_partial_sum_bound
     _ = (2 : ℝ) ^ (3 * σ) * S.toReal ^ 2 :=
       aux_toReal_ofReal_mul_rpow_two _ (Real.rpow_nonneg (by norm_num) _) S
 
-/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`: summability of the weighted dyadic energy sequence. -/
+/-- Auxiliary for \label{lem:weighted-dyadic-square} and `weightedDyadicSquareEstimate`:
+summability of the weighted dyadic energy sequence. -/
 lemma aux_weighted_dyadic_energy_summable
     (σ : ℝ) (hσ : 0 < σ)
     (f : ℝ → ℂ) (hf : MemLp f (2 : ℝ≥0∞) volume) :
@@ -755,7 +779,7 @@ Let \(0<\sigma\leq1\).  For every \(f\in L^2(\mathbb R)\),
 \]
 -/
 theorem weightedDyadicSquareEstimate
-    (σ : ℝ) (hσ_pos : 0 < σ) (hσ_le_one : σ ≤ 1)
+    (σ : ℝ) (hσ_pos : 0 < σ) (_hσ_le_one : σ ≤ 1)
     (f : ℝ → ℂ) (hf_memLp : MemLp f (2 : ℝ≥0∞) volume) :
     (eLpNorm (P 0 f) (2 : ℝ≥0∞) volume).toReal ≤
       (5 : ℝ) ^ (σ / 2) * (sobolevNorm σ (hf_memLp.toLp f)).toReal ∧
@@ -896,8 +920,8 @@ expression used by the main-theorem constant.
 -/
 theorem interactionSizeComparison
     (a b : ℝ) (χ : ℝ → ℝ) (hab : a ≤ b)
-    (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
-    (hχ_nonneg : ∀ t : ℝ, 0 ≤ χ t) (hχ_le_one : ∀ t : ℝ, χ t ≤ 1) :
+    (_hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
+    (_hχ_nonneg : ∀ t : ℝ, 0 ≤ χ t) (_hχ_le_one : ∀ t : ℝ, χ t ≤ 1) :
     sizeParameter ![
       aux_mainInteractionA0 a b,
       aux_mainInteractionA1 a b χ,
@@ -1182,7 +1206,7 @@ theorem aux_main_weighted_cauchy
       _ = (2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ)) * p k := by
         rw [← Real.rpow_add (by norm_num : (0 : ℝ) < 2)]
         congr 1
-        ring
+        ring_nf
   have hu2 (k : ℕ) : u k ^ 2 =
       (2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ)) * p k ^ 2 := by
     dsimp only [u]
@@ -1190,7 +1214,7 @@ theorem aux_main_weighted_cauchy
     rw [← Real.rpow_natCast]
     rw [← Real.rpow_mul (by norm_num : (0 : ℝ) ≤ 2)]
     congr 1
-    ring
+    ring_nf
   have hv2 (k : ℕ) : v k ^ 2 =
       (2 : ℝ) ^ (-2 * σ * ((k + 1 : ℕ) : ℝ)) := by
     dsimp only [v]
@@ -1332,7 +1356,7 @@ theorem aux_main_high_frequency_weighted_sum
           rw [← Real.sqrt_eq_rpow]
         _ = (C / D) ^ (1 / (2 : ℝ)) * H := by
           rw [div_eq_mul_inv]
-          ring
+          ring_nf
     _ ≤ (2 : ℝ) ^ 8 * H := by
       apply mul_le_mul_of_nonneg_right geometricSummationConstant hH
 
@@ -1576,7 +1600,8 @@ theorem aux_main_trilinearForm_dyadic_partial_sum
     (fun x ↦ ∑ k ∈ Finset.range N, P (k + 1) f₂ x)
     (hInt _ hPzero) (hInt _ (hsumMem N)), hsum]
 
-/-- Auxiliary for `bourgainTrilinearSmoothing` (`\label{thm:main}`): dyadic finite partial forms converge to the original raw form in `L²`. -/
+/-- Auxiliary for `bourgainTrilinearSmoothing` (`\label{thm:main}`):
+dyadic finite partial forms converge to the original raw form in `L²`. -/
 theorem aux_main_tendsto_trilinearForm_dyadic_partial
     (χ : ℝ → ℝ) (f₀ f₁ f₂ : ℝ → ℂ)
     (hχ : Integrable (fun t : ℝ ↦ (χ t : ℂ)))

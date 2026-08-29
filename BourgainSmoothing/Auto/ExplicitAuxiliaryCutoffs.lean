@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions.ConventionsAndFoundationalDefinitions
+import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions
 import Mathlib.Analysis.Fourier.Convolution
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
@@ -228,7 +223,8 @@ theorem smoothStepBounds :
   have hg1int : Integrable g1 volume := by
     apply (MeasureTheory.integrable_indicator_iff measurableSet_Ioo).2
     apply (intervalIntegrable_iff.mp
-      ((by fun_prop : Continuous (fun x : ℝ ↦ 6 * x - 6 * x ^ 2)).intervalIntegrable 0 1)).mono_set
+      ((by
+        fun_prop : Continuous (fun x : ℝ ↦ 6 * x - 6 * x ^ 2)).intervalIntegrable 0 1)).mono_set
     simpa using (Set.Ioo_subset_Ioc_self : Set.Ioo (0 : ℝ) 1 ⊆ Set.Ioc 0 1)
   have hg1nonneg : ∀ x : ℝ, 0 ≤ g1 x := by
     intro x
@@ -450,7 +446,7 @@ lemma aux_spatialCutoff_tsupport {a b : ℝ} :
     by_contra hxbounds
     have hxout : x < a - 1 ∨ b + 1 < x := by
       by_contra h
-      push_neg at h
+      push Not at h
       exact hxbounds ⟨h.1, h.2⟩
     rcases hxout with hleft | hright
     · apply hx
@@ -585,7 +581,8 @@ lemma aux_eLpNorm_reflect_translate (f : ℝ → ℝ) (hf : AEStronglyMeasurable
     (c : ℝ) (p : ℝ≥0∞) :
     eLpNorm (fun x : ℝ ↦ f (c - x)) p volume = eLpNorm f p volume := by
   have hmp : MeasurePreserving (fun x : ℝ ↦ c - x) volume volume := by
-    convert (measurePreserving_add_left volume c).comp (Measure.measurePreserving_neg volume) using 1 <;>
+    convert (measurePreserving_add_left volume c).comp
+      (Measure.measurePreserving_neg volume) using 1;
       simp [Function.comp_def, sub_eq_add_neg]
   simpa only [Function.comp_def] using (eLpNorm_comp_measurePreserving (p := p) hf hmp)
 
@@ -697,7 +694,7 @@ lemma aux_spatial_deriv_L1
   have hBmeas : AEStronglyMeasurable (fun x : ℝ ↦ smoothStep (b + 1 - x)) volume := by
     have hmp : MeasurePreserving (fun x : ℝ ↦ b + 1 - x) volume volume := by
       convert (measurePreserving_add_left volume (b + 1)).comp
-        (Measure.measurePreserving_neg volume) using 1 <;> simp [Function.comp_def, sub_eq_add_neg]
+        (Measure.measurePreserving_neg volume) using 1; simp [Function.comp_def, sub_eq_add_neg]
     simpa [Function.comp_def] using hSmeas.comp_measurePreserving hmp
   have hDAmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv smoothStep (x - a + 1)) volume := by
     have hshift : (fun x : ℝ ↦ deriv smoothStep (x - a + 1)) =
@@ -707,7 +704,7 @@ lemma aux_spatial_deriv_L1
   have hDBmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv smoothStep (b + 1 - x)) volume := by
     have hmp : MeasurePreserving (fun x : ℝ ↦ b + 1 - x) volume volume := by
       convert (measurePreserving_add_left volume (b + 1)).comp
-        (Measure.measurePreserving_neg volume) using 1 <;> simp [Function.comp_def, sub_eq_add_neg]
+        (Measure.measurePreserving_neg volume) using 1; simp [Function.comp_def, sub_eq_add_neg]
     simpa [Function.comp_def] using hDmeas.comp_measurePreserving hmp
   rw [eLpNorm_congr_ae (aux_deriv_spatial_ae a b)]
   calc
@@ -810,7 +807,7 @@ lemma aux_deriv2_spatial_at (a b x : ℝ)
       (-deriv (deriv smoothStep) (b + 1 - x)) x := by
     simpa [Function.comp_def] using (hDB.hasDerivAt.comp x hrightaff)
   have hderiv := ((hD_A.mul hS_B).sub (hS_A.mul hD_B)).congr_of_eventuallyEq hfirst
-  convert hderiv.deriv using 1 <;> ring
+  convert hderiv.deriv using 1; ring
 
 /-- Almost-everywhere second product-rule formula for the spatial cutoff.
 This is an auxiliary identity for the final derivative estimate in
@@ -849,7 +846,7 @@ lemma aux_spatial_deriv2_L1
   have hBmeas : AEStronglyMeasurable (fun x : ℝ ↦ smoothStep (b + 1 - x)) volume := by
     have hmp : MeasurePreserving (fun x : ℝ ↦ b + 1 - x) volume volume := by
       convert (measurePreserving_add_left volume (b + 1)).comp
-        (Measure.measurePreserving_neg volume) using 1 <;> simp [Function.comp_def, sub_eq_add_neg]
+        (Measure.measurePreserving_neg volume) using 1; simp [Function.comp_def, sub_eq_add_neg]
     simpa [Function.comp_def] using hSmeas.comp_measurePreserving hmp
   have hDAmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv smoothStep (x - a + 1)) volume := by
     have hshift : (fun x : ℝ ↦ deriv smoothStep (x - a + 1)) =
@@ -859,17 +856,19 @@ lemma aux_spatial_deriv2_L1
   have hDBmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv smoothStep (b + 1 - x)) volume := by
     have hmp : MeasurePreserving (fun x : ℝ ↦ b + 1 - x) volume volume := by
       convert (measurePreserving_add_left volume (b + 1)).comp
-        (Measure.measurePreserving_neg volume) using 1 <;> simp [Function.comp_def, sub_eq_add_neg]
+        (Measure.measurePreserving_neg volume) using 1; simp [Function.comp_def, sub_eq_add_neg]
     simpa [Function.comp_def] using hDmeas.comp_measurePreserving hmp
-  have hEAmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv (deriv smoothStep) (x - a + 1)) volume := by
+  have hEAmeas :
+      AEStronglyMeasurable (fun x : ℝ ↦ deriv (deriv smoothStep) (x - a + 1)) volume := by
     have hshift : (fun x : ℝ ↦ deriv (deriv smoothStep) (x - a + 1)) =
         (fun x : ℝ ↦ deriv (deriv smoothStep) (x + (1 - a))) := by ext x; congr 1; ring
     rw [hshift]
     exact hEmeas.comp_measurePreserving (measurePreserving_add_right volume (1 - a))
-  have hEBmeas : AEStronglyMeasurable (fun x : ℝ ↦ deriv (deriv smoothStep) (b + 1 - x)) volume := by
+  have hEBmeas :
+      AEStronglyMeasurable (fun x : ℝ ↦ deriv (deriv smoothStep) (b + 1 - x)) volume := by
     have hmp : MeasurePreserving (fun x : ℝ ↦ b + 1 - x) volume volume := by
       convert (measurePreserving_add_left volume (b + 1)).comp
-        (Measure.measurePreserving_neg volume) using 1 <;> simp [Function.comp_def, sub_eq_add_neg]
+        (Measure.measurePreserving_neg volume) using 1; simp [Function.comp_def, sub_eq_add_neg]
     simpa [Function.comp_def] using hEmeas.comp_measurePreserving hmp
   rw [eLpNorm_congr_ae hformula]
   have hF : eLpNorm ((fun x : ℝ ↦ deriv (deriv smoothStep) (x - a + 1)) *
@@ -1518,7 +1517,8 @@ lemma aux_annularCutoff_integrable :
     apply HasCompactSupport.intro (isCompact_Icc : IsCompact (Set.Icc (-4 : ℝ) 4))
     intro ξ hξ
     simp [aux_annularCutoff_eq_zero_of_not_mem ξ hξ]
-  exact (Complex.continuous_ofReal.comp aux_continuous_annularCutoff).integrable_of_hasCompactSupport
+  exact
+    (Complex.continuous_ofReal.comp aux_continuous_annularCutoff).integrable_of_hasCompactSupport
     hsupport
 
 /-- The oscillatory phase in the inverse Fourier integral.  This auxiliary
@@ -1837,7 +1837,7 @@ lemma aux_hasDerivAt_dyadicTransitionDeriv (e a b ξ : ℝ)
 /-- The outer negative transition of the annular cutoff, expressed using the
 generic transition model for `dyadicKernelBounds` in
 \(\label{lem:dyadic-kernel-bounds}\). -/
-lemma aux_annularCutoff_eq_negOuter_transition {ξ : ℝ} (hξa : -4 ≤ ξ) (hξb : ξ ≤ -2) :
+lemma aux_annularCutoff_eq_negOuter_transition {ξ : ℝ} (_hξa : -4 ≤ ξ) (hξb : ξ ≤ -2) :
     annularCutoff ξ = aux_dyadicTransition 0 1 2 (1 / 2 : ℝ) ξ := by
   unfold annularCutoff lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonpos (by linarith : ξ / 2 ≤ 0),
@@ -1879,7 +1879,7 @@ lemma aux_annularCutoff_eq_posInner_transition {ξ : ℝ} (hξa : 1 / 4 ≤ ξ)
 /-- The outer positive transition of the annular cutoff, expressed using the
 generic transition model for `dyadicKernelBounds` in
 \(\label{lem:dyadic-kernel-bounds}\). -/
-lemma aux_annularCutoff_eq_posOuter_transition {ξ : ℝ} (hξa : 2 ≤ ξ) (hξb : ξ ≤ 4) :
+lemma aux_annularCutoff_eq_posOuter_transition {ξ : ℝ} (hξa : 2 ≤ ξ) (_hξb : ξ ≤ 4) :
     annularCutoff ξ = aux_dyadicTransition 0 1 2 (-1 / 2 : ℝ) ξ := by
   unfold annularCutoff lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonneg (by linarith : 0 ≤ ξ / 2),
@@ -1947,7 +1947,7 @@ lemma aux_norm_dyadicFourierPhaseSecondPrimitive_le (x ξ : ℝ) (hx : 1 ≤ |x|
       abs_of_nonneg Real.pi_pos.le]
     calc
       4 = 2 * 2 * 1 := by norm_num
-      _ ≤ 2 * Real.pi * |x| := by gcongr <;> exact Real.two_le_pi
+      _ ≤ 2 * Real.pi * |x| := by gcongr; exact Real.two_le_pi
   have hpos : 0 < ‖c‖ := lt_of_lt_of_le (by norm_num) hr
   have hphase : ‖aux_dyadicFourierPhase x ξ‖ = 1 := aux_norm_dyadicFourierPhase x ξ
   change ‖aux_dyadicFourierPhase x ξ / c / c‖ ≤ 1 / 16
@@ -2341,7 +2341,7 @@ lemma aux_annularFourier_tail_representation (x : ℝ) (hx : x ≠ 0) :
   have hposOuter : annularCutoff (4 : ℝ) = 0 :=
     aux_annularCutoff_eq_zero_of_outside (Or.inr (by norm_num))
   rw [hnegOuter, hnegInner, hposInner, hposOuter]
-  simp <;> ring
+  simp; ring
 
 /-- The `|x|⁻²` tail estimate for the inverse Fourier kernel of the annular
 cutoff, used in `dyadicKernelBounds` for
@@ -2617,7 +2617,7 @@ noncomputable def aux_dyadicTransitionMultiplierSecondDeriv (c e a b ξ : ℝ) :
 
 /-- Identifies the complex multiplier with its real reciprocal-weighted
 form away from zero for `dyadicKernelBounds`. -/
-lemma aux_dyadicKernelMultiplier_eq_scalar (ξ : ℝ) (hξ : ξ ≠ 0) :
+lemma aux_dyadicKernelMultiplier_eq_scalar (ξ : ℝ) (_hξ : ξ ≠ 0) :
     aux_dyadicKernelMultiplier ξ =
       ((annularCutoff ξ * aux_dyadicKernelReciprocal ξ : ℝ) : ℂ) := by
   unfold aux_dyadicKernelMultiplier aux_dyadicKernelReciprocal
@@ -2642,7 +2642,7 @@ lemma aux_dyadicKernelReciprocal_hasDerivAt (ξ : ℝ) (hξ : ξ ≠ 0) :
   apply (h.congr_of_eventuallyEq hfun).congr_deriv
   field_simp [hξ]
   norm_num
-  field_simp [hξ] <;> ring
+  field_simp [hξ]
 
 /-- Differentiates the first reciprocal derivative away from zero for
 `dyadicKernelBounds`. -/
@@ -2658,7 +2658,7 @@ lemma aux_dyadicKernelReciprocalDeriv_hasDerivAt (ξ : ℝ) (hξ : ξ ≠ 0) :
   apply (h.congr_of_eventuallyEq hfun).congr_deriv
   field_simp [hξ]
   norm_num
-  field_simp [hξ] <;> ring
+  field_simp [hξ]
 
 /-- The derivative identity for a reciprocal-weighted transition, used in
 the multiplier integration by parts in `dyadicKernelBounds`. -/
@@ -3187,10 +3187,14 @@ two plateau, and central zero intervals for `dyadicKernelBounds` and
 lemma aux_dyadicKernelMultiplier_phase_seven_parts (x : ℝ) :
     (∫ ξ in (-4 : ℝ)..4, aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) =
       (∫ ξ in (-4 : ℝ)..(-2), aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
-      (∫ ξ in (-2 : ℝ)..(-1 / 2), aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
-      (∫ ξ in (-1 / 2 : ℝ)..(-1 / 4), aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
-      (∫ ξ in (-1 / 4 : ℝ)..(1 / 4), aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
-      (∫ ξ in (1 / 4 : ℝ)..(1 / 2), aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
+      (∫ ξ in (-2 : ℝ)..(-1 / 2),
+        aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
+      (∫ ξ in (-1 / 2 : ℝ)..(-1 / 4),
+        aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
+      (∫ ξ in (-1 / 4 : ℝ)..(1 / 4),
+        aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
+      (∫ ξ in (1 / 4 : ℝ)..(1 / 2),
+        aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
       (∫ ξ in (1 / 2 : ℝ)..2, aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) +
       (∫ ξ in (2 : ℝ)..4, aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ) := by
   let g : ℝ → ℂ := fun ξ ↦ aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ
@@ -3362,7 +3366,7 @@ lemma aux_dyadicKernelMultiplier_negOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicKernelMultiplier_eq_negOuter_transition ht'.1 ht'.2])]
   rw [aux_dyadicKernelMultiplier_eq_negOuter_transition (by norm_num) (by norm_num),
     aux_dyadicKernelMultiplier_eq_negOuter_transition (by norm_num) (by norm_num)]
-  convert h using 1 <;>
+  convert h using 1;
     norm_num [aux_dyadicTransitionMultiplierDeriv, aux_dyadicTransition,
       aux_dyadicTransitionDeriv, aux_smoothStepDerivative, smoothStep]
 
@@ -3398,7 +3402,7 @@ lemma aux_dyadicKernelMultiplier_negInner_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicKernelMultiplier_eq_negInner_transition ht'.1 ht'.2])]
   rw [aux_dyadicKernelMultiplier_eq_negInner_transition (by norm_num) (by norm_num),
     aux_dyadicKernelMultiplier_eq_negInner_transition (by norm_num) (by norm_num)]
-  convert h using 1 <;>
+  convert h using 1;
     norm_num [aux_dyadicTransitionMultiplierDeriv, aux_dyadicTransition,
       aux_dyadicTransitionDeriv, aux_smoothStepDerivative, smoothStep]
 
@@ -3434,7 +3438,7 @@ lemma aux_dyadicKernelMultiplier_posInner_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicKernelMultiplier_eq_posInner_transition ht'.1 ht'.2])]
   rw [aux_dyadicKernelMultiplier_eq_posInner_transition (by norm_num) (by norm_num),
     aux_dyadicKernelMultiplier_eq_posInner_transition (by norm_num) (by norm_num)]
-  convert h using 1 <;>
+  convert h using 1;
     norm_num [aux_dyadicTransitionMultiplierDeriv, aux_dyadicTransition,
       aux_dyadicTransitionDeriv, aux_smoothStepDerivative, smoothStep]
 
@@ -3470,7 +3474,7 @@ lemma aux_dyadicKernelMultiplier_posOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicKernelMultiplier_eq_posOuter_transition ht'.1 ht'.2])]
   rw [aux_dyadicKernelMultiplier_eq_posOuter_transition (by norm_num) (by norm_num),
     aux_dyadicKernelMultiplier_eq_posOuter_transition (by norm_num) (by norm_num)]
-  convert h using 1 <;>
+  convert h using 1;
     norm_num [aux_dyadicTransitionMultiplierDeriv, aux_dyadicTransition,
       aux_dyadicTransitionDeriv, aux_smoothStepDerivative, smoothStep]
 
@@ -3519,13 +3523,14 @@ lemma aux_dyadicKernelMultiplier_tail_representation (x : ℝ) (hx : x ≠ 0) :
   have hposInner : aux_dyadicKernelMultiplier (1 / 4 : ℝ) = 0 :=
     aux_dyadicKernelMultiplier_eq_zero_middle (by norm_num) (by norm_num)
   rw [hnegOuter, hposOuter, hnegInner, hposInner]
-  simp <;> ring
+  simp; ring
 
 /-- A \(512/|x|^2\) tail estimate for the reciprocal multiplier Fourier
 integral, used in `dyadicKernelBounds` for
 \(\label{lem:dyadic-kernel-bounds}\). -/
 lemma aux_dyadicKernelMultiplier_fourier_tail_norm (x : ℝ) (hx : x ≠ 0) :
-    ‖∫ ξ : ℝ, aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ‖ ≤ 512 / x ^ 2 := by
+    ‖∫ ξ : ℝ,
+      aux_dyadicFourierPhase x ξ * aux_dyadicKernelMultiplier ξ‖ ≤ 512 / x ^ 2 := by
   rw [aux_dyadicKernelMultiplier_tail_representation x hx]
   have houterNeg := aux_fourier_remainder_bound
     (u := fun t : ℝ ↦ aux_dyadicTransitionMultiplierSecondDeriv 0 1 2 (1 / 2 : ℝ) t)
@@ -3665,9 +3670,12 @@ lemma aux_dyadicKernelMultiplier_norm_integral_le_eight :
 used in `dyadicKernelBounds` for \(\label{lem:dyadic-kernel-bounds}\). -/
 lemma aux_dyadicKernelMultiplier_inverse_uniform (x : ℝ) :
     ‖inverseFourierTransform aux_dyadicKernelMultiplier x‖ ≤ 8 := by
-  change ‖VectorFourier.fourierIntegral 𝐞 volume (-(innerₗ ℝ)) aux_dyadicKernelMultiplier x‖ ≤ 8
+  change
+    ‖VectorFourier.fourierIntegral 𝐞 volume (-(innerₗ ℝ))
+      aux_dyadicKernelMultiplier x‖ ≤ 8
   calc
-    ‖VectorFourier.fourierIntegral 𝐞 volume (-(innerₗ ℝ)) aux_dyadicKernelMultiplier x‖ ≤
+    ‖VectorFourier.fourierIntegral 𝐞 volume (-(innerₗ ℝ))
+        aux_dyadicKernelMultiplier x‖ ≤
         ∫ ξ : ℝ, ‖aux_dyadicKernelMultiplier ξ‖ :=
       VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 volume (-(innerₗ ℝ)) _ x
     _ ≤ 8 := aux_dyadicKernelMultiplier_norm_integral_le_eight
@@ -3826,7 +3834,7 @@ theorem dyadicKernelBounds :
       aux_annular_inverseFourier_tail_bound
   · convert aux_eLpNorm_le_1024_of_uniform_and_tail
       aux_dyadicKernelMultiplier_inverse_uniform
-      aux_dyadicKernelMultiplier_inverse_tail using 1 <;>
+      aux_dyadicKernelMultiplier_inverse_tail using 1;
       norm_num [C_dyadicKernelBounds]
 
 /-- Continuity of the annular inverse-Fourier kernel.  This provides a
@@ -4015,7 +4023,8 @@ lemma aux_fourier_annularInverseFourierKernel_integrable :
       (inverseFourierTransform fun t : ℝ ↦ (annularCutoff t : ℂ)) volume :=
     memLp_one_iff_integrable.mp aux_annularInverseFourierKernel_memLp_one
   have hneg : Integrable
-      ((inverseFourierTransform fun t : ℝ ↦ (annularCutoff t : ℂ)) ∘ fun x : ℝ ↦ -x) volume :=
+      ((inverseFourierTransform fun t : ℝ ↦ (annularCutoff t : ℂ)) ∘
+        fun x : ℝ ↦ -x) volume :=
     ((Measure.measurePreserving_neg volume).integrable_comp hcheck.1).mpr hcheck
   convert hneg using 1
   ext x
@@ -4137,13 +4146,15 @@ lemma aux_l2Fourier_inverseFourier_eq
     _ = Lp.toTemperedDistribution (hg2.toLp g) :=
       FourierTransform.fourier_fourierInv_eq _
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_continuous_dyadicCutoff : Continuous dyadicCutoff := by
   unfold dyadicCutoff
   exact aux_continuous_lowFrequencyCutoff.sub
     (aux_continuous_lowFrequencyCutoff.comp (continuous_const.mul continuous_id))
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_integrable :
     Integrable (fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) volume := by
   have hsupport : HasCompactSupport (fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) := by
@@ -4163,18 +4174,20 @@ lemma aux_dyadicCutoff_integrable :
   exact (Complex.continuous_ofReal.comp aux_continuous_dyadicCutoff).integrable_of_hasCompactSupport
     hsupport
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_eq_negOuter_transition {ξ : ℝ}
-    (hξa : -2 ≤ ξ) (hξb : ξ ≤ -1) :
+    (_hξa : -2 ≤ ξ) (hξb : ξ ≤ -1) :
     dyadicCutoff ξ = aux_dyadicTransition 0 1 2 1 ξ := by
   unfold dyadicCutoff lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonpos (by linarith : ξ ≤ 0),
     abs_of_nonpos (by linarith : 2 * ξ ≤ 0)]
   have harg : 2 - -ξ = 2 + ξ := by ring
   rw [harg, aux_smoothStep_eq_zero_of_nonpos (by linarith : 2 - -(2 * ξ) ≤ 0)]
-  ring
+  ring_nf
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_eq_negInner_transition {ξ : ℝ}
     (hξa : -1 ≤ ξ) (hξb : ξ ≤ -1 / 2) :
     dyadicCutoff ξ = aux_dyadicTransition 1 (-1) 2 2 ξ := by
@@ -4184,9 +4197,10 @@ lemma aux_dyadicCutoff_eq_negInner_transition {ξ : ℝ}
   have hfirst : 2 - -ξ = 2 + ξ := by ring
   have harg : 2 - -(2 * ξ) = 2 + 2 * ξ := by ring
   rw [hfirst, harg, aux_smoothStep_eq_one_of_one_le (by linarith : 1 ≤ 2 + ξ)]
-  ring
+  ring_nf
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_eq_posInner_transition {ξ : ℝ}
     (hξa : 1 / 2 ≤ ξ) (hξb : ξ ≤ 1) :
     dyadicCutoff ξ = aux_dyadicTransition 1 (-1) 2 (-2) ξ := by
@@ -4194,19 +4208,21 @@ lemma aux_dyadicCutoff_eq_posInner_transition {ξ : ℝ}
   rw [abs_of_nonneg (by linarith : 0 ≤ ξ),
     abs_of_nonneg (by linarith : 0 ≤ 2 * ξ)]
   rw [aux_smoothStep_eq_one_of_one_le (by linarith : 1 ≤ 2 - ξ)]
-  ring
+  ring_nf
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_eq_posOuter_transition {ξ : ℝ}
-    (hξa : 1 ≤ ξ) (hξb : ξ ≤ 2) :
+    (hξa : 1 ≤ ξ) (_hξb : ξ ≤ 2) :
     dyadicCutoff ξ = aux_dyadicTransition 0 1 2 (-1) ξ := by
   unfold dyadicCutoff lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonneg (by linarith : 0 ≤ ξ),
     abs_of_nonneg (by linarith : 0 ≤ 2 * ξ)]
   rw [aux_smoothStep_eq_zero_of_nonpos (by linarith : 2 - 2 * ξ ≤ 0)]
-  ring
+  ring_nf
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicCutoff_eq_zero_middle {ξ : ℝ}
     (hξa : -1 / 2 ≤ ξ) (hξb : ξ ≤ 1 / 2) : dyadicCutoff ξ = 0 := by
   apply aux_dyadicCutoff_eq_zero_of_outside
@@ -4214,13 +4230,15 @@ lemma aux_dyadicCutoff_eq_zero_middle {ξ : ℝ}
   rw [abs_le]
   constructor <;> linarith
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourierIntegrand_continuous (x : ℝ) :
     Continuous (fun ξ : ℝ ↦ aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)) := by
   exact (aux_continuous_dyadicFourierPhase x).mul
     (Complex.continuous_ofReal.comp aux_continuous_dyadicCutoff)
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_integral_eq_interval (x : ℝ) :
     (∫ ξ : ℝ, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)) =
       ∫ ξ in (-2 : ℝ)..2, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ) := by
@@ -4246,7 +4264,8 @@ lemma aux_dyadicFourier_integral_eq_interval (x : ℝ) :
     apply hξ
     simp [hphi]
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_integral_five_parts (x : ℝ) :
     (∫ ξ in (-2 : ℝ)..2, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)) =
       (∫ ξ in (-2 : ℝ)..(-1), aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)) +
@@ -4268,7 +4287,8 @@ lemma aux_dyadicFourier_integral_five_parts (x : ℝ) :
   change (∫ ξ in (-2 : ℝ)..2, g ξ) = _
   rw [← h4, ← h3, ← h2, ← h1]
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_middle_zero_integral (x : ℝ) :
     (∫ t in (-1 / 2 : ℝ)..(1 / 2), aux_dyadicFourierPhase x t *
       (dyadicCutoff t : ℂ)) = 0 := by
@@ -4279,7 +4299,8 @@ lemma aux_dyadicFourier_middle_zero_integral (x : ℝ) :
     rw [aux_dyadicCutoff_eq_zero_middle ht'.1 ht'.2])]
   simp
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_negOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     (∫ t in (-2 : ℝ)..(-1), aux_dyadicFourierPhase x t *
       (dyadicCutoff t : ℂ)) =
@@ -4301,7 +4322,8 @@ lemma aux_dyadicFourier_negOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicCutoff_eq_negOuter_transition ht'.1 ht'.2])]
   exact htrans
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_negInner_ibp (x : ℝ) (hx : x ≠ 0) :
     (∫ t in (-1 : ℝ)..(-1 / 2), aux_dyadicFourierPhase x t *
       (dyadicCutoff t : ℂ)) =
@@ -4325,7 +4347,8 @@ lemma aux_dyadicFourier_negInner_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicCutoff_eq_negInner_transition ht'.1 ht'.2])]
   exact htrans
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_posInner_ibp (x : ℝ) (hx : x ≠ 0) :
     (∫ t in (1 / 2 : ℝ)..1, aux_dyadicFourierPhase x t *
       (dyadicCutoff t : ℂ)) =
@@ -4348,7 +4371,8 @@ lemma aux_dyadicFourier_posInner_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicCutoff_eq_posInner_transition ht'.1 ht'.2])]
   exact htrans
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_posOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     (∫ t in (1 : ℝ)..2, aux_dyadicFourierPhase x t *
       (dyadicCutoff t : ℂ)) =
@@ -4370,7 +4394,8 @@ lemma aux_dyadicFourier_posOuter_ibp (x : ℝ) (hx : x ≠ 0) :
     rw [aux_dyadicCutoff_eq_posOuter_transition ht'.1 ht'.2])]
   exact htrans
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_tail_representation (x : ℝ) (hx : x ≠ 0) :
     (∫ ξ : ℝ, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)) =
       (∫ t in (-2 : ℝ)..(-1),
@@ -4395,7 +4420,8 @@ lemma aux_dyadicFourier_tail_representation (x : ℝ) (hx : x ≠ 0) :
   norm_num [aux_dyadicTransition, smoothStep]
   ring
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicFourier_tail_norm (x : ℝ) (hx : x ≠ 0) :
     ‖∫ ξ : ℝ, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ)‖ ≤ 4 / x ^ 2 := by
   rw [aux_dyadicFourier_tail_representation x hx]
@@ -4481,7 +4507,8 @@ lemma aux_dyadicFourier_tail_norm (x : ℝ) (hx : x ≠ 0) :
       apply (div_le_div_iff_of_pos_right hx2).2
       norm_num
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_inverseFourierTransform_dyadic_eq_phase (x : ℝ) :
     inverseFourierTransform (fun ξ ↦ (dyadicCutoff ξ : ℂ)) x =
       ∫ ξ : ℝ, aux_dyadicFourierPhase x ξ * (dyadicCutoff ξ : ℂ) := by
@@ -4494,7 +4521,8 @@ lemma aux_inverseFourierTransform_dyadic_eq_phase (x : ℝ) :
   push_cast
   ring
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadic_inverseFourier_tail_bound (x : ℝ) (hx : x ≠ 0) :
     ‖inverseFourierTransform (fun ξ ↦ (dyadicCutoff ξ : ℂ)) x‖ ≤ 4 / x ^ 2 := by
   rw [aux_inverseFourierTransform_dyadic_eq_phase]
@@ -4542,7 +4570,8 @@ lemma test_dyadicCutoff_norm_integral_le_eight :
         Real.volume_real_Icc_of_le (by norm_num)]
       norm_num
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadic_inverseFourier_uniform_bound (x : ℝ) :
     ‖inverseFourierTransform (fun ξ ↦ (dyadicCutoff ξ : ℂ)) x‖ ≤ 8 := by
   change ‖VectorFourier.fourierIntegral 𝐞 volume (-(innerₗ ℝ))
@@ -4554,7 +4583,8 @@ lemma aux_dyadic_inverseFourier_uniform_bound (x : ℝ) :
       VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 volume (-(innerₗ ℝ)) _ x
     _ ≤ 8 := test_dyadicCutoff_norm_integral_le_eight
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicInverseFourierKernel_continuous :
     Continuous (inverseFourierTransform fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) := by
   let hmem : MemLp (fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) 1 volume :=
@@ -4563,14 +4593,16 @@ lemma aux_dyadicInverseFourierKernel_continuous :
   rw [← Real.Lp.fourierTransformInv_toLp hmem]
   exact (Real.Lp.fourierTransformInv hmem.toLp).continuous
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicInverseFourierKernel_memLp_one :
     MemLp (inverseFourierTransform fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) 1 volume := by
   refine ⟨aux_dyadicInverseFourierKernel_continuous.aestronglyMeasurable, ?_⟩
   exact (aux_eLpNorm_le_of_local_tail aux_dyadic_inverseFourier_uniform_bound
     aux_dyadic_inverseFourier_tail_bound).trans_lt (by norm_num)
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicInverseFourierKernel_memLp_two :
     MemLp (inverseFourierTransform fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) 2 volume := by
   let K : ℝ → ℂ := inverseFourierTransform fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)
@@ -4590,29 +4622,34 @@ lemma aux_dyadicInverseFourierKernel_memLp_two :
 
 /- The (L^1) annular-kernel fact in integrable form, used below for
 Fourier convolution in `dyadicReconstructionAndMultiplierBounds`. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_annularInverseFourierKernel_integrable :
     Integrable (inverseFourierTransform fun ξ : ℝ ↦ (annularCutoff ξ : ℂ)) volume :=
   memLp_one_iff_integrable.mp aux_annularInverseFourierKernel_memLp_one
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_dyadicInverseFourierKernel_integrable :
     Integrable (inverseFourierTransform fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) volume :=
   memLp_one_iff_integrable.mp aux_dyadicInverseFourierKernel_memLp_one
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_fourier_dyadicInverseFourierKernel_integrable :
     Integrable (fun ξ : ℝ ↦ 𝓕 (fun t : ℝ ↦ (dyadicCutoff t : ℂ)) ξ) volume := by
   have hcheck := aux_dyadicInverseFourierKernel_integrable
   have hneg : Integrable
-      ((inverseFourierTransform fun t : ℝ ↦ (dyadicCutoff t : ℂ)) ∘ fun x : ℝ ↦ -x) volume :=
+      ((inverseFourierTransform fun t : ℝ ↦ (dyadicCutoff t : ℂ)) ∘
+        fun x : ℝ ↦ -x) volume :=
     ((Measure.measurePreserving_neg volume).integrable_comp hcheck.1).mpr hcheck
   convert hneg using 1
   ext x
   simpa [inverseFourierTransform] using
     (Real.fourierInv_eq_fourier_neg (fun t : ℝ ↦ (dyadicCutoff t : ℂ)) (-x)).symm
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_fourier_dyadicInverseFourierKernel_eq (ξ : ℝ) :
     𝓕 (inverseFourierTransform fun t : ℝ ↦ (dyadicCutoff t : ℂ)) ξ =
       (dyadicCutoff ξ : ℂ) := by
@@ -4621,7 +4658,8 @@ lemma aux_fourier_dyadicInverseFourierKernel_eq (ξ : ℝ) :
     aux_dyadicCutoff_integrable aux_fourier_dyadicInverseFourierKernel_integrable
   exact congrFun h ξ
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_annular_dyadicInverseFourierKernel_convolution_fourier (ξ : ℝ) :
     𝓕 ((inverseFourierTransform fun t : ℝ ↦ (annularCutoff t : ℂ)) ⋆[
       ContinuousLinearMap.mul ℂ ℂ]
@@ -4632,7 +4670,8 @@ lemma aux_annular_dyadicInverseFourierKernel_convolution_fourier (ξ : ℝ) :
   rw [aux_fourier_annularInverseFourierKernel_eq, aux_fourier_dyadicInverseFourierKernel_eq,
     aux_annularCutoff_mul_dyadicCutoff]
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_annular_dyadicInverseFourierKernel_convolution_eq :
     (inverseFourierTransform fun t : ℝ ↦ (annularCutoff t : ℂ)) ⋆[
       ContinuousLinearMap.mul ℂ ℂ]
@@ -4660,17 +4699,20 @@ lemma aux_annular_dyadicInverseFourierKernel_convolution_eq :
     exact aux_dyadicCutoff_integrable
   have hinv := Continuous.fourierInv_fourier_eq hcont hconvint hfourierInt
   calc
-    qK ⋆[ContinuousLinearMap.mul ℂ ℂ] φK = 𝓕⁻ (𝓕 (qK ⋆[ContinuousLinearMap.mul ℂ ℂ] φK)) :=
+    qK ⋆[ContinuousLinearMap.mul ℂ ℂ] φK =
+      𝓕⁻ (𝓕 (qK ⋆[ContinuousLinearMap.mul ℂ ℂ] φK)) :=
       hinv.symm
     _ = 𝓕⁻ (fun ξ : ℝ ↦ (dyadicCutoff ξ : ℂ)) := by rw [hfourier]
     _ = φK := rfl
 
 /- Dilation commutes exactly with raw convolution for positive scales. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 def aux_scaleKernel (a : ℝ) (h : ℝ → ℂ) : ℝ → ℂ :=
   fun x ↦ (a : ℂ) * h (a * x)
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_scaleKernel_convolution (a : ℝ) (ha : 0 < a) (q φ : ℝ → ℂ) :
     aux_scaleKernel a q ⋆[ContinuousLinearMap.mul ℂ ℂ] aux_scaleKernel a φ =
       aux_scaleKernel a (q ⋆[ContinuousLinearMap.mul ℂ ℂ] φ) := by
@@ -4699,7 +4741,8 @@ lemma aux_scaleKernel_convolution (a : ℝ) (ha : 0 < a) (q φ : ℝ → ℂ) :
   have ha0 : (a : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr ha.ne'
   field_simp
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_scaled_annular_dyadicInverseFourierKernel_convolution_eq (k : ℕ) :
     (aux_scaledInverseFourierKernel (fun ξ ↦ (annularCutoff ξ : ℂ)) k) ⋆[
         ContinuousLinearMap.mul ℂ ℂ]
@@ -4723,7 +4766,8 @@ lemma aux_scaled_annular_dyadicInverseFourierKernel_convolution_eq (k : ℕ) :
     aux_annular_dyadicInverseFourierKernel_convolution_eq]
 
 /- Measurability of the positive (L^2\)-convolution majorant. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_norm_convolution_aestronglyMeasurable {b f : ℝ → ℂ}
     (hb : MemLp b 2 volume) (hf : MemLp f 2 volume) :
     AEStronglyMeasurable
@@ -4731,9 +4775,11 @@ lemma aux_norm_convolution_aestronglyMeasurable {b f : ℝ → ℂ}
         fun x : ℝ ↦ ‖f x‖) volume := by
   unfold convolution
   exact
-    ((hb.1.norm).convolution_integrand (ContinuousLinearMap.mul ℝ ℝ) hf.1.norm).integral_prod_right'
+    ((hb.1.norm).convolution_integrand
+      (ContinuousLinearMap.mul ℝ ℝ) hf.1.norm).integral_prod_right'
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_norm_convolution_nonneg {b f : ℝ → ℂ} (x : ℝ) :
     0 ≤ ((fun y : ℝ ↦ ‖b y‖) ⋆[ContinuousLinearMap.mul ℝ ℝ]
       fun y : ℝ ↦ ‖f y‖) x := by
@@ -4741,7 +4787,8 @@ lemma aux_norm_convolution_nonneg {b f : ℝ → ℂ} (x : ℝ) :
   exact integral_nonneg fun t ↦ mul_nonneg (norm_nonneg _) (norm_nonneg _)
 
 /- The elementary (L^2\)-Cauchy bound for the positive convolution. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_norm_convolution_le_l2_product {b f : ℝ → ℂ}
     (hb : MemLp b 2 volume) (hf : MemLp f 2 volume) (x : ℝ) :
     ((fun y : ℝ ↦ ‖b y‖) ⋆[ContinuousLinearMap.mul ℝ ℝ]
@@ -4770,7 +4817,8 @@ lemma aux_norm_convolution_le_l2_product {b f : ℝ → ℂ}
 
 /- The last Fubini condition in `convolution_assoc` follows from one
 integrable left kernel and two (L^2\) factors. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_norm_left_convolutionExistsAt_of_memLp_one_two {a b f : ℝ → ℂ}
     (ha : MemLp a 1 volume) (hb : MemLp b 2 volume) (hf : MemLp f 2 volume)
     (x : ℝ) :
@@ -4803,7 +4851,8 @@ lemma aux_norm_left_convolutionExistsAt_of_memLp_one_two {a b f : ℝ → ℂ}
       _ = C * ‖a y‖ := mul_comm _ _
   · exact mul_nonneg (norm_nonneg _) (hhnonneg _)
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_norm_convolutionExistsAt_of_memLp_two {b f : ℝ → ℂ}
     (hb : MemLp b 2 volume) (hf : MemLp f 2 volume) (x : ℝ) :
     ConvolutionExistsAt (fun y : ℝ ↦ ‖b y‖) (fun y : ℝ ↦ ‖f y‖) x
@@ -4817,7 +4866,8 @@ lemma aux_norm_convolutionExistsAt_of_memLp_two {b f : ℝ → ℂ}
   exact hbx.integrable_mul ((memLp_norm_iff hf.1).mpr hf)
 
 /- A pointwise raw associativity statement adequate for (Q_k(P_kf)). -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_convolution_assoc_of_memLp_one_two {a b f : ℝ → ℂ}
     (haone : MemLp a 1 volume)
     (hbone : MemLp b 1 volume) (hbtwo : MemLp b 2 volume)
@@ -4841,7 +4891,8 @@ lemma aux_convolution_assoc_of_memLp_one_two {a b f : ℝ → ℂ}
       aux_norm_convolutionExistsAt_of_memLp_two hbtwo hftwo y)
     (aux_norm_left_convolutionExistsAt_of_memLp_one_two haone hbtwo hftwo x)
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_scaledDyadicInverseFourierKernel_memLp_one (k : ℕ) :
     MemLp (aux_scaledInverseFourierKernel (fun ξ ↦ (dyadicCutoff ξ : ℂ)) k) 1 volume := by
   let a : ℝ := (2 : ℝ) ^ k
@@ -4860,7 +4911,8 @@ lemma aux_scaledDyadicInverseFourierKernel_memLp_one (k : ℕ) :
   rw [hEq]
   exact memLp_one_iff_integrable.mpr (hcomp.const_mul (a : ℂ))
 
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_scaledDyadicInverseFourierKernel_memLp_two (k : ℕ) :
     MemLp (aux_scaledInverseFourierKernel (fun ξ ↦ (dyadicCutoff ξ : ℂ)) k) 2 volume := by
   let a : ℝ := (2 : ℝ) ^ k
@@ -4902,7 +4954,8 @@ lemma aux_scaledDyadicInverseFourierKernel_memLp_two (k : ℕ) :
   · exact hmeas.norm
 
 /- The exact raw projection identity needed for the `Q(P f)` conjunct. -/
-/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and the manuscript result `\label{lem:dyadic-reconstruction}`. -/
+/-- An auxiliary fact used to prove `dyadicReconstructionAndMultiplierBounds` and
+the manuscript result `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_Q_P_eq (f : ℝ → ℂ) (hf : MemLp f 2 volume) (k : ℕ) (hk : 1 ≤ k) :
     Q k (P k f) = P k f := by
   have hk0 : k ≠ 0 := Nat.ne_of_gt hk
@@ -4924,7 +4977,7 @@ lemma aux_Q_P_eq (f : ℝ → ℂ) (hf : MemLp f 2 volume) (k : ℕ) (hk : 1 ≤
     ext x
     exact (aux_convolution_assoc_of_memLp_one_two hqone hφone hφtwo hf x).symm
   unfold Q P
-  rw [if_neg hk0]
+  rw [ite_eq_right hk0]
   change qK ⋆[ContinuousLinearMap.mul ℂ ℂ]
       (φK ⋆[ContinuousLinearMap.mul ℂ ℂ] f) =
     φK ⋆[ContinuousLinearMap.mul ℂ ℂ] f
@@ -5000,8 +5053,8 @@ the Fourier multiplier argument for `dyadicReconstructionAndMultiplierBounds`
 and `\label{lem:dyadic-reconstruction}`. -/
 lemma aux_continuous_l2Translate (t : ℝ) :
     Continuous (fun g : Lp (α := ℝ) ℂ 2 volume ↦ aux_l2Translate t g) := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   unfold aux_l2Translate
   exact (continuous_const : Continuous (fun _ : Lp (α := ℝ) ℂ 2 volume ↦
     (DomAddAct.mk (-t) : ℝᵈᵃᵃ))).vadd continuous_id
@@ -5066,7 +5119,7 @@ in `dyadicReconstructionAndMultiplierBounds` for
 lemma aux_l2Fourier_l2Translate (t : ℝ) (g : Lp (α := ℝ) ℂ 2 volume) :
     Lp.fourierTransformₗᵢ ℝ ℂ (aux_l2Translate t g) =
       aux_fourierPhaseLp t • Lp.fourierTransformₗᵢ ℝ ℂ g := by
-  letI : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
+  let : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
   refine (SchwartzMap.denseRange_toLpCLM (E := ℝ) (F := ℂ)
     (p := 2) ENNReal.ofNat_ne_top).induction_on
       (p := fun u : Lp (α := ℝ) ℂ 2 volume ↦
@@ -5289,9 +5342,9 @@ lemma aux_local_convolution_integrable_prod {p : ℝ≥0∞} [Fact (1 ≤ p)]
     (hμs : volume s < ∞) :
     Integrable (fun z : ℝ × ℝ ↦ κ z.2 * f (z.1 - z.2))
       ((volume.restrict s).prod volume) := by
-  letI : Fact (1 ≤ ENNReal.conjExponent p) :=
+  let : Fact (1 ≤ ENNReal.conjExponent p) :=
     ⟨ENNReal.HolderConjugate.one_le (ENNReal.conjExponent p) p⟩
-  letI : IsFiniteMeasure (volume.restrict s) :=
+  let : IsFiniteMeasure (volume.restrict s) :=
     ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
   have hF0 : AEStronglyMeasurable
       (fun z : ℝ × ℝ ↦ κ z.2 * f (z.1 - z.2)) (volume.prod volume) := by
@@ -5363,7 +5416,8 @@ lemma aux_coe_lpTranslation_ae {p : ℝ≥0∞}
       fun x ↦ f (x - t) := by
   have h0 := DomAddAct.vadd_Lp_ae_eq
     (DomAddAct.mk (-t) : ℝᵈᵃᵃ) hf.toLp
-  have h1 : ((DomAddAct.mk (-t) +ᵥ hf.toLp f : Lp (α := ℝ) ℂ p volume) : ℝ → ℂ) =ᵐ[volume]
+  have h1 :
+      ((DomAddAct.mk (-t) +ᵥ hf.toLp f : Lp (α := ℝ) ℂ p volume) : ℝ → ℂ) =ᵐ[volume]
       fun x ↦ (hf.toLp : ℝ → ℂ) (x - t) := by
     simpa [sub_eq_add_neg, add_comm] using h0
   have hshift : MeasurePreserving (fun x : ℝ ↦ x - t) volume volume := by
@@ -5393,7 +5447,7 @@ theorem aux_convolution_ae_eq_lpBochner {p : ℝ≥0∞}
     (fun x ↦ aux_convolution κ f x) =ᵐ[volume]
       ((∫ t : ℝ, κ t • (DomAddAct.mk (-t) +ᵥ hf.toLp f) :
         Lp (α := ℝ) ℂ p volume) : ℝ → ℂ) := by
-  letI : Fact (1 ≤ ENNReal.conjExponent p) :=
+  let : Fact (1 ≤ ENNReal.conjExponent p) :=
     ⟨ENNReal.HolderConjugate.one_le (ENNReal.conjExponent p) p⟩
   let H : Lp (α := ℝ) ℂ p volume :=
     ∫ t : ℝ, κ t • (DomAddAct.mk (-t) +ᵥ hf.toLp f)
@@ -5407,7 +5461,7 @@ theorem aux_convolution_ae_eq_lpBochner {p : ℝ≥0∞}
     change Integrable (fun x : ℝ ↦ ∫ t : ℝ, κ t * f (x - t)) (volume.restrict s)
     exact hF.integral_prod_left
   · intro s hs hμs
-    letI : IsFiniteMeasure (volume.restrict s) :=
+    let : IsFiniteMeasure (volume.restrict s) :=
       ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
     change Integrable (H : ℝ → ℂ) (volume.restrict s)
     exact ((Lp.memLp H).restrict s).integrable Fact.out
@@ -5498,7 +5552,7 @@ lemma aux_l2Pairing_indicator_eq_setIntegral (s : Set ℝ) (hs : MeasurableSet s
     (hμs : volume s ≠ ∞) (g : Lp (α := ℝ) ℂ 2 volume) :
     ((ContinuousLinearMap.lpPairing volume 2 2 (ContinuousLinearMap.mul ℂ ℂ))
       (indicatorConstLp 2 hs hμs (1 : ℂ))) g = ∫ x in s, g x := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
   rw [ContinuousLinearMap.lpPairing_eq_integral]
   rw [← integral_indicator hs]
   refine integral_congr_ae ?_
@@ -5518,7 +5572,7 @@ lemma aux_l2Pairing_indicator_phase_eq_setIntegral
       (indicatorConstLp 2 hs hμs (1 : ℂ)))
       (aux_fourierPhaseLp t • G) =
       ∫ ξ in s, aux_fourierPhase t ξ * G ξ := by
-  letI : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
+  let : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
   rw [aux_l2Pairing_indicator_eq_setIntegral s hs hμs]
   apply setIntegral_congr_ae hs
   filter_upwards [Lp.coeFn_lpSMul (p := ∞) (q := 2) (r := 2)
@@ -5539,7 +5593,7 @@ lemma aux_l2PhaseProduct_integrable_on
     Integrable (fun p : ℝ × ℝ ↦
       κ p.2 * aux_fourierPhase p.2 p.1 * G p.1)
       ((volume.restrict s).prod volume) := by
-  letI : IsFiniteMeasure (volume.restrict s) :=
+  let : IsFiniteMeasure (volume.restrict s) :=
     ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
   have hG : Integrable (G : ℝ → ℂ) (volume.restrict s) :=
     ((Lp.memLp G).restrict s).integrable (by norm_num)
@@ -5579,7 +5633,7 @@ lemma aux_l2PhaseIntegral_ae_eq_raw
   let H : Lp (α := ℝ) ℂ 2 volume := aux_l2PhaseIntegral κ G
   apply ae_eq_of_forall_setIntegral_eq_of_sigmaFinite
   · intro s hs hμs
-    letI : IsFiniteMeasure (volume.restrict s) :=
+    let : IsFiniteMeasure (volume.restrict s) :=
       ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
     change IntegrableOn (H : ℝ → ℂ) s volume
     exact ((Lp.memLp H).restrict s).integrable (by norm_num)
@@ -5732,8 +5786,8 @@ lemma aux_l2Fourier_aux_convolution_ae_eq_multiplier
     (κ f : ℝ → ℂ) (hκ : Integrable κ volume) (hf : MemLp f 2 volume) :
     aux_l2Fourier (aux_convolution κ f) =ᵐ[volume]
       fun ξ ↦ (𝓕 κ) ξ * aux_l2Fourier f ξ := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   have hconv : MemLp (aux_convolution κ f) 2 volume :=
     aux_convolution_memLp_of_memLp_one κ f hκ hf
   have hraw : (fun x ↦ aux_convolution κ f x) =ᵐ[volume]
@@ -5749,7 +5803,7 @@ lemma aux_l2Fourier_aux_convolution_ae_eq_multiplier
     apply Lp.ext (p := 2)
     filter_upwards [hconv.coeFn_toLp, hraw] with x hleft hright
     rw [hleft, hright]
-  rw [aux_l2Fourier, dif_pos hconv, aux_l2Fourier, dif_pos hf]
+  rw [aux_l2Fourier, dite_eq_left hconv, aux_l2Fourier, dite_eq_left hf]
   change (Lp.fourierTransformₗᵢ ℝ ℂ
     (hconv.toLp (aux_convolution κ f)) : ℝ → ℂ) =ᵐ[volume]
       fun ξ ↦ (𝓕 κ) ξ * (Lp.fourierTransformₗᵢ ℝ ℂ (hf.toLp f)) ξ
@@ -5823,7 +5877,7 @@ lemma aux_l2Fourier_P_ae_eq_multiplier (f : ℝ → ℂ) (hf : MemLp f 2 volume)
       (aux_scaledDyadicInverseFourierKernel_memLp_one k)
   have hmult := aux_l2Fourier_aux_convolution_ae_eq_multiplier κ f hκ hf
   unfold P
-  rw [if_neg hk0]
+  rw [ite_eq_right hk0]
   change aux_l2Fourier (aux_convolution κ f) =ᵐ[volume] _
   filter_upwards [hmult] with ξ hξ
   rw [hξ, aux_fourier_scaledDyadicInverseFourierKernel_eq k ξ]
@@ -5846,8 +5900,8 @@ lemma aux_eLpNorm_Q_le (f : ℝ → ℂ) (hf : MemLp f 2 volume)
   by_cases hp_top : p = ∞
   · subst p
     exact aux_eLpNorm_aux_convolution_top_le_of_eLpNorm_one_le κ f hκ (2 ^ 6) hκnorm
-  · letI : Fact (1 ≤ p) := ⟨hp⟩
-    letI : Fact (p ≠ ∞) := ⟨hp_top⟩
+  · let : Fact (1 ≤ p) := ⟨hp⟩
+    let : Fact (p ≠ ∞) := ⟨hp_top⟩
     by_cases hfp : MemLp f p volume
     · calc
         eLpNorm (aux_convolution κ f) p volume ≤
@@ -5879,28 +5933,27 @@ lemma aux_lowFrequencyCutoff_integrable :
       rw [abs_lt] at habs
       exact ⟨habs.1.le, habs.2.le⟩
     simp [aux_lowFrequencyCutoff_eq_zero_of_two_le_abs hout]
-  exact (Complex.continuous_ofReal.comp aux_continuous_lowFrequencyCutoff).integrable_of_hasCompactSupport
-    hsupport
+  have hcontinuous : Continuous (fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) :=
+    Complex.continuous_ofReal.comp aux_continuous_lowFrequencyCutoff
+  exact hcontinuous.integrable_of_hasCompactSupport hsupport
 
 /-- The negative transition of the low-frequency cutoff is a generic cubic
 transition, for use in `dyadicReconstructionAndMultiplierBounds` and
 \(\label{lem:dyadic-reconstruction}\). -/
-lemma aux_lowFrequencyCutoff_eq_neg_transition {ξ : ℝ} (hξa : -2 ≤ ξ) (hξb : ξ ≤ -1) :
+lemma aux_lowFrequencyCutoff_eq_neg_transition {ξ : ℝ} (_hξa : -2 ≤ ξ) (hξb : ξ ≤ -1) :
     lowFrequencyCutoff ξ = aux_dyadicTransition 0 1 2 1 ξ := by
   unfold lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonpos (by linarith : ξ ≤ 0)]
-  congr 1
-  ring
+  ring_nf
 
 /-- The positive transition of the low-frequency cutoff is a generic cubic
 transition, for use in `dyadicReconstructionAndMultiplierBounds` and
 \(\label{lem:dyadic-reconstruction}\). -/
-lemma aux_lowFrequencyCutoff_eq_pos_transition {ξ : ℝ} (hξa : 1 ≤ ξ) (hξb : ξ ≤ 2) :
+lemma aux_lowFrequencyCutoff_eq_pos_transition {ξ : ℝ} (hξa : 1 ≤ ξ) (_hξb : ξ ≤ 2) :
     lowFrequencyCutoff ξ = aux_dyadicTransition 0 1 2 (-1) ξ := by
   unfold lowFrequencyCutoff aux_dyadicTransition
   rw [abs_of_nonneg (by linarith : 0 ≤ ξ)]
-  congr 1
-  ring
+  ring_nf
 
 /-- The low-frequency cutoff is one on its central plateau.  This is used in
 the low-kernel calculation for `dyadicReconstructionAndMultiplierBounds` and
@@ -6226,12 +6279,14 @@ lemma aux_lowFrequencyInverse_memLp_one :
 Fourier-inversion input for `dyadicReconstructionAndMultiplierBounds` and
 \(\label{lem:dyadic-reconstruction}\). -/
 lemma aux_fourier_lowFrequencyInverse_integrable :
-    Integrable (fun ξ : ℝ ↦ 𝓕 (fun t : ℝ ↦ (lowFrequencyCutoff t : ℂ)) ξ) volume := by
+    Integrable
+      (fun ξ : ℝ ↦ 𝓕 (fun t : ℝ ↦ (lowFrequencyCutoff t : ℂ)) ξ) volume := by
   have hcheck : Integrable
       (inverseFourierTransform fun t : ℝ ↦ (lowFrequencyCutoff t : ℂ)) volume :=
     memLp_one_iff_integrable.mp aux_lowFrequencyInverse_memLp_one
   have hneg : Integrable
-      ((inverseFourierTransform fun t : ℝ ↦ (lowFrequencyCutoff t : ℂ)) ∘ fun x : ℝ ↦ -x)
+      ((inverseFourierTransform fun t : ℝ ↦ (lowFrequencyCutoff t : ℂ)) ∘
+        fun x : ℝ ↦ -x)
         volume :=
     ((Measure.measurePreserving_neg volume).integrable_comp hcheck.1).mpr hcheck
   convert hneg using 1
@@ -6257,12 +6312,13 @@ multiplier, completing the low-index case for
 lemma aux_l2Fourier_P_zero_ae_eq_multiplier (f : ℝ → ℂ) (hf : MemLp f 2 volume) :
     aux_l2Fourier (P 0 f) =ᵐ[volume]
       fun ξ ↦ (lowFrequencyCutoff ξ : ℂ) * aux_l2Fourier f ξ := by
-  have hκ : Integrable (inverseFourierTransform fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) volume :=
+  have hκ :
+      Integrable (inverseFourierTransform fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) volume :=
     memLp_one_iff_integrable.mp aux_lowFrequencyInverse_memLp_one
   have hmult := aux_l2Fourier_aux_convolution_ae_eq_multiplier
     (inverseFourierTransform fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) f hκ hf
   unfold P
-  rw [if_pos rfl]
+  rw [ite_eq_left rfl]
   filter_upwards [hmult] with ξ hξ
   rw [hξ, aux_fourier_lowFrequencyInverse_eq ξ]
 
@@ -6271,12 +6327,13 @@ input for the reconstruction in `dyadicReconstructionAndMultiplierBounds`
 and \(\label{lem:dyadic-reconstruction}\). -/
 lemma aux_memLp_P_zero (f : ℝ → ℂ) (hf : MemLp f 2 volume) :
     MemLp (P 0 f) 2 volume := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
-  have hκ : Integrable (inverseFourierTransform fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) volume :=
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  have hκ :
+      Integrable (inverseFourierTransform fun ξ : ℝ ↦ (lowFrequencyCutoff ξ : ℂ)) volume :=
     memLp_one_iff_integrable.mp aux_lowFrequencyInverse_memLp_one
   unfold P
-  rw [if_pos rfl]
+  rw [ite_eq_left rfl]
   exact aux_convolution_memLp_of_memLp_one _ _ hκ hf
 
 /-- Every positive dyadic projection preserves `L²`; this is the membership
@@ -6284,13 +6341,13 @@ input for `dyadicReconstructionAndMultiplierBounds` and
 \(\label{lem:dyadic-reconstruction}\). -/
 lemma aux_memLp_P_succ (f : ℝ → ℂ) (hf : MemLp f 2 volume) (k : ℕ) :
     MemLp (P (k + 1) f) 2 volume := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   have hκ : Integrable
       (aux_scaledInverseFourierKernel (fun ξ ↦ (dyadicCutoff ξ : ℂ)) (k + 1)) volume :=
     memLp_one_iff_integrable.mp (aux_scaledDyadicInverseFourierKernel_memLp_one (k + 1))
   unfold P
-  rw [if_neg (Nat.succ_ne_zero k)]
+  rw [ite_eq_right (Nat.succ_ne_zero k)]
   exact aux_convolution_memLp_of_memLp_one _ _ hκ hf
 
 /-- Plancherel preserves the `eLpNorm` of the chosen `aux_l2Fourier`
@@ -6517,7 +6574,9 @@ lemma aux_tendsto_eLpNorm_mul_of_bounded_tends_zero
   have hpow : Tendsto
       (fun N ↦ (∫ ξ : ℝ, ‖R N ξ * G ξ‖ ^ (2 : ℕ)) ^ ((2 : ℝ)⁻¹))
       atTop (𝓝 0) := by
-    convert ((Real.continuous_rpow_const (by norm_num : 0 ≤ (2 : ℝ)⁻¹)).tendsto 0).comp hInt using 1 <;>
+    convert
+      ((Real.continuous_rpow_const
+        (by norm_num : 0 ≤ (2 : ℝ)⁻¹)).tendsto 0).comp hInt using 1 <;>
       simp [Function.comp_def, Real.zero_rpow]
   have henn : Tendsto
       (fun N ↦ ENNReal.ofReal
@@ -6527,7 +6586,7 @@ lemma aux_tendsto_eLpNorm_mul_of_bounded_tends_zero
       simp [Function.comp_def]
   refine henn.congr' ?_
   filter_upwards with N
-  convert ((hRmem N).eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.ofNat_ne_top).symm using 1 <;>
+  convert ((hRmem N).eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.ofNat_ne_top).symm using 1;
     norm_num [Real.rpow_two]
 
 /-- The shrinking low-frequency remainder multiplier tends to zero against
@@ -6570,7 +6629,7 @@ lemma aux_tendsto_lowFrequencyResidual_multiplier
     exact hRbound N ξ
   have hRmem : ∀ N, MemLp (fun ξ ↦ R N ξ * G ξ) 2 volume := by
     intro N
-    letI : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
+    let : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
     exact hG.mul (hRtop N)
   have hRlim : ∀ ξ, Tendsto (fun N ↦ R N ξ) atTop (𝓝 0) := by
     intro ξ

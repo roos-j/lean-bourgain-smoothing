@@ -1,10 +1,5 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.DualDifferenceInterchange.DualDifferenceInterchange
-import BourgainSmoothing.Auto.ExplicitAuxiliaryCutoffs.ExplicitAuxiliaryCutoffs
+import BourgainSmoothing.Auto.DualDifferenceInterchange
+import BourgainSmoothing.Auto.ExplicitAuxiliaryCutoffs
 import BourgainSmoothing.VanDerCorput
 
 /-!
@@ -32,7 +27,8 @@ C_{\ref{lem:quadratic-oscillatory},\,J,\chi}
 def C_quadraticOscillatoryIntegralEstimate (J : Set ℝ) (χ : ℝ → ℝ) : ℝ :=
   (2 : ℝ) ^ 5 * sizeParameter ![J] χ ^ 2
 
-/-- Places the support of a compactly supported cutoff strictly inside its support-radius interval. -/
+/-- Places the support of a compactly supported cutoff strictly inside its
+support-radius interval. -/
 lemma aux_quadratic_support_subset_Ioc_radius (χ : ℝ → ℝ)
     (hχ_compact : HasCompactSupport χ) :
     Function.support χ ⊆ Set.Ioc (-supportRadius χ) (supportRadius χ) := by
@@ -100,7 +96,7 @@ lemma aux_quadratic_phase_deriv (a b t : ℝ) :
       simpa using hbx0
     have hadd := hax.add hbx
     change HasDerivAt (fun x : ℝ ↦ a * x + b * x ^ 2) _ t at hadd
-    convert hadd using 1 <;> ring
+    convert hadd using 1; ring
   exact (hinner.const_mul (2 * Real.pi)).deriv
 
 /-- Computes the derivative of the affine first derivative of the phase. -/
@@ -116,7 +112,7 @@ lemma aux_quadratic_phase_second_deriv (a b t : ℝ) :
     change HasDerivAt (fun x : ℝ ↦ a + 2 * b * x) _ t at hadd
     simpa using hadd
   have h := hinner.const_mul (2 * Real.pi)
-  convert h.deriv using 1 <;> ring
+  convert h.deriv using 1; ring
 
 /-- Computes the second iterated ordinary derivative of the quadratic phase. -/
 lemma aux_quadratic_phase_iteratedDeriv_two (a b t : ℝ) :
@@ -160,7 +156,7 @@ lemma aux_quadratic_phase_derivWithin (a b u v t : ℝ) (huv : u ≠ v)
       simpa using hbx0
     have hadd := hax.add hbx
     change HasDerivAt (fun x : ℝ ↦ a * x + b * x ^ 2) _ t at hadd
-    convert hadd using 1 <;> ring
+    convert hadd using 1; ring
   have h : HasDerivAt (fun x : ℝ ↦ 2 * Real.pi * (a * x + b * x ^ 2))
       (2 * Real.pi * (a + 2 * b * t)) t := by
     exact (hinner.const_mul (2 * Real.pi))
@@ -175,7 +171,8 @@ lemma aux_quadratic_ofReal_derivWithin_eq (χ : ℝ → ℝ) (hχ_smooth : ContD
     exact ((hχ_smooth.differentiable (by norm_num) t).hasDerivAt).ofReal_comp
   exact hderiv.hasDerivWithinAt.derivWithin (uniqueDiffOn_uIcc (by linarith) t ht)
 
-/-- Identifies the variation term in van der Corput with the cutoff's global `L¹` derivative norm. -/
+/-- Identifies the variation term in van der Corput with the cutoff's global
+`L¹` derivative norm. -/
 lemma aux_quadratic_deriv_norm_interval_eq_eLpNorm_one (χ : ℝ → ℝ)
     (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ) :
     |∫ t in -supportRadius χ..supportRadius χ,
@@ -185,7 +182,8 @@ lemma aux_quadratic_deriv_norm_interval_eq_eLpNorm_one (χ : ℝ → ℝ)
   let r : ℝ := supportRadius χ
   have hr : 0 < r := lt_of_lt_of_le zero_lt_one (aux_u3_one_le_supportRadius χ hχ_compact)
   have htsupp : tsupport χ ⊆ Set.Ioc (-r) r := by
-    simpa [r] using aux_quadratic_tsupport_subset_Ioo_radius χ hχ_compact |>.trans Set.Ioo_subset_Ioc_self
+    simpa [r] using
+      aux_quadratic_tsupport_subset_Ioo_radius χ hχ_compact |>.trans Set.Ioo_subset_Ioc_self
   have hder_supp : Function.support (fun t : ℝ ↦ |deriv (𝕜 := ℝ) χ t|) ⊆ Set.Ioc (-r) r := by
     intro t ht
     apply htsupp
@@ -221,7 +219,8 @@ lemma aux_quadratic_deriv_norm_interval_eq_eLpNorm_one (χ : ℝ → ℝ)
       (lpNorm_one_eq_integral_norm hdermem.aestronglyMeasurable).symm
     _ = _ := (toReal_eLpNorm hdermem.aestronglyMeasurable).symm
 
-/-- Applies second-order van der Corput to the quadratic phase for `quadraticOscillatoryIntegralEstimate`. -/
+/-- Applies second-order van der Corput to the quadratic phase for
+`quadraticOscillatoryIntegralEstimate`. -/
 lemma aux_quadratic_vdc_order_two (χ : ℝ → ℝ)
     (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
     (a b : ℝ) (hb : b ≠ 0) :
@@ -280,7 +279,6 @@ lemma aux_quadratic_vdc_order_two (χ : ℝ → ℝ)
     _ = 8 * (2 * Real.pi * |b|) ^ (-(1 / 2 : ℝ)) *
         (eLpNorm (deriv (𝕜 := ℝ) χ) (1 : ℝ≥0∞) volume).toReal := by
       rw [show ψ r = 0 by simp [ψ, hχr], norm_zero, zero_add]
-      change Oscillatory.VanDerCorput.c 2 * _ * _ = _
       rw [hnormderiv]
       norm_num [Oscillatory.VanDerCorput.c]
 
@@ -322,7 +320,7 @@ lemma aux_quadratic_vdc_order_one_nonneg_b (χ : ℝ → ℝ)
       exact mul_le_mul_of_nonneg_left hxabs (by positivity)
     have htri : |a| ≤ |a + 2 * b * x| + |2 * b * x| := by
       calc
-        |a| = |(a + 2 * b * x) + -(2 * b * x)| := by congr 1 <;> ring
+        |a| = |(a + 2 * b * x) + -(2 * b * x)| := by congr 1; ring
         _ ≤ _ := by simpa using abs_add_le (a + 2 * b * x) (-(2 * b * x))
     have hhalf : |a| / 2 ≤ |a + 2 * b * x| := by
       have hdom' : 2 * |b| * r ≤ |a| / 2 := by
@@ -384,7 +382,7 @@ lemma aux_quadratic_integral_neg_coeff_norm (χ : ℝ → ℝ) (a b : ℝ) :
     rw [map_mul, aux_phase_star_exponential]
     rw [Complex.conj_ofReal]
     congr 1
-    ring
+    ring_nf
   have hconj : starRingEnd ℂ (∫ t : ℝ, f t) = ∫ t : ℝ, g t := by
     rw [← integral_conj]
     apply integral_congr_ae
@@ -396,7 +394,8 @@ lemma aux_quadratic_integral_neg_coeff_norm (χ : ℝ → ℝ) (a b : ℝ) :
     _ = ‖∫ t : ℝ, g t‖ := by rw [hconj]
     _ = _ := rfl
 
-/-- Extends the first-order quadratic van der Corput bound to either sign of the quadratic coefficient. -/
+/-- Extends the first-order quadratic van der Corput bound to either sign of
+the quadratic coefficient. -/
 lemma aux_quadratic_vdc_order_one (χ : ℝ → ℝ)
     (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
     (a b : ℝ) (ha : a ≠ 0)
@@ -446,7 +445,8 @@ lemma aux_quadratic_size_properties (J : Set ℝ) (χ : ℝ → ℝ) :
     exact le_trans (le_max_left _ _) (le_max_right _ _)
   have hd1 : (eLpNorm (deriv (𝕜 := ℝ) χ) (1 : ℝ≥0∞) volume).toReal ≤ T := by
     dsimp [T]
-    exact le_trans (le_max_left _ _) (le_trans (le_max_right _ _) (le_trans (le_max_right _ _) (le_max_right _ _)))
+    exact le_trans (le_max_left _ _)
+      (le_trans (le_max_right _ _) (le_trans (le_max_right _ _) (le_max_right _ _)))
   exact ⟨hS2, le_trans (by norm_num : (0 : ℝ) ≤ 2) hS2,
     hR.trans hT, hχ1.trans hT, hd1.trans hT⟩
 
@@ -465,7 +465,7 @@ lemma aux_quadratic_integral_trivial_bound (χ : ℝ → ℝ)
     _ = ∫ t : ℝ, χ t := by
       apply integral_congr_ae
       filter_upwards with t
-      simp [norm_mul, aux_norm_exponential, Complex.norm_real, Real.norm_eq_abs,
+      simp [aux_norm_exponential, Complex.norm_real, Real.norm_eq_abs,
         abs_of_nonneg (hχ_nonneg t)]
     _ = ∫ t : ℝ, ‖χ t‖ := by
       apply integral_congr_ae
@@ -595,7 +595,7 @@ lemma aux_quadratic_a_case_numerical (S A D : ℝ)
 /-- Converts the trivial bound into the stated explicit constant at small frequency. -/
 lemma aux_quadratic_small_case_numerical (S A D : ℝ)
     (hS : 2 ≤ S) (hA0 : 0 ≤ A) (hA : A ≤ 1)
-    (hD : 0 ≤ D) (hDle : D ≤ S) :
+    (_hD : 0 ≤ D) (hDle : D ≤ S) :
     D ≤ 32 * S ^ 2 * (1 + A) ^ (-(1 / 2 : ℝ)) := by
   have hSpos : 0 < S := by linarith
   have hYnonneg : 0 ≤ 1 + A := by linarith
@@ -640,10 +640,10 @@ C_{\ref{lem:quadratic-oscillatory},\,J,\chi}
 -/
 theorem quadraticOscillatoryIntegralEstimate
     (J : Set ℝ) (χ : ℝ → ℝ)
-    (hJ : ∃ jMinus jPlus : ℝ, jMinus ≤ jPlus ∧ J = Set.Icc jMinus jPlus)
+    (_hJ : ∃ jMinus jPlus : ℝ, jMinus ≤ jPlus ∧ J = Set.Icc jMinus jPlus)
     (hχ_smooth : ContDiff ℝ ⊤ χ) (hχ_compact : HasCompactSupport χ)
-    (hχ_nonneg : ∀ t : ℝ, 0 ≤ χ t) (hχ_le_one : ∀ t : ℝ, χ t ≤ 1)
-    (hχ_support : tsupport χ ⊆ J) (a b : ℝ) :
+    (hχ_nonneg : ∀ t : ℝ, 0 ≤ χ t) (_hχ_le_one : ∀ t : ℝ, χ t ≤ 1)
+    (_hχ_support : tsupport χ ⊆ J) (a b : ℝ) :
     ‖∫ t : ℝ, exponential (a * t + b * t ^ 2) * (χ t : ℂ)‖ ≤
       C_quadraticOscillatoryIntegralEstimate J χ *
         (1 + max |a| |b|) ^ (-(1 / 2 : ℝ)) := by
@@ -708,7 +708,7 @@ theorem quadraticOscillatoryIntegralEstimate
       have hbzero' : |b| = 0 := le_antisymm (le_of_not_gt hbzero) (abs_nonneg _)
       have : 4 * supportRadius χ * |b| ≤ |a| := by
         rw [hbzero']
-        simpa using abs_nonneg a
+        simp
       exact hdom this
     have hAle : A ≤ 4 * S * |b| := by
       dsimp [A]
@@ -750,8 +750,8 @@ lemma aux_bilinear_continuous_shift_l2Translate
     (τ : ℝ → ℝ) (hτ : Continuous τ)
     (g : Lp (α := ℝ) ℂ 2 volume) :
     Continuous (fun t : ℝ ↦ aux_l2Translate (τ t) g) := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   exact (aux_continuous_lpTranslation g).comp hτ
 
 /-- An integrable scalar kernel makes a continuous translated `L²` curve
@@ -928,7 +928,7 @@ lemma aux_bilinear_trilinear_branchOne_eq_inner
           filter_upwards with x
           have hphase : frequencyCharacter ξ x =
               frequencyCharacter ξ (x + t ^ 2) * exponential (-ξ * t ^ 2) := by
-            convert aux_bilinear_frequencyCharacter_sub_sq ξ (x + t ^ 2) t using 1 <;> ring
+            convert aux_bilinear_frequencyCharacter_sub_sq ξ (x + t ^ 2) t using 1; ring_nf
           dsimp [e, aux_bilinear_branchOneModulation, aux_bilinear_branchOneKernel,
             aux_bilinear_branchOneShift]
           rw [hphase]
@@ -1067,7 +1067,7 @@ lemma aux_bilinear_integrable_branchOne_joint
       aux_bilinear_branchOneModulation, aux_bilinear_branchOneShift]
     have hphase : frequencyCharacter ξ x =
         frequencyCharacter ξ (x + t ^ 2) * exponential (-ξ * t ^ 2) := by
-      convert aux_bilinear_frequencyCharacter_sub_sq ξ (x + t ^ 2) t using 1 <;> ring
+      convert aux_bilinear_frequencyCharacter_sub_sq ξ (x + t ^ 2) t using 1; ring_nf
     rw [hphase]
     ring_nf
   rw [hEq]
@@ -1120,7 +1120,7 @@ lemma aux_bilinear_phaseProduct_integrable_on
     Integrable (fun p : ℝ × ℝ ↦
       κ p.2 * aux_fourierPhase (τ p.2) p.1 * G p.1)
       ((volume.restrict s).prod volume) := by
-  letI : IsFiniteMeasure (volume.restrict s) :=
+  let : IsFiniteMeasure (volume.restrict s) :=
     ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
   have hG : Integrable (G : ℝ → ℂ) (volume.restrict s) :=
     ((Lp.memLp G).restrict s).integrable (by norm_num)
@@ -1155,7 +1155,7 @@ lemma aux_bilinear_phaseIntegral_ae_eq_raw
   let H : Lp (α := ℝ) ℂ 2 volume := aux_bilinear_phaseIntegral τ κ G
   apply ae_eq_of_forall_setIntegral_eq_of_sigmaFinite
   · intro s hs hμs
-    letI : IsFiniteMeasure (volume.restrict s) :=
+    let : IsFiniteMeasure (volume.restrict s) :=
       ⟨by simpa only [Measure.restrict_apply_univ] using hμs⟩
     change IntegrableOn (H : ℝ → ℂ) s volume
     exact ((Lp.memLp H).restrict s).integrable (by norm_num)
@@ -1528,7 +1528,7 @@ lemma aux_bilinear_branchTwo_multiplier_bound
 /-- A pointwise quadratic multiplier bound yields the associated weighted
 `L²` estimate. -/
 lemma aux_bilinear_weighted_multiplier_eLpNorm_bound
-    (m F : ℝ → ℂ) (C : ℝ) (hC : 0 ≤ C)
+    (m F : ℝ → ℂ) (C : ℝ) (_hC : 0 ≤ C)
     (hm : ∀ ζ : ℝ, ‖m ζ‖ ≤
       C * japaneseBracket ζ ^ (-(1 / 2 : ℝ))) :
     eLpNorm (fun ζ ↦ m ζ * F ζ) (2 : ℝ≥0∞) volume ≤
@@ -1602,7 +1602,7 @@ lemma aux_bilinear_sobolev_weight_memLp_two
       (∞ : ℝ≥0∞) volume :=
     memLp_top_of_bound hweight_cont.aestronglyMeasurable 1
       (Filter.Eventually.of_forall hweight_bound)
-  letI : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
+  let : (∞ : ℝ≥0∞).HolderTriple 2 2 := ENNReal.HolderTriple.symm
   exact (Lp.memLp G).smul hweight
 
 /-- Finiteness of the half-order Sobolev norm needed by the multiplier

@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.SobolevNormsOfMultiplicativeDifferences.SobolevNormsOfMultiplicativeDifferences
+import BourgainSmoothing.Auto.SobolevNormsOfMultiplicativeDifferences
 
 /-!
 # Degree lowering and normalized smoothing
@@ -423,7 +418,8 @@ lemma aux_firstDualization_dual_trilinearAbs_eq_energy
   calc
     ‖∫ x : ℝ, aux_firstDualFunction χ f₁ f₂ x *
         starRingEnd ℂ (aux_firstDualFunction χ f₁ f₂ x)‖ =
-        ‖∫ x : ℝ, ((‖aux_firstDualFunction χ f₁ f₂ x‖ ^ (2 : ℝ) : ℝ) : ℂ)‖ := by
+        ‖∫ x : ℝ,
+          ((‖aux_firstDualFunction χ f₁ f₂ x‖ ^ (2 : ℝ) : ℝ) : ℂ)‖ := by
       congr 1
       apply integral_congr_ae
       filter_upwards with x
@@ -522,7 +518,7 @@ theorem firstDualization
     (hf₂_one_bounded : ∀ᵐ x ∂volume, ‖f₂ x‖ ≤ 1)
     (hf₀_support : ∀ᵐ x ∂volume, x ∉ D.A₀ → f₀ x = 0)
     (hf₁_support : ∀ᵐ x ∂volume, x ∉ D.A₁ → f₁ x = 0)
-    (hf₂_support : ∀ᵐ x ∂volume, x ∉ D.A₂ → f₂ x = 0) :
+    (_hf₂_support : ∀ᵐ x ∂volume, x ∉ D.A₂ → f₂ x = 0) :
     (∀ᵐ x ∂volume, x ∉ aux_firstDualInterval D →
       aux_firstDualFunction D.χ f₁ f₂ x = 0) ∧
       trilinearFormAbs D.χ f₀ f₁ f₂ ≤
@@ -778,7 +774,7 @@ lemma aux_u2Family_difference_pointwise
   · have hpair₀ : (t, x) ∈ {z : ℝ × ℝ | z.1 ∈ D.J} := ht
     have hpair₁ : (t, x + h) ∈ {z : ℝ × ℝ | z.1 ∈ D.J} := ht
     rw [multiplicativeDifference, aux_u2Family, aux_u2Family,
-      Set.indicator_of_mem hpair₀, Set.indicator_of_mem hpair₁, if_pos ht]
+      Set.indicator_of_mem hpair₀, Set.indicator_of_mem hpair₁, ite_eq_left ht]
     rw [show starRingEnd ℂ
         (multiplicativeDifference h f₁ (x + t) *
           multiplicativeDifference h f₂ (x + t ^ 2)) =
@@ -792,10 +788,10 @@ lemma aux_u2Family_difference_pointwise
       hstar_mul (f₁ (x + t)) (star (f₁ (x + t + h))),
       hstar_mul (f₂ (x + t ^ 2)) (star (f₂ (x + t ^ 2 + h)))]
     simp only [star_star]
-    ring
+    ring_nf
   · have hpair₀ : (t, x) ∉ {z : ℝ × ℝ | z.1 ∈ D.J} := ht
     rw [multiplicativeDifference, aux_u2Family,
-      Set.indicator_of_notMem hpair₀, if_neg ht]
+      Set.indicator_of_notMem hpair₀, ite_eq_right ht]
     simp
 
 /-- The dual-difference target of `aux_u2Family` is the conjugate of the
@@ -824,7 +820,7 @@ lemma aux_u2Family_difference_target_eq_star_trilinear
   rw [aux_u2Family_difference_pointwise]
   classical
   by_cases ht : t ∈ D.J
-  · rw [if_pos ht]
+  · rw [ite_eq_left ht]
     have hstar_mul (a b : ℂ) : starRingEnd ℂ (a * b) =
         starRingEnd ℂ a * starRingEnd ℂ b := by
       exact map_mul _ _ _
@@ -835,7 +831,7 @@ lemma aux_u2Family_difference_target_eq_star_trilinear
     ring
   · have hnot : t ∉ tsupport D.χ := fun hts ↦ ht (D.hχ_support hts)
     have hzero : D.χ t = 0 := image_eq_zero_of_notMem_tsupport hnot
-    rw [if_neg ht]
+    rw [ite_eq_right ht]
     simp [hzero]
 
 /-- Norm form of the first-dual difference target identity, used to put the
@@ -1056,7 +1052,7 @@ lemma aux_u2_direct_trilinear_bilinear_bound
     exact aux_u2_multiplicativeDifference_memLp_two a₂ b₂ f₂
       hf₂meas hf₂bound hf₂support h
   have hzero : MemLp (fun _ : ℝ ↦ (0 : ℂ)) (2 : ℝ≥0∞) volume := by
-    simpa using (MemLp.zero : MemLp (0 : ℝ → ℂ) (2 : ℝ≥0∞) volume)
+    exact MemLp.zero
   have hbil := (bilinearSobolevEstimates D.J D.χ
     (by rcases D.hJ with ⟨a, b, hab, hJ⟩; exact ⟨a, b, hab.le, hJ⟩)
     D.hχ_smooth D.hχ_compact D.hχ_nonneg D.hχ_le_one D.hχ_support (-ξ)
@@ -1989,14 +1985,14 @@ lemma aux_u2_numerical_endgame
         (((128 : ℝ≥0∞) * S ^ (3 : ℝ)) ^ (1 / (2 : ℝ))) *
           (((8 : ℝ≥0∞) * S ^ (2 : ℝ) *
             (((128 : ℝ≥0∞) * S ^ (4 : ℝ) * U ^ (1 / (4 : ℝ))) ^
-              (1 / (4 : ℝ))) ) ^ (1 / (10 : ℝ))) ) :
+              (1 / (4 : ℝ)))) ^ (1 / (10 : ℝ)))) :
     I ≤ (64 : ℝ≥0∞) * S ^ (3 : ℝ) * U ^ (1 / (160 : ℝ)) := by
   by_cases hUzero : U = 0
   · subst U
     simpa using hchain
   by_cases hStop : S = ∞
   · subst S
-    simpa [hUzero] using hchain
+    simp [hUzero]
   have hSone : 1 ≤ S := by
     exact le_trans (by norm_num) hS
   have hSzero : S ≠ 0 := by
@@ -2006,7 +2002,7 @@ lemma aux_u2_numerical_endgame
       (128 : ℝ≥0∞) ^ (1 / (2 : ℝ)) * S ^ (3 / (2 : ℝ)) := by
     rw [ENNReal.mul_rpow_of_nonneg _ _ (by norm_num), ← ENNReal.rpow_mul]
     congr 1
-    ring
+    ring_nf
   have hQroot : ((128 : ℝ≥0∞) * S ^ (4 : ℝ) * U ^ (1 / (4 : ℝ))) ^
       (1 / (4 : ℝ)) =
       (128 : ℝ≥0∞) ^ (1 / (4 : ℝ)) * S * U ^ (1 / (16 : ℝ)) := by
@@ -2354,7 +2350,7 @@ lemma aux_secondDualKernel_aestronglyMeasurable
     convert h using 1
     ext z
     simp only [Function.comp_apply]
-    ring
+    ring_nf
   have h₂ : AEStronglyMeasurable (fun z : ℝ × ℝ ↦ f₂ (z.1 - z.2 + z.2 ^ 2))
       (volume.prod volume) := by
     change AEStronglyMeasurable (f₂ ∘ fun z : ℝ × ℝ ↦ z.1 - z.2 + z.2 ^ 2)
@@ -2380,7 +2376,7 @@ lemma aux_secondDualKernel_ae_one_bounded
   have h₀ : ∀ᵐ z : ℝ × ℝ ∂volume.prod volume, ‖f₀ (z.1 - z.2)‖ ≤ 1 := by
     filter_upwards [h₀'] with z hz
     convert hz using 1
-    ring
+    ring_nf
   have h₂ : ∀ᵐ z : ℝ × ℝ ∂volume.prod volume,
       ‖f₂ (z.1 - z.2 + z.2 ^ 2)‖ ≤ 1 :=
     aux_secondDual_qmp_sub_add_sq.tendsto_ae hf₂
@@ -2407,7 +2403,7 @@ lemma aux_secondDualKernel_ae_zero_outside
   have h₀ : ∀ᵐ z : ℝ × ℝ ∂volume.prod volume,
       z.1 - z.2 ∉ D.A₀ → f₀ (z.1 - z.2) = 0 := by
     filter_upwards [h₀'] with z hz
-    convert hz using 1 <;> ring
+    convert hz using 1 <;> ring_nf
   filter_upwards [h₀] with z hz₀ hz
   by_cases ht : z.2 ∈ D.J
   · have hx : z.1 ∉ D.A₁ := by
@@ -2676,7 +2672,7 @@ lemma aux_secondDualization_trilinear_eq_pairing
           apply integral_congr_ae
           filter_upwards with t
           simp only [P]
-          ring
+          ring_nf
         _ = f₁ y * ∫ t : ℝ,
             f₀ (y - t) * f₂ (y - t + t ^ 2) * (χ t : ℂ) :=
           integral_const_mul _ _
@@ -2699,7 +2695,8 @@ lemma aux_secondDualization_dual_trilinearAbs_eq_energy
   calc
     ‖∫ x : ℝ, aux_secondDualFunction χ f₀ f₂ x *
         starRingEnd ℂ (aux_secondDualFunction χ f₀ f₂ x)‖ =
-        ‖∫ x : ℝ, ((‖aux_secondDualFunction χ f₀ f₂ x‖ ^ (2 : ℝ) : ℝ) : ℂ)‖ := by
+        ‖∫ x : ℝ,
+          ((‖aux_secondDualFunction χ f₀ f₂ x‖ ^ (2 : ℝ) : ℝ) : ℂ)‖ := by
       congr 1
       apply integral_congr_ae
       filter_upwards with x
@@ -2796,7 +2793,7 @@ theorem secondDualization
     (hf₂_one_bounded : ∀ᵐ x ∂volume, ‖f₂ x‖ ≤ 1)
     (hf₀_support : ∀ᵐ x ∂volume, x ∉ D.A₀ → f₀ x = 0)
     (hf₁_support : ∀ᵐ x ∂volume, x ∉ D.A₁ → f₁ x = 0)
-    (hf₂_support : ∀ᵐ x ∂volume, x ∉ D.A₂ → f₂ x = 0) :
+    (_hf₂_support : ∀ᵐ x ∂volume, x ∉ D.A₂ → f₂ x = 0) :
     (∀ᵐ x ∂volume, x ∉ D.A₁ → aux_secondDualFunction D.χ f₀ f₂ x = 0) ∧
       trilinearFormAbs D.χ f₀ f₁ f₂ ≤
         intervalLength D.A₁ ^ (1 / (2 : ℝ)) *
@@ -2957,7 +2954,7 @@ lemma aux_normalized_secondDual_fourier_pointwise_bound
     (by rcases D.hJ with ⟨a, b, hab, hJ⟩; exact ⟨a, b, hab.le, hJ⟩)
     D.hχ_smooth D.hχ_compact D.hχ_nonneg D.hχ_le_one D.hχ_support ξ
     f₀ (fun _ : ℝ ↦ (0 : ℂ)) f₂ hf₀Lp
-    (by simpa using (MemLp.zero : MemLp (0 : ℝ → ℂ) (2 : ℝ≥0∞) volume)) hf₂Lp).2
+    (by exact MemLp.zero) hf₂Lp).2
   have hL2 := aux_normalized_l2_toReal_le_length_half D f₀ hf₀meas hf₀bound hf₀support
   have hC : 0 ≤ C_bilinearSobolevEstimates D.J D.χ := by
     unfold C_bilinearSobolevEstimates
@@ -2998,7 +2995,7 @@ lemma aux_normalized_secondDual_uNorm_two_bound_toReal
         (C_bilinearSobolevEstimates D.J D.χ *
           intervalLength D.A₀ ^ (1 / (2 : ℝ)) *
             (aux_sobolevNormRaw (1 / 2 : ℝ) f₂).toReal) := by
-  rw [uNorm, if_pos rfl, eLpNorm_exponent_top]
+  rw [uNorm, ite_eq_left rfl, eLpNorm_exponent_top]
   apply eLpNormEssSup_le_of_ae_bound
   filter_upwards with ξ
   exact aux_normalized_secondDual_fourier_pointwise_bound D f₀ f₂ hf₀meas hf₂meas
@@ -3083,7 +3080,8 @@ lemma aux_normalized_secondDual_scaled_one_bounded
     (hf₂bound : ∀ᵐ x ∂volume, ‖f₂ x‖ ≤ 1)
     (hf₀support : ∀ᵐ x ∂volume, x ∉ D.A₀ → f₀ x = 0) :
     let s : ℝ := sizeParameter ![D.A₀, D.A₁, D.A₂, D.J] D.χ
-    ∀ᵐ x ∂volume, ‖((s : ℂ)⁻¹ • aux_secondDualFunction D.χ f₀ f₂) x‖ ≤ 1 := by
+    ∀ᵐ x ∂volume,
+      ‖((s : ℂ)⁻¹ • aux_secondDualFunction D.χ f₀ f₂) x‖ ≤ 1 := by
   dsimp
   let s : ℝ := sizeParameter ![D.A₀, D.A₁, D.A₂, D.J] D.χ
   have hs : 2 ≤ s := by
@@ -3131,7 +3129,7 @@ lemma aux_normalized_ofReal_recover_scaled_middle
 the normalization step in `normalizedNonlinearSmoothing`. -/
 lemma aux_normalized_uNorm_two_smul (a : ℂ) (f : ℝ → ℂ) :
     uNorm 2 (a • f) = ENNReal.ofReal ‖a‖ * uNorm 2 f := by
-  simp only [uNorm, if_pos]
+  simp only [uNorm]
   rw [aux_fourier_smul, eLpNorm_const_smul]
   simp
 
@@ -3249,7 +3247,7 @@ lemma aux_normalized_secondDual_u2_scaled_root (S U : ℝ≥0∞) :
     ENNReal.mul_rpow_of_nonneg _ _ (by positivity),
     ENNReal.mul_rpow_of_nonneg _ _ (by positivity)]
   rw [← ENNReal.rpow_mul, ← ENNReal.rpow_mul]
-  congr 1 <;> ring
+  congr 1 <;> ring_nf
 
 /-- This combines `secondDualization` with the normalized `u²` estimate.
 The Fourier-side `u²` bound remains an explicit hypothesis so it can be
@@ -3441,7 +3439,7 @@ lemma aux_normalized_numerical_endgame_S3
     simpa using hchain
   by_cases hStop : S = ∞
   · subst S
-    simpa [hHzero] using hchain
+    simp [hHzero]
   have hSone : 1 ≤ S := by
     exact le_trans (by norm_num) hS
   have hSzero : S ≠ 0 := by
@@ -3451,7 +3449,7 @@ lemma aux_normalized_numerical_endgame_S3
       (64 : ℝ≥0∞) ^ (1 / (2 : ℝ)) * S ^ (3 / (2 : ℝ)) := by
     rw [ENNReal.mul_rpow_of_nonneg _ _ (by norm_num), ← ENNReal.rpow_mul]
     congr 1
-    ring
+    ring_nf
   have hBH : ((32 : ℝ≥0∞) * S ^ (3 : ℝ) * H) ^ (1 / (320 : ℝ)) =
       (32 : ℝ≥0∞) ^ (1 / (320 : ℝ)) * S ^ (3 / (320 : ℝ)) *
         H ^ (1 / (320 : ℝ)) := by
@@ -3531,7 +3529,7 @@ lemma aux_normalized_numerical_endgame_S3
             16 * S ^ (3 : ℝ) * H ^ (1 / (320 : ℝ)) := by
           gcongr
         _ ≤ 64 * S ^ (3 : ℝ) * H ^ (1 / (320 : ℝ)) := by
-          gcongr <;> norm_num
+          gcongr; norm_num
 
 /-- The constant in \(\label{thm:normalized-smoothing}\), used by
 `normalizedNonlinearSmoothing`:
@@ -3738,7 +3736,7 @@ lemma aux_homogeneous_sobolevNormRaw_smul
       a * (((japaneseBracket ξ ^ (-σ) : ℝ) : ℂ) * FF ξ)
     ring
   rw [eLpNorm_congr_ae heq, eLpNorm_const_smul]
-  simpa [FF, ← ofReal_norm]
+  simp [FF, ← ofReal_norm]
 
 /-- Algebraic Sobolev exponent bookkeeping for homogeneous normalization. -/
 lemma aux_homogeneous_sobolev_power
@@ -3898,7 +3896,9 @@ theorem homogeneousNormalizedSmoothing
       by
         calc
           B₀ * B₁ * B₂ * ENNReal.ofReal (trilinearFormAbs D.χ g₀ g₁ g₂) =
-              ENNReal.ofReal (trilinearFormAbs D.χ g₀ g₁ g₂) * (B₀ * B₁ * B₂) := by ring
+              ENNReal.ofReal (trilinearFormAbs D.χ g₀ g₁ g₂) *
+                (B₀ * B₁ * B₂) := by
+              ring
           _ ≤ (ENNReal.ofReal (C_normalizedNonlinearSmoothing D.A₀ D.A₁ D.A₂ D.J D.χ) *
               aux_sobolevNormRaw (1 / 2 : ℝ) g₂ ^ (1 / (320 : ℝ))) * (B₀ * B₁ * B₂) :=
             mul_le_mul_left hnorm _

@@ -1,0 +1,17 @@
+/-
+Copyright (c) 2026 Joris Roos. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joris Roos
+-/
+import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions
+import BourgainSmoothing.Auto.Introduction
+import BourgainSmoothing.Auto.ExplicitAuxiliaryCutoffs
+import BourgainSmoothing.Auto.FourierEstimatesForProductsOfCutoffs
+import BourgainSmoothing.Auto.GowersDifferencingAndU3Control
+import BourgainSmoothing.Auto.DualDifferenceInterchange
+import BourgainSmoothing.Auto.QuadraticOscillationAndBilinearSmoothing
+import BourgainSmoothing.Auto.SobolevNormsOfMultiplicativeDifferences
+import BourgainSmoothing.Auto.DegreeLoweringAndNormalizedSmoothing
+import BourgainSmoothing.Auto.LocalizationAndDyadicLInfinityDecay
+import BourgainSmoothing.Auto.NondecayingEndpointAndInterpolation
+import BourgainSmoothing.Auto.DyadicSummationAndProofOfMainTheorem

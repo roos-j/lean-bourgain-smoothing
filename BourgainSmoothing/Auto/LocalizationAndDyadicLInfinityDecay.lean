@@ -1,10 +1,5 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.DegreeLoweringAndNormalizedSmoothing.DegreeLoweringAndNormalizedSmoothing
-import BourgainSmoothing.Auto.ExplicitAuxiliaryCutoffs.ExplicitAuxiliaryCutoffs
+import BourgainSmoothing.Auto.DegreeLoweringAndNormalizedSmoothing
+import BourgainSmoothing.Auto.ExplicitAuxiliaryCutoffs
 
 /-!
 # Localization and dyadic \(L^\infty\) decay
@@ -165,7 +160,7 @@ theorem mainInteractionDataAdmissible
       aux_mainInteractionI1]
     rw [himage (a - 1) (b + 1) (-R) R (by linarith) (by linarith),
       himage (a - R) (b + R) (-1) 1 (by linarith) (by norm_num)]
-    convert Set.Subset.rfl using 1 <;> ring
+    convert Set.Subset.rfl using 1; ring_nf
   · rfl
 
 /--
@@ -177,11 +172,11 @@ If \(f_0\) is supported in \(K\), then
 \]
 -/
 theorem trilinearFormSpatialLocalization
-    (a b : ℝ) (χ : ℝ → ℝ) (hab : a ≤ b)
+    (a b : ℝ) (χ : ℝ → ℝ) (_hab : a ≤ b)
     (hχ_compact : HasCompactSupport χ)
     (f₀ f₁ f₂ : ℝ → ℂ)
     (hf₀_support : ∀ᵐ x ∂volume, x ∉ Set.Icc a b → f₀ x = 0)
-    (h_integrable : Integrable (fun p : ℝ × ℝ ↦
+    (_h_integrable : Integrable (fun p : ℝ × ℝ ↦
       f₀ p.1 * f₁ (p.1 + p.2) * f₂ (p.1 + p.2 ^ 2) * (χ p.2 : ℂ))) :
     trilinearForm χ f₀ f₁ f₂ =
       trilinearForm χ f₀
@@ -732,7 +727,7 @@ lemma aux_integral_mul_aux_convolution_eq_sheared
         apply integral_congr_ae
         filter_upwards with t
         dsimp [H, T]
-        ring
+        ring_nf
       rw [hcomm, ← integral_const_mul]
 
 /-- The Fourier phase used to test the localized dyadic convolution in
@@ -1323,7 +1318,7 @@ lemma aux_leftLocalizedTest_outer (a ξ y : ℝ) :
   have harg : y + (a - 1 - y) = a - 1 := by ring
   rw [aux_leftLocalizedTest, harg]
   simp only [aux_leftSpatialCutoff]
-  ring
+  ring_nf
   norm_num
 
 /-- The first derivative vanishes at the outer left endpoint, eliminating its
@@ -1333,7 +1328,7 @@ lemma aux_leftLocalizedTestDeriv_outer (a ξ y : ℝ) :
   have harg : y + (a - 1 - y) = a - 1 := by ring
   rw [aux_leftLocalizedTestDeriv, harg]
   simp only [aux_leftSpatialCutoff, aux_leftSpatialCutoffDeriv]
-  ring
+  ring_nf
   norm_num
 
 /-- The left transition and central test agree at their common endpoint in
@@ -1343,7 +1338,7 @@ lemma aux_leftLocalizedTest_inner (a ξ y : ℝ) :
   have harg : y + (a - y) = a := by ring
   rw [aux_leftLocalizedTest, harg]
   simp only [aux_leftSpatialCutoff]
-  ring
+  ring_nf
   norm_num
 
 /-- The first derivatives of the left transition and central test agree at
@@ -1353,7 +1348,7 @@ lemma aux_leftLocalizedTestDeriv_inner (a ξ y : ℝ) :
   have harg : y + (a - y) = a := by ring
   rw [aux_leftLocalizedTestDeriv, harg]
   simp only [aux_leftSpatialCutoff, aux_leftSpatialCutoffDeriv]
-  ring
+  ring_nf
   norm_num
 
 /-- The central test takes the phase value at the left joining point in
@@ -1391,7 +1386,7 @@ lemma aux_rightLocalizedTest_inner (b ξ y : ℝ) :
   have harg : y + (b - y) = b := by ring
   rw [aux_rightLocalizedTest, harg]
   simp only [aux_rightSpatialCutoff]
-  ring
+  ring_nf
   norm_num
 
 /-- The first derivatives of the central and right transition tests agree at
@@ -1401,7 +1396,7 @@ lemma aux_rightLocalizedTestDeriv_inner (b ξ y : ℝ) :
   have harg : y + (b - y) = b := by ring
   rw [aux_rightLocalizedTestDeriv, harg]
   simp only [aux_rightSpatialCutoff, aux_rightSpatialCutoffDeriv]
-  ring
+  ring_nf
   norm_num
 
 /-- The outer right endpoint vanishes, eliminating a boundary term in the
@@ -1411,7 +1406,7 @@ lemma aux_rightLocalizedTest_outer (b ξ y : ℝ) :
   have harg : y + (b + 1 - y) = b + 1 := by ring
   rw [aux_rightLocalizedTest, harg]
   simp only [aux_rightSpatialCutoff]
-  ring
+  ring_nf
   norm_num
 
 /-- The first derivative vanishes at the outer right endpoint, eliminating
@@ -1421,7 +1416,7 @@ lemma aux_rightLocalizedTestDeriv_outer (b ξ y : ℝ) :
   have harg : y + (b + 1 - y) = b + 1 := by ring
   rw [aux_rightLocalizedTestDeriv, harg]
   simp only [aux_rightSpatialCutoff, aux_rightSpatialCutoffDeriv]
-  ring
+  ring_nf
   norm_num
 
 /-- Summing the three interval transfers cancels every endpoint term and
@@ -1723,8 +1718,8 @@ lemma aux_eLpNorm_addConvolution_le_one
     eLpNorm (fun y : ℝ ↦ ∫ t : ℝ, κ t * f (y + t))
       (1 : ℝ≥0∞) volume ≤
       eLpNorm κ (1 : ℝ≥0∞) volume * eLpNorm f (1 : ℝ≥0∞) volume := by
-  letI : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((1 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((1 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   have hreflect : MemLp (fun t : ℝ ↦ κ (-t)) (1 : ℝ≥0∞) volume :=
     aux_memLp_reflect_one κ hκ
   calc
@@ -1751,8 +1746,8 @@ lemma aux_memLp_addConvolution_one
     (hf : MemLp f (1 : ℝ≥0∞) volume) :
     MemLp (fun y : ℝ ↦ ∫ t : ℝ, κ t * f (y + t))
       (1 : ℝ≥0∞) volume := by
-  letI : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((1 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((1 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   have hreflect : MemLp (fun t : ℝ ↦ κ (-t)) (1 : ℝ≥0∞) volume :=
     aux_memLp_reflect_one κ hκ
   have hraw : MemLp (aux_convolution (fun t : ℝ ↦ κ (-t)) f)
@@ -2052,7 +2047,10 @@ lemma aux_localizedSecondTest_domination (a b ξ R x : ℝ) (hab : a ≤ b)
         have hright : x ∉ Set.Ioc b (b + 1) := by
           rintro ⟨hstrict, _⟩
           exact (not_lt_of_ge (hxleft.trans hab)) hstrict
-        simp [aux_localizedSecondTest, hleft, hmiddle, hright]
+        simp only [aux_localizedSecondTest, Pi.add_apply]
+        rw [Set.indicator_of_notMem hleft,
+          Set.indicator_of_notMem hmiddle, Set.indicator_of_notMem hright]
+        simp only [zero_add, norm_zero]
         positivity
       · have hxlo' : a - 1 < x := lt_of_le_of_ne hxlo (Ne.symm hxouter)
         have hleft : x ∈ Set.Ioc (a - 1) a := ⟨hxlo', hxleft⟩
@@ -2193,7 +2191,10 @@ lemma aux_localizedSecondTest_support (a b ξ x : ℝ) (hab : a ≤ b)
     intro h
     apply hx
     exact ⟨lt_of_le_of_lt (by linarith [hab] : a - 1 ≤ b) h.1, h.2⟩
-  simp [aux_localizedSecondTest, hleft, hmiddle, hright]
+  simp only [aux_localizedSecondTest, Pi.add_apply]
+  rw [Set.indicator_of_notMem hleft,
+    Set.indicator_of_notMem hmiddle, Set.indicator_of_notMem hright]
+  simp only [zero_add]
 
 /-- The global second test has the sharp `L¹` bound needed after the
 three-piece integration-by-parts transfer. -/
@@ -2341,7 +2342,7 @@ lemma aux_localizedFourier_eq_sheared
     intro x hx
     have hx' : x < a - 1 ∨ b + 1 < x := by
       by_contra h
-      push_neg at h
+      push Not at h
       exact hx ⟨h.1, h.2⟩
     have hzero : spatialCutoff a b x = 0 := by
       rcases hx' with hleft | hright
@@ -3508,9 +3509,11 @@ theorem dyadicLInfinityDecay
       ((hcut_cont _ _).aestronglyMeasurable.mul hf₁_memLp.aestronglyMeasurable)
       (eLpNorm f₁ (∞ : ℝ≥0∞) volume).toReal ?_
     filter_upwards [aux_homogeneous_ae_norm_le_toReal f₁ hf₁_memLp] with x hx
-    change ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ) * f₁ x‖ ≤ _
+    change
+      ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ) * f₁ x‖ ≤ _
     rw [norm_mul]
-    have hcut : ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ)‖ ≤ 1 := by
+    have hcut :
+        ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ)‖ ≤ 1 := by
       rw [Complex.norm_real, Real.norm_eq_abs,
         abs_of_nonneg (aux_spatialCutoff_pointwise _ _ _).1]
       exact (aux_spatialCutoff_pointwise _ _ _).2
@@ -3533,12 +3536,16 @@ theorem dyadicLInfinityDecay
       ‖(spatialCutoff a (b + supportRadius χ ^ 2) x : ℂ)‖ * ‖Q k g x‖ ≤
           1 * ‖Q k g x‖ := mul_le_mul_of_nonneg_right hcut (norm_nonneg _)
       _ ≤ (eLpNorm (Q k g) (∞ : ℝ≥0∞) volume).toReal := by simpa using hx
-  have hF₁bound : eLpNorm F₁ (∞ : ℝ≥0∞) volume ≤ eLpNorm f₁ (∞ : ℝ≥0∞) volume := by
+  have hF₁bound :
+      eLpNorm F₁ (∞ : ℝ≥0∞) volume ≤ eLpNorm f₁ (∞ : ℝ≥0∞) volume := by
     apply eLpNorm_mono_ae
     filter_upwards with x
-    change ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ) * f₁ x‖ ≤ ‖f₁ x‖
+    change
+      ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ) *
+          f₁ x‖ ≤ ‖f₁ x‖
     rw [norm_mul]
-    have hcut : ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ)‖ ≤ 1 := by
+    have hcut :
+        ‖(spatialCutoff (a - supportRadius χ) (b + supportRadius χ) x : ℂ)‖ ≤ 1 := by
       rw [Complex.norm_real, Real.norm_eq_abs,
         abs_of_nonneg (aux_spatialCutoff_pointwise _ _ _).1]
       exact (aux_spatialCutoff_pointwise _ _ _).2
@@ -3552,7 +3559,8 @@ theorem dyadicLInfinityDecay
       eLpNorm F₂ (∞ : ℝ≥0∞) volume ≤ eLpNorm (Q k g) (∞ : ℝ≥0∞) volume := by
         apply eLpNorm_mono_ae
         filter_upwards with x
-        change ‖(spatialCutoff a (b + supportRadius χ ^ 2) x : ℂ) * Q k g x‖ ≤ ‖Q k g x‖
+        change
+          ‖(spatialCutoff a (b + supportRadius χ ^ 2) x : ℂ) * Q k g x‖ ≤ ‖Q k g x‖
         rw [norm_mul]
         have hcut : ‖(spatialCutoff a (b + supportRadius χ ^ 2) x : ℂ)‖ ≤ 1 := by
           rw [Complex.norm_real, Real.norm_eq_abs,

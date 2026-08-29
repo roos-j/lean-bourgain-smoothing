@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.LocalizationAndDyadicLInfinityDecay.LocalizationAndDyadicLInfinityDecay
+import BourgainSmoothing.Auto.LocalizationAndDyadicLInfinityDecay
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Normed.Operator.Extend
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
@@ -98,7 +93,7 @@ lemma aux_quadraticDensity_eq_zero_of_radius_lt
     have : 1 / 2 - Real.sqrt u < -supportRadius χ := by linarith
     exact (not_lt_of_ge hmem.1.le) this
   unfold aux_quadraticDensity
-  rw [if_pos hu0, hplus, hminus]
+  rw [ite_eq_left hu0, hplus, hminus]
   norm_num
 
 /-- Compact reciprocal-square-root envelope for the quadratic density. -/
@@ -124,20 +119,20 @@ lemma aux_quadraticDensity_le_envelope
   by_cases hu0 : 0 < u
   · by_cases huL : u ≤ (supportRadius χ + 1) ^ 2
     · have hmem : u ∈ Set.Ioc (0 : ℝ) ((supportRadius χ + 1) ^ 2) := ⟨hu0, huL⟩
-      rw [aux_quadraticEnvelope, if_pos hmem]
+      rw [aux_quadraticEnvelope, ite_eq_left hmem]
       simpa [hu0] using aux_quadraticDensity_le_root χ hχone u
     · have hlt : (supportRadius χ + 1) ^ 2 < u := lt_of_not_ge huL
       have hzero := aux_quadraticDensity_eq_zero_of_radius_lt χ hχcompact hlt
       have hnotmem : u ∉ Set.Ioc (0 : ℝ) ((supportRadius χ + 1) ^ 2) := by
         intro h
         exact (not_le_of_gt hlt) h.2
-      rw [aux_quadraticEnvelope, if_neg hnotmem, hzero]
+      rw [aux_quadraticEnvelope, ite_eq_right hnotmem, hzero]
   · have hnotmem : u ∉ Set.Ioc (0 : ℝ) ((supportRadius χ + 1) ^ 2) := by
       intro h
       exact hu0 (lt_of_lt_of_le h.1 (le_refl _))
-    rw [aux_quadraticEnvelope, if_neg hnotmem]
+    rw [aux_quadraticEnvelope, ite_eq_right hnotmem]
     unfold aux_quadraticDensity
-    rw [if_neg hu0]
+    rw [ite_eq_right hu0]
 
 /-- Indicator representation of the compact reciprocal-square-root envelope. -/
 lemma aux_quadraticEnvelope_eq_indicator (R : ℝ) :
@@ -146,8 +141,8 @@ lemma aux_quadraticEnvelope_eq_indicator (R : ℝ) :
         (fun u : ℝ ↦ (Real.sqrt u)⁻¹) := by
   funext u
   by_cases hu : u ∈ Set.Ioc (0 : ℝ) ((R + 1) ^ 2)
-  · rw [aux_quadraticEnvelope, if_pos hu, Set.indicator_of_mem hu]
-  · rw [aux_quadraticEnvelope, if_neg hu, Set.indicator_of_notMem hu]
+  · rw [aux_quadraticEnvelope, ite_eq_left hu, Set.indicator_of_mem hu]
+  · rw [aux_quadraticEnvelope, ite_eq_right hu, Set.indicator_of_notMem hu]
 
 /-- Measurability of the compact reciprocal-square-root envelope. -/
 lemma aux_quadraticEnvelope_aestronglyMeasurable (R : ℝ) :
@@ -327,7 +322,7 @@ lemma aux_quadraticEnvelope_eLpNorm_threeHalves_toReal (R : ℝ) :
     simpa only [Real.norm_eq_abs] using
       aux_quadraticEnvelope_integral_norm_rpow_threeHalves R
   rw [hI] at h
-  convert h using 1 <;> norm_num
+  exact h
 
 /-- Scalar simplification of the envelope norm using the support-radius scale. -/
 lemma aux_scalar_quadraticEnvelope_bound (R : ℝ) (hR : 0 ≤ R) :
@@ -488,7 +483,7 @@ lemma aux_lintegral_quadraticDensity_square (χ A : ℝ → ℝ) :
   have hs2 : 0 < s ^ 2 := sq_pos_of_pos hs0
   unfold aux_quadraticDensity
   dsimp
-  rw [if_pos hs2, Real.sqrt_sq_eq_abs, abs_of_pos hs0]
+  rw [ite_eq_left hs2, Real.sqrt_sq_eq_abs, abs_of_pos hs0]
   rw [← ENNReal.ofReal_mul (by positivity : 0 ≤ 2 * s)]
   congr 1
   field_simp
@@ -588,11 +583,11 @@ lemma aux_lintegral_quadratic_to_convolution
         ∫⁻ u : ℝ, ENNReal.ofReal (aux_quadraticDensity χ u) * ‖f (x + u - 1 / 4)‖ₑ := by
     apply lintegral_congr
     intro u
-    rw [ENNReal.ofReal_mul (hA _), ofReal_norm_eq_enorm]
+    rw [ENNReal.ofReal_mul (hA _), ofReal_norm]
     rw [mul_comm]
     congr 1
     congr 1
-    ring
+    ring_nf
   calc
     (∫⁻ t : ℝ, ENNReal.ofReal (‖f (x + (t ^ 2 - t))‖ * χ t)) =
         ∫⁻ u : ℝ, ENNReal.ofReal (A (u - 1 / 4) * aux_quadraticDensity χ u) := by
@@ -720,11 +715,11 @@ lemma aux_ae_integrable_aux_convolution_sections_threeHalves
     (κ f : ℝ → ℂ) (hκ : Integrable κ volume)
     (hf : MemLp f (3 / 2 : ℝ≥0∞) volume) :
     ∀ᵐ x : ℝ ∂volume, Integrable (fun t : ℝ ↦ κ t * f (x - t)) volume := by
-  letI : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
+  let : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
     refine (ENNReal.le_div_iff_mul_le (a := 1) (b := 2) (c := 3)
       (by simp) (by simp)).2 ?_
     norm_num⟩
-  letI : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) :=
+  let : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) :=
     ⟨ENNReal.div_ne_top (by simp) (by norm_num)⟩
   exact aux_ae_integrable_aux_convolution_sections κ f hκ hf
 
@@ -1137,7 +1132,7 @@ lemma aux_eLpNorm_sq_le_mul_of_ae_sq_le_mul
     simpa using
       (eLpNorm_le_eLpNorm_mul_eLpNorm_top (p := (3 / 2 : ℝ≥0∞)) hA B
         (fun a b : ℂ ↦ a * b) 1
-        (Filter.Eventually.of_forall fun x ↦ by simp [norm_mul]))
+        (Filter.Eventually.of_forall fun x ↦ by simp))
   have hCsq : eLpNorm Csq (3 / 2 : ℝ≥0∞) volume =
       eLpNorm C (3 : ℝ≥0∞) volume ^ (2 : ℝ) := by
     calc
@@ -1205,7 +1200,7 @@ lemma aux_eLpNorm_convolution_nonneg_real_threeHalves
       (3 : ℝ≥0∞) volume := by
     have h := hf.norm_rpow_div (1 / 2 : ℝ≥0∞)
     rw [aux_ennreal_threeHalves_div_half] at h
-    convert h using 1 <;> norm_num
+    convert h using 1; norm_num
   have hAint : ∀ᵐ x : ℝ ∂volume,
       Integrable (fun t : ℝ ↦ K t * ‖f (x - t)‖ ^ (3 / 2 : ℝ)) volume := by
     have hraw : ∀ᵐ x : ℝ ∂volume,
@@ -1222,7 +1217,7 @@ lemma aux_eLpNorm_convolution_nonneg_real_threeHalves
     have hshift : MemLp ((fun y : ℝ ↦ ‖f y‖ ^ (1 / 2 : ℝ)) ∘
         fun t : ℝ ↦ x - t) (3 : ℝ≥0∞) volume :=
       hFhalfR.comp_measurePreserving (volume.measurePreserving_sub_left x)
-    letI : ENNReal.HolderTriple (3 / 2 : ℝ≥0∞) (3 : ℝ≥0∞) 1 := ⟨by
+    let : ENNReal.HolderTriple (3 / 2 : ℝ≥0∞) (3 : ℝ≥0∞) 1 := ⟨by
       rw [ENNReal.inv_div (Or.inl (by norm_num)) (Or.inl (by norm_num))]
       calc
         2 * (3 : ℝ≥0∞)⁻¹ + 3⁻¹ = (2 + 1) * 3⁻¹ := by ring
@@ -1245,11 +1240,11 @@ lemma aux_eLpNorm_convolution_nonneg_real_threeHalves
     have hx' := ENNReal.toReal_mono
       (ENNReal.mul_ne_top enorm_ne_top enorm_ne_top) hx
     simpa using hx'
-  letI : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
+  let : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
     apply (ENNReal.le_div_iff_mul_le (Or.inl (by norm_num))
       (Or.inl (by norm_num))).mpr
     norm_num⟩
-  letI : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) := ⟨by finiteness⟩
+  let : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) := ⟨by finiteness⟩
   have hAeq : A = aux_convolution FP KC := by
     simpa only [A, KC, FP] using aux_convolution_comm KC FP
   have hAraw : MemLp A (3 / 2 : ℝ≥0∞) volume := by
@@ -1554,11 +1549,11 @@ theorem nondecayingLThreeHalvesEndpoint
   have hFthree : MemLp F (3 / 2 : ℝ≥0∞) volume := by
     change MemLp (fun y : ℝ ↦ (‖g₂ y‖ : ℂ)) (3 / 2 : ℝ≥0∞) volume
     exact hg₂lp.norm.ofReal
-  letI : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
+  let : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
     apply (ENNReal.le_div_iff_mul_le (Or.inl (by norm_num))
       (Or.inl (by norm_num))).mpr
     norm_num⟩
-  letI : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) := ⟨by finiteness⟩
+  let : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) := ⟨by finiteness⟩
   have hCthree : MemLp C (3 / 2 : ℝ≥0∞) volume := by
     simpa only [C] using aux_convolution_memLp_of_memLp_one K F
       (memLp_one_iff_integrable.mp hKone) hFthree
@@ -1694,7 +1689,7 @@ theorem nondecayingLThreeHalvesEndpoint
         intro t
         rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm]
         congr 1
-        ring
+        ring_nf
       _ = ∫⁻ s : ℝ, ENNReal.ofReal (aux_quadraticDensity χ (1 / 4 - s)) *
           ‖g₂ (y - s)‖ₑ :=
         aux_lintegral_quadratic_to_convolution χ hχ_nonneg g₂
@@ -1727,7 +1722,7 @@ theorem nondecayingLThreeHalvesEndpoint
         apply lintegral_congr
         intro y
         rw [enorm_mul]
-  letI : ENNReal.HolderTriple (3 / 2 : ℝ≥0∞) (3 : ℝ≥0∞) 1 := ⟨by
+  let : ENNReal.HolderTriple (3 / 2 : ℝ≥0∞) (3 : ℝ≥0∞) 1 := ⟨by
     rw [ENNReal.inv_div (Or.inl (by norm_num)) (Or.inl (by norm_num))]
     calc
       2 * (3 : ℝ≥0∞)⁻¹ + 3⁻¹ = (2 + 1) * 3⁻¹ := by
@@ -2071,7 +2066,8 @@ lemma aux_extend_bilinear_of_dense
         exact LinearMap.norm_extendOfNorm_apply_le hdense C hF f
       _ = C * ‖f‖ * ‖g‖ := by ring
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_three_lines_at_three_quarters
     (F : ℂ → ℂ) (a b : ℝ)
     (hF : DiffContOnCl ℂ F
@@ -2090,12 +2086,14 @@ theorem aux_three_lines_at_three_quarters
   convert h using 1
   norm_num
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 def aux_scalarFamily (c z : ℂ) : ℂ :=
   if c = 0 then 0 else
     (‖c‖ : ℂ) ^ (((4 : ℂ) / 3) * z) * (c / ‖c‖)
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_differentiable_scalarFamily (c : ℂ) :
     Differentiable ℂ (aux_scalarFamily c) := by
   unfold aux_scalarFamily
@@ -2107,7 +2105,8 @@ theorem aux_differentiable_scalarFamily (c : ℂ) :
       exact Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr hc)
     · exact differentiable_const _
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_scalarFamily_at_three_quarters (c : ℂ) :
     aux_scalarFamily c ((3 / 4 : ℝ) : ℂ) = c := by
   unfold aux_scalarFamily
@@ -2120,7 +2119,8 @@ theorem aux_scalarFamily_at_three_quarters (c : ℂ) :
     rw [hexp, Complex.cpow_one]
     field_simp
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_norm_scalarFamily_of_ne_zero (c z : ℂ) (hc : c ≠ 0) :
     ‖aux_scalarFamily c z‖ = ‖c‖ ^ ((((4 : ℂ) / 3) * z).re) := by
   unfold aux_scalarFamily
@@ -2130,7 +2130,8 @@ theorem aux_norm_scalarFamily_of_ne_zero (c z : ℂ) (hc : c ≠ 0) :
     rw [norm_div, Complex.norm_real, norm_norm, div_self (norm_ne_zero_iff.mpr hc)]
   rw [hdiv, mul_one]
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_norm_scalarFamily_le_max (c z : ℂ)
     (hz0 : 0 ≤ z.re) (hz1 : z.re ≤ 1) :
     ‖aux_scalarFamily c z‖ ≤ max 1 (‖c‖ ^ (4 / 3 : ℝ)) := by
@@ -2150,7 +2151,8 @@ theorem aux_norm_scalarFamily_le_max (c z : ℂ)
   · have hbase' : ‖c‖ ≤ 1 := le_of_lt (lt_of_not_ge hbase)
     exact (Real.rpow_le_one (norm_nonneg _) hbase' he0).trans (le_max_left _ _)
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_norm_scalarFamily_of_re_eq_zero (c z : ℂ) (hz : z.re = 0) :
     ‖aux_scalarFamily c z‖ ≤ 1 := by
   unfold aux_scalarFamily
@@ -2166,7 +2168,8 @@ theorem aux_norm_scalarFamily_of_re_eq_zero (c z : ℂ) (hz : z.re = 0) :
     rw [hdiv]
     norm_num
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_norm_scalarFamily_of_re_eq_one (c z : ℂ) (hz : z.re = 1) :
     ‖aux_scalarFamily c z‖ = ‖c‖ ^ (4 / 3 : ℝ) := by
   unfold aux_scalarFamily
@@ -2181,7 +2184,8 @@ theorem aux_norm_scalarFamily_of_re_eq_one (c z : ℂ) (hz : z.re = 1) :
       rw [norm_div, Complex.norm_real, norm_norm, div_self (norm_ne_zero_iff.mpr hc)]
     rw [hdiv, mul_one]
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 def aux_compactSimpleFamily (f : Auto.CompactSimple) (z : ℂ) : Auto.CompactSimple :=
   ⟨f.1.map fun c ↦ aux_scalarFamily c z, by
     have h := f.2.comp_left (g := fun c ↦ aux_scalarFamily c z) (by simp [aux_scalarFamily])
@@ -2189,12 +2193,14 @@ def aux_compactSimpleFamily (f : Auto.CompactSimple) (z : ℂ) : Auto.CompactSim
       ((f.1.map fun c ↦ aux_scalarFamily c z : SimpleFunc ℝ ℂ) : ℝ → ℂ)
     simpa only [SimpleFunc.coe_map, Function.comp_apply] using h⟩
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 @[simp]
 theorem aux_compactSimpleFamily_apply (f : Auto.CompactSimple) (z : ℂ) (x : ℝ) :
     (aux_compactSimpleFamily f z).1 x = aux_scalarFamily (f.1 x) z := rfl
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_compactSimpleFamily_at_three_quarters (f : Auto.CompactSimple) :
     aux_compactSimpleFamily f ((3 / 4 : ℝ) : ℂ) = f := by
   apply Subtype.ext
@@ -2202,7 +2208,8 @@ theorem aux_compactSimpleFamily_at_three_quarters (f : Auto.CompactSimple) :
   intro x
   exact aux_scalarFamily_at_three_quarters (f.1 x)
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 def aux_compactSimpleFiber (f : Auto.CompactSimple) (c : ℂ) (hc : c ≠ 0) : Auto.CompactSimple :=
   ⟨(SimpleFunc.const ℝ (1 : ℂ)).restrict (f.1 ⁻¹' {c}), by
     apply f.2.mono
@@ -2216,7 +2223,8 @@ def aux_compactSimpleFiber (f : Auto.CompactSimple) (c : ℂ) (hc : c ≠ 0) : A
     rw [SimpleFunc.restrict_apply _ (f.1.measurableSet_fiber c)] at hx
     simp [hnot] at hx⟩
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 @[simp]
 theorem aux_compactSimpleFiber_apply (f : Auto.CompactSimple) (c : ℂ) (hc : c ≠ 0) (x : ℝ) :
     (aux_compactSimpleFiber f c hc).1 x =
@@ -2224,11 +2232,13 @@ theorem aux_compactSimpleFiber_apply (f : Auto.CompactSimple) (c : ℂ) (hc : c 
   simp [aux_compactSimpleFiber, SimpleFunc.restrict_apply, f.1.measurableSet_fiber]
   rfl
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 def aux_compactSimpleFiberAll (f : Auto.CompactSimple) (c : ℂ) : Auto.CompactSimple :=
   if hc : c = 0 then 0 else aux_compactSimpleFiber f c hc
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_compactSimpleFiberAll_apply (f : Auto.CompactSimple) (c : ℂ) (x : ℝ) :
     (aux_compactSimpleFiberAll f c).1 x =
       if c = 0 then 0 else
@@ -2237,7 +2247,8 @@ theorem aux_compactSimpleFiberAll_apply (f : Auto.CompactSimple) (c : ℂ) (x : 
   · simp [aux_compactSimpleFiberAll, hc]
   · simp [aux_compactSimpleFiberAll, hc, aux_compactSimpleFiber_apply]
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_simpleFunc_finset_sum_apply {ι : Type*} (s : Finset ι)
     (F : ι → SimpleFunc ℝ ℂ) (x : ℝ) :
     (∑ i ∈ s, F i) x = ∑ i ∈ s, F i x := by
@@ -2246,7 +2257,8 @@ theorem aux_simpleFunc_finset_sum_apply {ι : Type*} (s : Finset ι)
   | empty => simp
   | insert i s hi ih => simp [hi, ih]
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_compactSimpleFamily_eq_fiber_sum (f : Auto.CompactSimple) (z : ℂ) :
     aux_compactSimpleFamily f z =
       ∑ c ∈ f.1.range, aux_scalarFamily c z • aux_compactSimpleFiberAll f c := by
@@ -2279,7 +2291,8 @@ theorem aux_compactSimpleFamily_eq_fiber_sum (f : Auto.CompactSimple) (z : ℂ) 
       exact (hnot hxrange).elim
   exact hsum.symm
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_bilinear_family_eq_finite_sum
     (T : Auto.CompactSimple →ₗ[ℂ] Auto.CompactSimple →ₗ[ℂ] ℂ)
     (f g : Auto.CompactSimple) (z : ℂ) :
@@ -2300,7 +2313,8 @@ theorem aux_bilinear_family_eq_finite_sum
   intro d hd
   ring
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_eLpNorm_compactSimpleFamily_top_le_one
     (f : Auto.CompactSimple) (z : ℂ) (hz : z.re = 0) :
     (eLpNorm ((aux_compactSimpleFamily f z).1 : ℝ → ℂ) (∞ : ℝ≥0∞) volume).toReal ≤ 1 := by
@@ -2311,7 +2325,8 @@ theorem aux_eLpNorm_compactSimpleFamily_top_le_one
       (Filter.Eventually.of_forall fun x ↦ aux_norm_scalarFamily_of_re_eq_zero (f.1 x) z hz)
   simpa using ENNReal.toReal_mono ENNReal.one_ne_top hbound
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_eLpNorm_compactSimpleFamily_threeHalves_of_re_eq_one
     (f : Auto.CompactSimple) (z : ℂ) (hz : z.re = 1) :
     eLpNorm ((aux_compactSimpleFamily f z).1 : ℝ → ℂ) (3 / 2 : ℝ≥0∞) volume =
@@ -2349,7 +2364,8 @@ theorem aux_eLpNorm_compactSimpleFamily_threeHalves_of_re_eq_one
               _ = 2 := by simp
       rw [hp]
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_normalized_special_interpolation_core
     (T : Auto.CompactSimple →ₗ[ℂ] Auto.CompactSimple →ₗ[ℂ] ℂ)
     (A₀ A₁ : ℝ) (hA₀ : 0 ≤ A₀) (_hA₁ : 0 ≤ A₁)
@@ -2366,7 +2382,8 @@ theorem aux_normalized_special_interpolation_core
     (hg : (eLpNorm (g.1 : ℝ → ℂ) (2 : ℝ≥0∞) volume).toReal = 1)
     (hF : DiffContOnCl ℂ (fun z ↦ T (aux_compactSimpleFamily f z) (aux_compactSimpleFamily g z))
       (Complex.HadamardThreeLines.verticalStrip 0 1))
-    (hB : BddAbove ((norm ∘ fun z ↦ T (aux_compactSimpleFamily f z) (aux_compactSimpleFamily g z)) ''
+    (hB : BddAbove
+      ((norm ∘ fun z ↦ T (aux_compactSimpleFamily f z) (aux_compactSimpleFamily g z)) ''
       Complex.HadamardThreeLines.verticalClosedStrip 0 1)) :
     ‖T f g‖ ≤ A₀ ^ (1 / 4 : ℝ) * A₁ ^ (3 / 4 : ℝ) := by
   have hleft : ∀ z ∈ Complex.re ⁻¹' ({0} : Set ℝ),
@@ -2406,7 +2423,8 @@ theorem aux_normalized_special_interpolation_core
     (fun z ↦ T (aux_compactSimpleFamily f z) (aux_compactSimpleFamily g z)) A₀ A₁ hF hB hleft hright
   simpa only [aux_compactSimpleFamily_at_three_quarters] using hinterp
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_differentiable_finset_bilinear_family
     {ι κ : Type*} (s : Finset ι) (t : Finset κ)
     (K : ι → κ → ℂ) (u : ι → ℂ) (v : κ → ℂ) :
@@ -2425,7 +2443,8 @@ theorem aux_differentiable_finset_bilinear_family
   ext z
   simp
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_bddAbove_finite_bilinear_family
     {ι κ : Type*} (s : Finset ι) (t : Finset κ)
     (K : ι → κ → ℂ) (u : ι → ℂ) (v : κ → ℂ) :
@@ -2465,7 +2484,8 @@ theorem aux_bddAbove_finite_bilinear_family
       gcongr with i hi j hj
       exact hterm i hi j hj
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_bddAbove_bilinear_family
     (T : Auto.CompactSimple →ₗ[ℂ] Auto.CompactSimple →ₗ[ℂ] ℂ)
     (f g : Auto.CompactSimple) :
@@ -2495,7 +2515,8 @@ theorem aux_bddAbove_bilinear_family
   exact aux_bddAbove_finite_bilinear_family f.1.range g.1.range
     (fun c d ↦ T (aux_compactSimpleFiberAll f c) (aux_compactSimpleFiberAll g d)) id id
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_diffContOnCl_bilinear_family
     (T : Auto.CompactSimple →ₗ[ℂ] Auto.CompactSimple →ₗ[ℂ] ℂ)
     (f g : Auto.CompactSimple) :
@@ -2526,7 +2547,8 @@ theorem aux_diffContOnCl_bilinear_family
   exact aux_differentiable_finset_bilinear_family f.1.range g.1.range
     (fun c d ↦ T (aux_compactSimpleFiberAll f c) (aux_compactSimpleFiberAll g d)) id id
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_normalized_special_interpolation
     (T : Auto.CompactSimple →ₗ[ℂ] Auto.CompactSimple →ₗ[ℂ] ℂ)
     (A₀ A₁ : ℝ) (hA₀ : 0 ≤ A₀) (hA₁ : 0 ≤ A₁)
@@ -2545,7 +2567,8 @@ theorem aux_normalized_special_interpolation
   exact aux_normalized_special_interpolation_core T A₀ A₁ hA₀ hA₁ hInfinity hThreeHalves f g hf hg
     (aux_diffContOnCl_bilinear_family T f g) (aux_bddAbove_bilinear_family T f g)
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_eLpNorm_normalize_two (f : ℝ → ℂ) (a : ℝ) (ha : 0 < a)
     (hfa : (eLpNorm f (2 : ℝ≥0∞) volume).toReal = a) :
     (eLpNorm (((a : ℂ)⁻¹) • f) (2 : ℝ≥0∞) volume).toReal = 1 := by
@@ -2555,13 +2578,15 @@ theorem aux_eLpNorm_normalize_two (f : ℝ → ℂ) (a : ℝ) (ha : 0 < a)
     simp [Complex.norm_real, abs_of_pos ha]
   rw [hscalar, inv_mul_cancel₀ ha.ne']
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_norm_compactSimpleToLpTwo (f : Auto.CompactSimple) :
     ‖Auto.compactSimpleToLpTwo f‖ =
       (eLpNorm (f.1 : ℝ → ℂ) (2 : ℝ≥0∞) volume).toReal := by
   exact Lp.norm_toLp (f.1 : ℝ → ℂ) (Auto.compactSimpleMemLpTwo f)
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_eLpNorm_two_eq_zero_of_toReal_eq_zero (f : Auto.CompactSimple)
     (hzero : (eLpNorm (f.1 : ℝ → ℂ) (2 : ℝ≥0∞) volume).toReal = 0) :
     eLpNorm (f.1 : ℝ → ℂ) (2 : ℝ≥0∞) volume = 0 := by
@@ -2569,7 +2594,8 @@ theorem aux_eLpNorm_two_eq_zero_of_toReal_eq_zero (f : Auto.CompactSimple)
   · exact h
   · exact (Auto.compactSimpleMemLpTwo f).eLpNorm_ne_top h |>.elim
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_eLpNorm_threeHalves_eq_zero_of_two_toReal_eq_zero (f : Auto.CompactSimple)
     (hzero : (eLpNorm (f.1 : ℝ → ℂ) (2 : ℝ≥0∞) volume).toReal = 0) :
     eLpNorm (f.1 : ℝ → ℂ) (3 / 2 : ℝ≥0∞) volume = 0 := by
@@ -2579,7 +2605,8 @@ theorem aux_eLpNorm_threeHalves_eq_zero_of_two_toReal_eq_zero (f : Auto.CompactS
     (eLpNorm_eq_zero_iff f.1.aestronglyMeasurable (by norm_num)).mp htwo
   exact eLpNorm_eq_zero_of_ae_zero hae
 
-/-- Auxiliary component of the proof of `prop:special-interpolation` and `specialBilinearInterpolation`. -/
+/-- Auxiliary component of the proof of `prop:special-interpolation` and
+`specialBilinearInterpolation`. -/
 theorem aux_unnormalize_real_bound (a b C x : ℝ) (ha : 0 < a) (hb : 0 < b)
     (h : a⁻¹ * b⁻¹ * x ≤ C) :
     x ≤ C * a * b := by
@@ -2839,8 +2866,8 @@ compact-simple form in `prop:dyadic-l2-decay`, formalized by
 theorem aux_Q_memLp_two (k : ℕ) (g : ℝ → ℂ)
     (hg : MemLp g (2 : ℝ≥0∞) volume) :
     MemLp (Q k g) (2 : ℝ≥0∞) volume := by
-  letI : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
-  letI : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
+  let : Fact (1 ≤ (2 : ℝ≥0∞)) := ⟨by norm_num⟩
+  let : Fact ((2 : ℝ≥0∞) ≠ ∞) := ⟨by norm_num⟩
   have hκ : Integrable
       (aux_scaledInverseFourierKernel (fun ξ ↦ (annularCutoff ξ : ℂ)) k) volume :=
     memLp_one_iff_integrable.mp (aux_scaledAnnularInverseFourierKernel_memLp_one k)
@@ -2904,10 +2931,18 @@ theorem aux_trilinearForm_add_middle
               filter_upwards with x
               apply integral_congr_ae
               filter_upwards with t
-              simp only [trilinearForm, aux_u3_trilinearIntegrand, Pi.add_apply]
+              simp only [aux_u3_trilinearIntegrand, Pi.add_apply]
               ring
     _ = trilinearForm χ f₀ f₁ f₂ + trilinearForm χ f₀ f₁' f₂ := by
-      simpa [trilinearForm, aux_u3_trilinearIntegrand] using integral_integral_add h₁ h₂
+      change
+        (∫ x : ℝ, ∫ t : ℝ,
+          aux_u3_trilinearIntegrand f₀ f₁ f₂ χ (x, t) +
+            aux_u3_trilinearIntegrand f₀ f₁' f₂ χ (x, t)) =
+          (∫ x : ℝ, ∫ t : ℝ,
+            aux_u3_trilinearIntegrand f₀ f₁ f₂ χ (x, t)) +
+            ∫ x : ℝ, ∫ t : ℝ,
+              aux_u3_trilinearIntegrand f₀ f₁' f₂ χ (x, t)
+      exact integral_integral_add h₁ h₂
 
 /-- Supplies additivity in the last variable for the compact-simple bilinear
 form in `prop:dyadic-l2-decay`, formalized by `dyadicL2Smoothing`. -/
@@ -2926,10 +2961,18 @@ theorem aux_trilinearForm_add_last
               filter_upwards with x
               apply integral_congr_ae
               filter_upwards with t
-              simp only [trilinearForm, aux_u3_trilinearIntegrand, Pi.add_apply]
+              simp only [aux_u3_trilinearIntegrand, Pi.add_apply]
               ring
     _ = trilinearForm χ f₀ f₁ f₂ + trilinearForm χ f₀ f₁ f₂' := by
-      simpa [trilinearForm, aux_u3_trilinearIntegrand] using integral_integral_add h₁ h₂
+      change
+        (∫ x : ℝ, ∫ t : ℝ,
+          aux_u3_trilinearIntegrand f₀ f₁ f₂ χ (x, t) +
+            aux_u3_trilinearIntegrand f₀ f₁ f₂' χ (x, t)) =
+          (∫ x : ℝ, ∫ t : ℝ,
+            aux_u3_trilinearIntegrand f₀ f₁ f₂ χ (x, t)) +
+            ∫ x : ℝ, ∫ t : ℝ,
+              aux_u3_trilinearIntegrand f₀ f₁ f₂' χ (x, t)
+      exact integral_integral_add h₁ h₂
 
 /-- Supplies complex homogeneity in the middle variable for the compact-simple
 bilinear form in `prop:dyadic-l2-decay`, formalized by `dyadicL2Smoothing`. -/
@@ -3087,11 +3130,11 @@ theorem aux_compactSimpleDyadicFormOf_threeHalves_bound
         (eLpNorm f₀ (∞ : ℝ≥0∞) volume).toReal * (2 : ℝ) ^ 6) *
           (eLpNorm (f.1 : ℝ → ℂ) (3 / 2 : ℝ≥0∞) volume).toReal *
             (eLpNorm (g.1 : ℝ → ℂ) (3 / 2 : ℝ≥0∞) volume).toReal := by
-  letI : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
+  let : Fact (1 ≤ (3 / 2 : ℝ≥0∞)) := ⟨by
     refine (ENNReal.le_div_iff_mul_le (a := 1) (b := 2) (c := 3)
       (by simp) (by simp)).2 ?_
     norm_num⟩
-  letI : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) :=
+  let : Fact ((3 / 2 : ℝ≥0∞) ≠ ∞) :=
     ⟨ENNReal.div_ne_top (by simp) (by norm_num)⟩
   have hκ : Integrable
       (aux_scaledInverseFourierKernel (fun ξ ↦ (annularCutoff ξ : ℂ)) k) volume :=
@@ -3262,7 +3305,7 @@ theorem aux_trilinearIntegrand_norm_integral_le_linf_l2_l2
         apply integral_congr_ae
         filter_upwards with z
         dsimp [B, aux_u3_trilinearIntegrand]
-        ring
+        ring_nf
       _ = _ := hswap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding
         (fun z : ℝ × ℝ ↦ ‖(χ z.1 : ℂ) * B z.1 z.2‖)
   calc

@@ -1,9 +1,4 @@
-/-
-Copyright (c) 2026 Joris Roos. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joris Roos
--/
-import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions.ConventionsAndFoundationalDefinitions
+import BourgainSmoothing.Auto.ConventionsAndFoundationalDefinitions
 import Mathlib.Analysis.Distribution.Sobolev
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 
@@ -71,7 +66,6 @@ lemma aux_negativeReciprocalSquareIntegral :
         exact congrArg Inv.inv (Real.rpow_natCast x 2).symm
     _ = 1 := h
 
-set_option maxHeartbeats 800000 in
 -- The explicit tail-integrability calculation requires substantial normalization.
 /-- Square-integrability of the reciprocal tail weight used to split the Fourier integral in
 `\label{lem:fourier-l1-h1}` for `fourierL1LeFromH1`. -/
@@ -132,7 +126,6 @@ lemma aux_tailReciprocalMemLp :
     exact hSc
   · exact ((measurable_id.inv).indicator (measurableSet_Icc.compl)).aestronglyMeasurable
 
-set_option maxHeartbeats 800000 in
 -- Splitting the reciprocal-square integral into two half-lines is normalization-intensive.
 /-- Exact square integral of the reciprocal tail weight used by
 `\label{lem:fourier-l1-h1}` and `fourierL1LeFromH1`. -/
@@ -243,7 +236,6 @@ lemma aux_unitIntervalLpNorm :
   rw [ENNReal.toReal_mul, ← ENNReal.toReal_rpow]
   norm_num [Real.volume_Icc, Real.sqrt_eq_rpow]
 
-set_option maxHeartbeats 800000 in
 -- Converting the explicit integral into an `L^2` norm requires substantial normalization.
 /-- Exact (L^2) norm of the real reciprocal tail weight used in
 `\label{lem:fourier-l1-h1}` and `fourierL1LeFromH1`. -/
