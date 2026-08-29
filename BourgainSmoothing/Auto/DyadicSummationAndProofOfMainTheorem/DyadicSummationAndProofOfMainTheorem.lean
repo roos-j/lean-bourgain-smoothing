@@ -42,7 +42,20 @@ theorem elementaryL2Endpoint
         (eLpNorm f₀ (∞ : ℝ≥0∞) volume).toReal *
           (eLpNorm f₁ (2 : ℝ≥0∞) volume).toReal *
             (eLpNorm f₂ (2 : ℝ≥0∞) volume).toReal := by
-  sorry
+  have hχint : Integrable (fun t : ℝ ↦ (χ t : ℂ)) :=
+    memLp_one_iff_integrable.mp hχ_memLp.ofReal
+  have hχnorm : (∫ t : ℝ, ‖(χ t : ℂ)‖) =
+      (eLpNorm χ (1 : ℝ≥0∞) volume).toReal := by
+    calc
+      (∫ t : ℝ, ‖(χ t : ℂ)‖) = ∫ t : ℝ, ‖χ t‖ := by
+        apply integral_congr_ae
+        filter_upwards with t
+        simp
+      _ = lpNorm χ 1 volume :=
+        (lpNorm_one_eq_integral_norm hχ_memLp.aestronglyMeasurable).symm
+      _ = _ := (toReal_eLpNorm hχ_memLp.aestronglyMeasurable).symm
+  rw [← hχnorm]
+  exact aux_trilinearFormAbs_le_linf_l2_l2 χ f₀ f₁ f₂ hχint hf₀_memLp hf₁_memLp hf₂_memLp
 
 /--
 Let \(0<\sigma\leq1\).  For every \(f\in L^2(\mathbb R)\),

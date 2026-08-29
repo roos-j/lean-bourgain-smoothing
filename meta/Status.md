@@ -109,8 +109,8 @@ None.
 
 ### Theorems
 
-\label{thm:sobolev-difference}: [Statement completed] (Lean: sobolevDifferenceEstimate) (2026-08-27 22:00 PDT)
-\label{cor:sobolev-difference-s1}: [Statement completed] (Lean: sobolevDifferenceEstimateS1) (2026-08-27 22:00 PDT)
+\label{thm:sobolev-difference}: [Proof completed] (Lean: sobolevDifferenceEstimate) (2026-08-28 10:25 PDT)
+\label{cor:sobolev-difference-s1}: [Proof completed] (Lean: sobolevDifferenceEstimateS1) (2026-08-28 10:25 PDT)
 
 ## Degree lowering and normalized smoothing
 
@@ -122,11 +122,11 @@ Lean file: BourgainSmoothing/Auto/DegreeLoweringAndNormalizedSmoothing/DegreeLow
 
 ### Theorems
 
-\label{lem:first-dualization}: [Statement completed] (Lean: firstDualization) (2026-08-27 22:05 PDT)
-\label{thm:u2-control}: [Statement completed] (Lean: u2Control) (2026-08-27 22:05 PDT)
-\label{lem:second-dualization}: [Statement completed] (Lean: secondDualization) (2026-08-27 22:05 PDT)
-\label{thm:normalized-smoothing}: [Statement completed] (Lean: normalizedNonlinearSmoothing) (2026-08-27 22:05 PDT)
-\label{cor:homogeneous-normalized}: [Statement completed] (Lean: homogeneousNormalizedSmoothing) (2026-08-27 22:05 PDT)
+\label{lem:first-dualization}: [Proof completed] (Lean: firstDualization) (2026-08-28 10:40 PDT)
+\label{thm:u2-control}: [Proof completed] (Lean: u2Control) (2026-08-28 11:23 PDT)
+\label{lem:second-dualization}: [Proof completed] (Lean: secondDualization) (2026-08-28 11:41 PDT)
+\label{thm:normalized-smoothing}: [Proof completed] (Lean: normalizedNonlinearSmoothing) (2026-08-28 12:10 PDT)
+\label{cor:homogeneous-normalized}: [Proof completed] (Lean: homogeneousNormalizedSmoothing) (2026-08-28 12:27 PDT)
 
 ## Localization and dyadic L-infinity decay
 
@@ -138,10 +138,10 @@ Lean file: BourgainSmoothing/Auto/LocalizationAndDyadicLInfinityDecay/Localizati
 
 ### Theorems
 
-\label{lem:main-interaction-admissible}: [Statement completed] (Lean: mainInteractionDataAdmissible) (2026-08-27 22:09 PDT)
-\label{lem:trilinear-localization}: [Statement completed] (Lean: trilinearFormSpatialLocalization) (2026-08-27 22:09 PDT)
-\label{lem:localized-sobolev-decay}: [Statement completed] (Lean: localizedNegativeSobolevDecay) (2026-08-27 22:09 PDT)
-\label{prop:dyadic-linfty-decay}: [Statement completed] (Lean: dyadicLInfinityDecay) (2026-08-27 22:09 PDT)
+\label{lem:main-interaction-admissible}: [Proof completed] (Lean: mainInteractionDataAdmissible) (2026-08-28 12:32 PDT)
+\label{lem:trilinear-localization}: [Proof completed] (Lean: trilinearFormSpatialLocalization) (2026-08-28 12:33 PDT)
+\label{lem:localized-sobolev-decay}: [Proof completed] (Lean: localizedNegativeSobolevDecay) (2026-08-28 14:13 PDT)
+\label{prop:dyadic-linfty-decay}: [Proof completed] (Lean: dyadicLInfinityDecay) (2026-08-28 14:19 PDT)
 
 ## The nondecaying endpoint and interpolation
 
@@ -153,10 +153,10 @@ None.
 
 ### Theorems
 
-\label{lem:quadratic-average}: [Statement completed] (Lean: quadraticAveragingOperator) (2026-08-27 22:15 PDT)
-\label{cor:l32-endpoint}: [Statement completed] (Lean: nondecayingLThreeHalvesEndpoint) (2026-08-27 22:15 PDT)
-\label{prop:special-interpolation}: [Statement completed] (Lean: specialBilinearInterpolation) (2026-08-27 22:15 PDT)
-\label{prop:dyadic-l2-decay}: [Statement completed] (Lean: dyadicL2Smoothing) (2026-08-27 22:15 PDT)
+\label{lem:quadratic-average}: [Proof completed] (Lean: quadraticAveragingOperator) (2026-08-28 15:30 PDT)
+\label{cor:l32-endpoint}: [Proof completed] (Lean: nondecayingLThreeHalvesEndpoint) (2026-08-28 15:50 PDT)
+\label{prop:special-interpolation}: [Proof completed] (Lean: specialBilinearInterpolation) (2026-08-28 16:36 PDT)
+\label{prop:dyadic-l2-decay}: [Proof completed] (Lean: dyadicL2Smoothing) (2026-08-28 17:25 PDT)
 
 ## Dyadic summation and proof of the main theorem
 
@@ -168,7 +168,7 @@ None.
 
 ### Theorems
 
-\label{lem:l2-endpoint}: [Statement completed] (Lean: elementaryL2Endpoint) (2026-08-27 22:19 PDT)
+\label{lem:l2-endpoint}: [Proof completed] (Lean: elementaryL2Endpoint) (2026-08-28 17:26 PDT)
 \label{lem:weighted-dyadic-square}: [Statement completed] (Lean: weightedDyadicSquareEstimate) (2026-08-27 22:19 PDT)
 \label{lem:geometric-summation}: [Statement completed] (Lean: geometricSummationConstant) (2026-08-27 22:19 PDT)
 \label{lem:interaction-size-comparison}: [Statement completed] (Lean: interactionSizeComparison) (2026-08-27 22:19 PDT)
