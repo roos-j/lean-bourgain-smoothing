@@ -15,7 +15,7 @@ Use this skill to continue or repair the formalization represented by this repos
 ## Organize the formalization
 
 - Translate manuscript *theorems*, *lemmas*, and *propositions* into Lean `theorem` declarations. Treat a labeled corollary that is in scope as a theorem as well. If a labeled convention or another environment cannot clearly be classified as an in-scope definition or result, surface that scope decision instead of silently omitting or inventing formal content.
-- Create one CamelCase folder for each top-level manuscript section and no folders for subsections. Put each leaf sub(sub)section in one appropriately named CamelCase Lean file, omitting articles from its filename. When a section has no sub(sub)sections, treat the section itself as its leaf.
+- Create a CamelCase folder for a top-level manuscript section only when it contains multiple Lean source files; if it would contain only one file, put that CamelCase file directly in `BourgainSmoothing/Auto/` instead. Do not create folders for subsections. Put each leaf sub(sub)section in one appropriately named CamelCase Lean file, omitting articles from its filename. When a section has no sub(sub)sections, treat the section itself as its leaf.
 - Add each newly created, non-temporary Lean source as an explicit import in the top-level module. Use scratch files only for temporary work; do not import them and delete them when they are no longer needed.
 - Work through subsections in manuscript order. First formalize all in-scope definitions and theorem statements; temporary `sorry` proofs are allowed during this phase. Then prove theorems in appearance order, advancing only after the preceding theorem or independent batch is complete.
 
